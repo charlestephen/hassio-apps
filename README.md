@@ -1,8 +1,8 @@
-# CharleStephen's Hassio Add-ons
+# charlestephen's Hassio Apps
 
 ## About
 
-My Home Assistant add-on repository.
+My Home Assistant Apps repository.
 
 The add-on images are published to the **GitHub Container Registry** at
 `ghcr.io`. Home Assistant pulls a prebuilt, per-architecture image for
@@ -13,21 +13,21 @@ the Supervisor does **not** build them locally.
 
 Add this repository to your Home Assistant instance with one click:
 
-[![Open your Home Assistant instance and show the add add-on repository dialog with this repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fcharlestephen%2Fhassio-apps)
+[![Open your Home Assistant instance and show the add apps repository dialog with this repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_apps_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fcharlestephen%2Fhassio-apps)
 
 Or add it manually:
 
-1. Go to **Settings → Add-ons → Add-on Store → ⋮ → Repositories** and add:
+1. Go to **Settings → Apps → App Store → ⋮ → Repositories** and add:
 
    ```
    https://github.com/charlestephen/hassio-apps
    ```
 
-2. Install the add-on you want from the store. The images are public on
+2. Install the apps you want from the store. The images are public on
    `ghcr.io`, so no registry credentials are required.
 
 
-## Available add-ons
+## Available apps
 
 [//]: # "ADDONLIST_START"
 
