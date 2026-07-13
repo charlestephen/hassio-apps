@@ -9,8 +9,8 @@ configuration of your own.
 ## Installation
 
 1. Add this repository to **Settings → Add-ons → Add-on Store → ⋮ → Repositories**:
-   `https://github.com/charlestephen/hassio-apps`, and add the
-   `git.cst.nyc` registry credentials so the prebuilt image can be pulled.
+   `https://github.com/charlestephen/hassio-apps`. The prebuilt images are
+   public on `ghcr.io`, so no registry credentials are required.
 2. Install the **Grafana Alloy** add-on.
 3. **Disable Protection mode** for the add-on (see below) — this is required for
    Docker log collection.

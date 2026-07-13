@@ -1,4 +1,4 @@
 # https://developers.home-assistant.io/docs/add-ons/repository#repository-configuration
 name: CharleStephen's Hassio Add-ons
 url: 'https://github.com/charlestephen/hassio-apps'
-maintainer: hassio-apps@cst.nyc
+maintainer: CharleStephen <hassio-apps@cst.nyc>
