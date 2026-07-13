@@ -1,22 +1,25 @@
-# CharleStephen's Home Assistant Apps
+# CharleStephen's Hassio Add-ons
 
 ## About
 
-A public collection of Home Assistant add-ons. Prebuilt, per-architecture images
-are published to the GitHub Container Registry (`ghcr.io`) and pulled directly by
-the Home Assistant Supervisor — it does not build them locally.
+My Home Assistant add-on repository.
+
+The add-on images are published to the **GitHub Container Registry** at
+`ghcr.io`. Home Assistant pulls a prebuilt, per-architecture image for
+each add-on (`ghcr.io/charlestephen/hassio-addons-<addon>-{arch}`), so
+the Supervisor does **not** build them locally.
 
 ## Installation
 
-1. In Home Assistant, open **Settings → Add-ons → Add-on Store → ⋮ → Repositories**
-   and add:
+1. Add this repository in **Settings → Add-ons → Add-on Store → ⋮ → Repositories**:
 
    ```
    https://github.com/charlestephen/hassio-apps
    ```
 
-2. Install the add-on you want from the store. The images are **public** on
+2. Install the add-on you want from the store. The images are public on
    `ghcr.io`, so no registry credentials are required.
+
 
 ## Available add-ons
 
