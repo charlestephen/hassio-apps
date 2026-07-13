@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Handle pgAdmin service termination
+# ==============================================================================
+
+declare exit_code=${1}
+
+if [ "${exit_code}" -ne 0 ] && [ "${exit_code}" -ne 256 ]; then
+  bashio::log.warning "pgAdmin exited with code ${exit_code}, restarting ..."
+fi

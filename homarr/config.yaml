@@ -1,0 +1,185 @@
+name: Homarr
+description: Modern, feature-rich, self-hosted dashboard for your homelab with widgets, integrations and SSO/OIDC.
+url: https://homarr.dev
+version: "1.70.0-1"
+stage: stable
+homeassistant: "2026.6.0"
+slug: homarr
+image: ghcr.io/charlestephen/hassio-addons-homarr-{arch}
+# Homarr is a self-contained monolith (its own entrypoint supervises redis +
+# nginx + Next.js), so we do NOT layer HA's s6 init on top of it.
+init: false
+startup: application
+boot: auto
+panel_icon: mdi:view-dashboard
+webui: http://[HOST]:[PORT:7575]
+arch:
+  - aarch64
+  - amd64
+map:
+  - type: data
+    read_only: false
+  - type: share
+    read_only: false
+ports:
+  7575/tcp: 7575
+ports_description:
+  7575/tcp: Web UI
+backup: cold
+
+# ---------------------------------------------------------------------------
+# Homarr environment variables surfaced as add-on options.
+# Full reference: https://homarr.dev/docs/advanced/environment-variables/
+#                 https://homarr.dev/docs/advanced/single-sign-on/
+# Empty strings / false are treated as "not set" and are not exported, so the
+# add-on falls back to Homarr's own defaults.
+# ---------------------------------------------------------------------------
+options:
+  # --- General ---
+  log_level: info
+  puid: 0
+  pgid: 0
+  no_external_connection: false
+  enable_dns_caching: true
+
+  # --- Security ---
+  # Leave blank to auto-generate a stable key on first boot (persisted to /data).
+  secret_encryption_key: ""
+
+  # --- Authentication (common) ---
+  # credentials = built-in local users. Add "oidc" and/or "ldap" to enable SSO.
+  auth_providers: credentials
+  auth_session_expiry_time: "30d"
+  auth_logout_redirect_url: ""
+  auth_cookie_prefix: homarr
+
+  # --- OIDC / SSO ---
+  oidc_client_name: ""
+  oidc_issuer: ""
+  oidc_client_id: ""
+  oidc_client_secret: ""
+  oidc_scope_overwrite: ""
+  oidc_groups_attribute: ""
+  oidc_name_attribute_overwrite: ""
+  oidc_auto_login: false
+  oidc_groups_local_management: false
+  oidc_force_userinfo: false
+  oidc_enable_dangerous_account_linking: false
+  oidc_token_endpoint_auth_method: ""
+
+  # --- LDAP ---
+  ldap_uri: ""
+  ldap_base: ""
+  ldap_bind_dn: ""
+  ldap_bind_password: ""
+  ldap_username_attribute: uid
+  ldap_user_mail_attribute: mail
+  ldap_group_class: groupOfUniqueNames
+  ldap_group_member_attribute: member
+  ldap_group_member_user_attribute: dn
+  ldap_search_scope: base
+  ldap_username_filter_extra_arg: ""
+  ldap_group_filter_extra_arg: ""
+
+  # --- External database (optional; defaults to embedded SQLite in /data) ---
+  external_db: false
+  db_driver: ""
+  db_dialect: ""
+  db_host: ""
+  db_port: 0
+  db_name: ""
+  db_user: ""
+  db_password: ""
+
+  # --- External Redis (optional; defaults to bundled Redis) ---
+  redis_is_external: false
+  redis_host: ""
+  redis_port: 6379
+  redis_username: ""
+  redis_password: ""
+  redis_database_index: 0
+  redis_tls_ca: ""
+
+  # --- Docker integration (optional; point at remote docker hosts) ---
+  docker_hostnames: ""
+  docker_ports: ""
+  docker_socket_paths: ""
+
+  # --- Outbound proxy (optional) ---
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""
+
+schema:
+  # General
+  log_level: list(debug|info|warn|error)?
+  puid: int(0,)
+  pgid: int(0,)
+  no_external_connection: bool
+  enable_dns_caching: bool
+
+  # Security
+  secret_encryption_key: password?
+
+  # Authentication (common)
+  auth_providers: str
+  auth_session_expiry_time: str?
+  auth_logout_redirect_url: str?
+  auth_cookie_prefix: str?
+
+  # OIDC
+  oidc_client_name: str?
+  oidc_issuer: str?
+  oidc_client_id: str?
+  oidc_client_secret: password?
+  oidc_scope_overwrite: str?
+  oidc_groups_attribute: str?
+  oidc_name_attribute_overwrite: str?
+  oidc_auto_login: bool
+  oidc_groups_local_management: bool
+  oidc_force_userinfo: bool
+  oidc_enable_dangerous_account_linking: bool
+  oidc_token_endpoint_auth_method: str?
+
+  # LDAP
+  ldap_uri: str?
+  ldap_base: str?
+  ldap_bind_dn: str?
+  ldap_bind_password: password?
+  ldap_username_attribute: str?
+  ldap_user_mail_attribute: str?
+  ldap_group_class: str?
+  ldap_group_member_attribute: str?
+  ldap_group_member_user_attribute: str?
+  ldap_search_scope: list(base|one|sub)?
+  ldap_username_filter_extra_arg: str?
+  ldap_group_filter_extra_arg: str?
+
+  # External database
+  external_db: bool
+  db_driver: str?
+  db_dialect: str?
+  db_host: str?
+  db_port: int(0,65535)?
+  db_name: str?
+  db_user: str?
+  db_password: password?
+
+  # External Redis
+  redis_is_external: bool
+  redis_host: str?
+  redis_port: int(1,65535)?
+  redis_username: str?
+  redis_password: password?
+  redis_database_index: int(0,)?
+  redis_tls_ca: str?
+
+  # Docker integration
+  docker_hostnames: str?
+  docker_ports: str?
+  docker_socket_paths: str?
+
+  # Proxy
+  http_proxy: str?
+  https_proxy: str?
+  no_proxy: str?

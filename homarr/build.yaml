@@ -1,0 +1,8 @@
+---
+# Thin wrapper: build directly on Homarr's official multi-arch image.
+# Renovate tracks these per-arch lines via the shared regex manager.
+build_from:
+  aarch64: ghcr.io/homarr-labs/homarr:v1.70.0
+  amd64: ghcr.io/homarr-labs/homarr:v1.70.0
+args:
+  HOMARR_VERSION: "1.70.0"

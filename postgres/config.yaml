@@ -1,0 +1,34 @@
+name: PostgreSQL
+description: PostgreSQL 18 object-relational database server.
+url: https://github.com/charlestephen/hassio-apps/src/branch/main/postgres
+version: "18.4.e"
+stage: stable
+homeassistant: "2026.6.0"
+slug: postgres
+image: ghcr.io/charlestephen/hassio-addons-postgres-{arch}
+# Databases should come up before dependent services.
+startup: system
+init: false
+boot: auto
+hassio_role: default
+panel_icon: mdi:database
+arch:
+  - aarch64
+  - amd64
+map:
+  - type: data
+    read_only: false
+ports:
+  5432/tcp: 5432
+ports_description:
+  5432/tcp: PostgreSQL
+options:
+  superuser_password: changeme
+  database: homeassistant
+  max_connections: 100
+  log_level: info
+schema:
+  superuser_password: password
+  database: str?
+  max_connections: int(10,10000)
+  log_level: list(trace|debug|info|warning|error|fatal)

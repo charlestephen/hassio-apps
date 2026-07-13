@@ -1,0 +1,37 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Initialize Semaphore (oneshot: runs once at startup)
+# ==============================================================================
+
+readonly data_dir="/data/semaphore"
+readonly keys_file="${data_dir}/.generated-keys"
+
+bashio::log.info "Ensuring Semaphore data directory '${data_dir}' exists ..."
+mkdir -p "${data_dir}/tmp"
+
+# Ensure /share/semaphore exists for playbooks/inventory accessible from HA share
+if ! bashio::fs.directory_exists "/share/semaphore"; then
+    bashio::log.info "Creating /share/semaphore for playbooks and inventory ..."
+    mkdir -p /share/semaphore/playbooks /share/semaphore/inventory
+fi
+
+# Warn if security keys still hold the placeholder defaults
+cookie_hash="$(bashio::config 'cookie_hash')"
+if [[ "${cookie_hash}" == "CHANGE_ME"* ]]; then
+    bashio::log.warning "============================================================"
+    bashio::log.warning " SECURITY WARNING: cookie_hash / cookie_encryption /"
+    bashio::log.warning " access_key_encryption are using placeholder defaults."
+    bashio::log.warning " Generate real keys with:"
+    bashio::log.warning "   head -c32 /dev/urandom | base64"
+    bashio::log.warning " and set them in the add-on Configuration tab."
+    bashio::log.warning "============================================================"
+fi
+
+# Warn if admin password is the default
+admin_pass="$(bashio::config 'admin_password')"
+if [[ "${admin_pass}" == "changeme" ]]; then
+    bashio::log.warning "Admin password is still 'changeme' — change it after first login."
+fi
+
+bashio::log.info "Semaphore initialization complete."

@@ -1,0 +1,14 @@
+configuration:
+  tunnel_token:
+    name: Tunnel token
+    description: >-
+      Connector token of your remotely-managed Cloudflare tunnel (Zero Trust
+      dashboard -> Networks -> Tunnels -> your tunnel). Both HA replicas use it.
+  log_level:
+    name: Log level
+    description: cloudflared logging verbosity.
+network:
+  36400/tcp:
+    name: cloudflared0 Prometheus metrics
+  36401/tcp:
+    name: cloudflared1 Prometheus metrics

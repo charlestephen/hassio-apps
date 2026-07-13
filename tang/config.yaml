@@ -1,0 +1,25 @@
+name: Tang
+description: Tang is a server for Network Bound Disk Encryption (NBDE), providing automatic LUKS2 key management.
+url: https://github.com/charlestephen/hassio-apps/src/branch/main/tang
+version: 1.0.11
+stage: stable
+slug: tang
+image: ghcr.io/charlestephen/hassio-addons-tang-{arch}
+startup: system
+init: false
+boot: auto
+panel_icon: mdi:key-chain
+arch:
+- aarch64
+- amd64
+map:
+- type: data
+  read_only: false
+ports:
+  8888/tcp: 8888
+ports_description:
+  8888/tcp: Tang NBDE
+options:
+  log_level: info
+schema:
+  log_level: list(trace|debug|info|notice|warning|error|fatal)

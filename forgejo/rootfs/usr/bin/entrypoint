@@ -1,0 +1,102 @@
+#!/bin/bash
+set -e
+
+# ==============================================================================
+# Forgejo add-on entrypoint
+# Reads /data/options.json (Home Assistant add-on options) and exports every
+# key as an environment variable so the app.ini template and Forgejo itself
+# pick them up. Safe defaults are applied for variables not present in options.
+# ==============================================================================
+
+OPTIONS_SOURCE=/data/options.json
+
+echo "=== Loading Forgejo add-on options ==="
+
+mapfile -t KEYS < <(jq -r 'keys[]' "${OPTIONS_SOURCE}")
+
+for KEY in "${KEYS[@]}"; do
+    VALUE=$(jq -r ".\"${KEY}\"" "${OPTIONS_SOURCE}")
+
+    # Mask secrets in log output
+    if [[ "${KEY}" == *"PASS"* || "${KEY}" == *"SECRET"* || "${KEY}" == *"TOKEN"* ]]; then
+        echo "${KEY}=******"
+    else
+        echo "${KEY}=${VALUE}"
+    fi
+
+    export "${KEY}=${VALUE}"
+
+    # Write to /etc/environment so child processes inherit the value
+    echo "${KEY}=${VALUE}" >> /etc/environment
+done
+
+# Apply defaults for variables that may not be present in older configs
+: "${APP_NAME:=Forgejo}"
+: "${DOMAIN:=homeassistant.local}"
+: "${ROOT_URL:=http://homeassistant.local:3080/}"
+: "${HTTP_PORT:=3000}"
+: "${SSH_LISTEN_PORT:=22}"
+: "${SSH_PORT:=222}"
+: "${DISABLE_SSH:=false}"
+: "${DB_TYPE:=sqlite3}"
+: "${DB_HOST:=localhost:3306}"
+: "${DB_NAME:=forgejo}"
+: "${DB_USER:=root}"
+: "${DB_PASSWD:=}"
+: "${INSTALL_LOCK:=true}"
+: "${REQUIRE_SIGNIN_VIEW:=false}"
+: "${SHOW_REGISTRATION_BUTTON:=true}"
+: "${DEFAULT_USER_VISIBILITY:=public}"
+: "${DEFAULT_BRANCH:=main}"
+: "${DEFAULT_PRIVATE:=last}"
+: "${ENABLE_PUSH_CREATE_USER:=false}"
+: "${ENABLE_PUSH_CREATE_ORG:=false}"
+: "${MAILER_ENABLED:=false}"
+: "${MAILER_FROM:=}"
+: "${MAILER_SMTP_ADDR:=}"
+: "${MAILER_SMTP_PORT:=587}"
+: "${MAILER_USER:=}"
+: "${MAILER_PASSWD:=}"
+: "${MAILER_PROTOCOL:=smtp+starttls}"
+: "${LOG_LEVEL:=info}"
+: "${USER:=git}"
+: "${USER_UID:=1000}"
+: "${USER_GID:=1000}"
+
+# Apply timezone
+if [ -n "${TZ}" ] && [ -f "/usr/share/zoneinfo/${TZ}" ]; then
+    echo "Setting timezone to ${TZ}"
+    ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime
+    echo "${TZ}" > /etc/timezone
+fi
+
+# Adjust the git user's UID/GID to match the configured values
+groupmod -o -g "${USER_GID}" "${USER}" 2>/dev/null || true
+usermod  -o -u "${USER_UID}" "${USER}" 2>/dev/null || true
+
+# Ensure required directories exist and are owned correctly
+for DIR in /data/logs /share/forgejo /data/ssh /share/forgejo/repositories \
+           /share/forgejo/lfs /share/forgejo/attachments /share/forgejo/repo-avatars \
+           /config/sessions /config/avatars /config/indexers; do
+    mkdir -p "${DIR}"
+done
+chown -R "${USER_UID}:${USER_GID}" /data /config /share/forgejo
+
+# Process the app.ini template (envsubst replaces $VAR placeholders)
+CONF_DIR=/config
+mkdir -p "${CONF_DIR}"
+if command -v envsubst > /dev/null 2>&1; then
+    envsubst < /etc/templates/app.ini > "${CONF_DIR}/app.ini"
+    echo "Generated ${CONF_DIR}/app.ini from template"
+    chown "${USER_UID}:${USER_GID}" "${CONF_DIR}/app.ini"
+else
+    echo "WARNING: envsubst not found — copying raw template (variables will not be substituted)"
+    cp /etc/templates/app.ini "${CONF_DIR}/app.ini"
+fi
+
+# Hand off to the Forgejo image's own init system (or a custom CMD argument)
+if [ $# -gt 0 ]; then
+    exec "$@"
+else
+    exec /bin/s6-svscan /etc/s6
+fi

@@ -1,0 +1,20 @@
+#!/command/with-contenv sh
+# =============================================================================
+# Run linkding via its own bootstrap (migrations + gunicorn + background tasks),
+# under s6 supervision. Env comes from the file built in cont-init.
+# =============================================================================
+echo "[linkding] starting..."
+
+set -a
+# shellcheck disable=SC1091
+[ -f /var/run/linkding.env ] && . /var/run/linkding.env
+set +a
+
+cd /etc/linkding
+# Run the entire linkding stack as www-data (the uid uwsgi.ini drops to). Doing
+# the privilege drop here — rather than letting uwsgi do it — means every file
+# bootstrap creates (db.sqlite3 on first boot, migration artifacts on upgrade,
+# huey's tasks.sqlite3) is owned by www-data from creation, so SQLite can always
+# write. uwsgi's own `uid = www-data` then becomes a harmless no-op (setuid to
+# the current uid). s6-setuidgid is grafted in from the HA base (/command).
+exec s6-setuidgid www-data ./bootstrap.sh

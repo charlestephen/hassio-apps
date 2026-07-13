@@ -1,0 +1,7 @@
+---
+# https://github.com/hassio-addons/addon-base
+build_from:
+  aarch64: ghcr.io/hassio-addons/base:21.0.0
+  amd64: ghcr.io/hassio-addons/base:21.0.0
+args:
+  ERROR_PAGES_VERSION: "4.2.2"

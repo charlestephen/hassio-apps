@@ -1,0 +1,150 @@
+name: Forgejo
+version: "15.0.4"
+slug: forgejo
+image: ghcr.io/charlestephen/hassio-addons-forgejo-{arch}
+description: Forgejo is a Git hosting, code review, team collaboration, package registry, and CI/CD
+url: https://codeberg.org/forgejo
+webui: http://[HOST]:[PORT:3000]
+homeassistant: "2026.6.0"
+arch:
+  - aarch64
+  - amd64
+init: true
+map:
+  - type: addon_config
+    read_only: false
+  - type: data
+    read_only: false
+  - type: share
+    read_only: false
+  - type: ssl
+backup: cold
+backup_exclude:
+  - "**/logs"
+ports:
+  3000/tcp: 3080
+  22/tcp: 222
+ports_description:
+  3000/tcp: Web UI
+  22/tcp: SSH
+
+# ---------------------------------------------------------------------------
+# Process identity
+# ---------------------------------------------------------------------------
+options:
+  USER_UID: 1000
+  USER_GID: 1000
+
+  # Time zone (IANA name, e.g. America/New_York)
+  TZ: "America/New_York"
+
+  # ---------------------------------------------------------------------------
+  # Server
+  # ---------------------------------------------------------------------------
+  # APP_NAME: display name shown in the browser title and page header
+  APP_NAME: "Forgejo"
+  # DOMAIN: hostname used in SSH clone URLs (e.g. homeassistant.local)
+  DOMAIN: "homeassistant.local"
+  # ROOT_URL: full public base URL — MUST end with /
+  # Critical when running behind a reverse proxy.
+  ROOT_URL: "http://homeassistant.local:3080/"
+  HTTP_PORT: 3000
+  SSH_LISTEN_PORT: 22
+  SSH_PORT: 222
+  DISABLE_SSH: false
+
+  # ---------------------------------------------------------------------------
+  # Security
+  # ---------------------------------------------------------------------------
+  SECRET_KEY: "RNXVG8MSeh5ik6abGFctBMllvVAFWmP2"
+  INSTALL_LOCK: true
+
+  # ---------------------------------------------------------------------------
+  # Database (sqlite3 by default; external DB requires additional config)
+  # ---------------------------------------------------------------------------
+  DB_TYPE: "sqlite3"
+
+  # ---------------------------------------------------------------------------
+  # User registration & access
+  # ---------------------------------------------------------------------------
+  DISABLE_REGISTRATION: false
+  REQUIRE_SIGNIN_VIEW: false
+  # SHOW_REGISTRATION_BUTTON: show/hide the Sign Up link on the login page
+  SHOW_REGISTRATION_BUTTON: true
+  # DEFAULT_USER_VISIBILITY: public | limited | private
+  DEFAULT_USER_VISIBILITY: "public"
+
+  # ---------------------------------------------------------------------------
+  # Repository defaults
+  # ---------------------------------------------------------------------------
+  LFS_START_SERVER: true
+  DEFAULT_BRANCH: "main"
+  # DEFAULT_PRIVATE: last | private | public (visibility for new repos)
+  DEFAULT_PRIVATE: "last"
+  ENABLE_PUSH_CREATE_USER: false
+  ENABLE_PUSH_CREATE_ORG: false
+
+  # ---------------------------------------------------------------------------
+  # Mailer / SMTP (all optional — leave MAILER_ENABLED false to skip)
+  # ---------------------------------------------------------------------------
+  MAILER_ENABLED: false
+  MAILER_FROM: ""
+  # MAILER_SMTP_ADDR: SMTP server hostname
+  MAILER_SMTP_ADDR: ""
+  MAILER_SMTP_PORT: 587
+  MAILER_USER: ""
+  MAILER_PASSWD: ""
+  # MAILER_PROTOCOL: smtp | smtps | smtp+starttls | smtp+insecure
+  MAILER_PROTOCOL: "smtp+starttls"
+
+  # ---------------------------------------------------------------------------
+  # Logging
+  # ---------------------------------------------------------------------------
+  # LOG_LEVEL: trace | debug | info | warn | error | fatal | none
+  LOG_LEVEL: "info"
+
+schema:
+  USER_UID: int(1000,)
+  USER_GID: int(1000,)
+  TZ: str?
+
+  # Server
+  APP_NAME: str?
+  DOMAIN: str?
+  ROOT_URL: str?
+  HTTP_PORT: int(1,65535)?
+  SSH_LISTEN_PORT: int(1,65535)?
+  SSH_PORT: int(1,65535)?
+  DISABLE_SSH: bool
+
+  # Security
+  SECRET_KEY: password
+  INSTALL_LOCK: bool?
+
+  # Database
+  DB_TYPE: list(sqlite3|mysql|postgres)?
+
+  # Registration & access
+  DISABLE_REGISTRATION: bool
+  REQUIRE_SIGNIN_VIEW: bool
+  SHOW_REGISTRATION_BUTTON: bool?
+  DEFAULT_USER_VISIBILITY: list(public|limited|private)?
+
+  # Repository
+  LFS_START_SERVER: bool
+  DEFAULT_BRANCH: str?
+  DEFAULT_PRIVATE: list(last|private|public)?
+  ENABLE_PUSH_CREATE_USER: bool?
+  ENABLE_PUSH_CREATE_ORG: bool?
+
+  # Mailer
+  MAILER_ENABLED: bool
+  MAILER_FROM: str?
+  MAILER_SMTP_ADDR: str?
+  MAILER_SMTP_PORT: int(1,65535)?
+  MAILER_USER: str?
+  MAILER_PASSWD: password?
+  MAILER_PROTOCOL: list(smtp|smtps|smtp+starttls|smtp+insecure)?
+
+  # Logging
+  LOG_LEVEL: list(trace|debug|info|warn|error|fatal|none)?

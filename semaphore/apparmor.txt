@@ -1,0 +1,81 @@
+#include <tunables/global>
+
+profile semaphore flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  capability,
+  file,
+  signal,
+  mount,
+  umount,
+  remount,
+  network udp,
+  network tcp,
+  network dgram,
+  network stream,
+  network inet,
+  network inet6,
+  network netlink raw,
+  network unix dgram,
+  network unix stream,
+
+  capability setgid,
+  capability setuid,
+  capability sys_admin,
+  capability dac_read_search,
+  capability net_bind_service,
+
+  # S6-Overlay v3
+  /init rix,
+  /bin/** rix,
+  /usr/bin/** rix,
+  /usr/local/bin/** rix,
+  /run/{s6,s6-rc*,service}/** rix,
+  /package/** rix,
+  /command/** rix,
+  /etc/s6-overlay/** rix,
+  /run/s6/** rix,
+  /etc/services.d/** rwix,
+  /etc/cont-init.d/** rwix,
+  /etc/cont-finish.d/** rwix,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+  /dev/** mrwkl,
+
+  # Bashio
+  /usr/lib/bashio/** rix,
+  /tmp/** mrwk,
+
+  # Semaphore binary
+  /usr/local/bin/semaphore rix,
+
+  # Semaphore data (BoltDB, task tmp, inventory)
+  /data/** rw,
+  /share/** rw,
+  /ssl/** r,
+
+  # Python / Ansible runtime
+  /usr/lib/python3*/** rix,
+  /usr/lib/python3*/ r,
+  /usr/bin/python3* rix,
+  /usr/bin/ansible* rix,
+  /usr/bin/git rix,
+  /usr/bin/ssh rix,
+  /usr/bin/sshpass rix,
+  /usr/bin/rsync rix,
+
+  /etc/ssh/** r,
+  /root/.ssh/** rw,
+  /root/.ansible/** rw,
+  /tmp/ansible-* rw,
+
+  /etc/nsswitch.conf r,
+  /etc/resolv.conf r,
+  /etc/hosts r,
+  /etc/localtime r,
+  /usr/share/zoneinfo/** r,
+
+  /proc/self/** r,
+  /sys/fs/cgroup/** r,
+}

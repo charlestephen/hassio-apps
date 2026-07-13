@@ -1,0 +1,39 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Initialize Technitium DNS Server (oneshot: runs once at startup)
+# ==============================================================================
+
+readonly data_dir="/data/technitium"
+readonly webservice_config="${data_dir}/webservice.config"
+readonly webservice_reset_marker="${data_dir}/.webservice-config-reset"
+
+bashio::log.info "Ensuring Technitium data directory '${data_dir}' exists ..."
+mkdir -p "${data_dir}"
+
+# ---- One-shot recovery: wipe webservice.config so bind address is reseeded ---
+if bashio::config.true 'reset_webservice_config'; then
+    if bashio::fs.file_exists "${webservice_config}" && ! bashio::fs.file_exists "${webservice_reset_marker}"; then
+        backup_file="${webservice_config}.bak.$(date +%Y%m%d%H%M%S)"
+        bashio::log.warning "Resetting Technitium web service config so bind addresses can be regenerated."
+        bashio::log.warning "Backing up '${webservice_config}' to '${backup_file}'."
+        mv "${webservice_config}" "${backup_file}"
+        touch "${webservice_reset_marker}"
+    elif bashio::fs.file_exists "${webservice_reset_marker}"; then
+        bashio::log.info "Technitium web service config reset already completed; leaving existing config untouched."
+    else
+        bashio::log.info "No Technitium web service config exists yet; marking reset as completed."
+        touch "${webservice_reset_marker}"
+    fi
+fi
+
+# ---- libmsquic sanity check --------------------------------------------------
+if ldconfig -p 2>/dev/null | grep -q 'libmsquic'; then
+    bashio::log.info "libmsquic is installed; DNS-over-QUIC and DNS-over-HTTP/3 are available."
+elif [ -e /usr/lib/libmsquic.so ] || [ -e /usr/lib/libmsquic.so.2 ]; then
+    bashio::log.info "libmsquic detected in /usr/lib; DNS-over-QUIC and DNS-over-HTTP/3 are available."
+else
+    bashio::log.warning "libmsquic was not detected; DNS-over-QUIC (853/udp) and DoH3 (443/udp) will be disabled."
+fi
+
+bashio::log.info "Technitium initialization complete."

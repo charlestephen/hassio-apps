@@ -1,0 +1,65 @@
+configuration:
+  log_level:
+    name: Log level
+    description: >-
+      Semaphore server log verbosity (SEMAPHORE_LOG_LEVEL). Set to "debug" (or
+      "trace") to troubleshoot login/auth issues, then back to "info".
+  slack_url:
+    name: Slack webhook URL
+    description: Incoming webhook URL for Slack alerts. Treated as a secret.
+  rocketchat_url:
+    name: Rocket.Chat webhook URL
+    description: Incoming webhook URL for Rocket.Chat alerts. Treated as a secret.
+  microsoft_teams_url:
+    name: Microsoft Teams webhook URL
+    description: Incoming webhook URL for Microsoft Teams alerts. Treated as a secret.
+  oidc_enable:
+    name: Enable OIDC (SSO) login
+    description: >-
+      Add a "Sign in with…" button backed by an OpenID Connect provider
+      (Authelia, Keycloak, Authentik, Google, etc.). Fill the fields below.
+  oidc_provider_id:
+    name: OIDC provider ID
+    description: >-
+      Short identifier used internally and in the redirect URL path
+      (/api/auth/oidc/<id>/redirect). e.g. "authelia".
+  oidc_display_name:
+    name: OIDC button label
+    description: Text shown on the login button, e.g. "Sign in with Authelia".
+  oidc_icon:
+    name: OIDC button icon
+    description: Optional MDI icon name shown before the button label, e.g. "login" or "key".
+  oidc_color:
+    name: OIDC button color
+    description: Optional button color on the login screen, e.g. "orange".
+  oidc_order:
+    name: OIDC button order
+    description: Optional position of the button on the login screen (0 = unset).
+  oidc_provider_url:
+    name: OIDC provider URL (issuer)
+    description: >-
+      Issuer base URL that serves /.well-known/openid-configuration for
+      auto-discovery, e.g. https://auth.example.com or a Keycloak realm URL.
+  oidc_client_id:
+    name: OIDC client ID
+    description: Client ID registered for Semaphore at your OIDC provider.
+  oidc_client_secret:
+    name: OIDC client secret
+    description: Client secret for the Semaphore OIDC client. Stored as a secret.
+  oidc_redirect_url:
+    name: OIDC redirect URL
+    description: >-
+      Full callback URL, must match what you register at the provider:
+      https://<your-semaphore-url>/api/auth/oidc/<provider_id>/redirect
+  oidc_username_claim:
+    name: Username claim
+    description: ID-token claim mapped to the Semaphore username (e.g. preferred_username).
+  oidc_email_claim:
+    name: Email claim
+    description: ID-token claim mapped to the user's email (e.g. email).
+  oidc_name_claim:
+    name: Name claim
+    description: ID-token claim mapped to the display name (e.g. name).
+  oidc_scopes:
+    name: OIDC scopes
+    description: Space-separated scopes to request. Default "openid profile email".

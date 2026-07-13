@@ -1,0 +1,22 @@
+#!/usr/bin/with-contenv bashio
+# =============================================================================
+# Run Cloudflared connector replica 0
+#
+# Two replicas (cloudflared0/1) of the SAME remotely-managed tunnel give
+# Cloudflare-native HA: it load-balances and fails over between the connectors.
+# Each connector also spreads its edge connections across the two nearest
+# Cloudflare data centers automatically (closest + second-closest).
+# s6-overlay docs: https://github.com/just-containers/s6-overlay
+# =============================================================================
+
+bashio::log.info "Starting Cloudflared connector replica 0..."
+
+# Token comes via the environment (TUNNEL_TOKEN) so it never appears in the
+# process args (ps/argv). Metrics + log level likewise via env.
+export TUNNEL_TOKEN="$(bashio::config 'tunnel_token')"
+export TUNNEL_METRICS="0.0.0.0:36400"
+export TUNNEL_LOGLEVEL="$(bashio::config 'log_level')"
+
+# --no-autoupdate: the binary is pinned in the image; the add-on (Renovate +
+# Forgejo CI) controls upgrades, so cloudflared must NOT self-update.
+exec cloudflared tunnel --no-autoupdate run
