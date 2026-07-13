@@ -135,5 +135,5 @@ When running behind Nginx Proxy Manager or Traefik:
 
 1. Go to **Settings → Add-ons → Add-on Store → ⋮ → Repositories**.
 2. Add `https://github.com/charlestephen/hassio-apps`.
-3. No registry credentials are needed (images are public on `ghcr.io`) under
-   **Settings → Add-ons → ⋮ → Registries**.
+3. The prebuilt images are public on `ghcr.io`, so no registry credentials are
+   required.
