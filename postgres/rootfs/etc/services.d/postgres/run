@@ -1,0 +1,13 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Start the PostgreSQL server
+# ==============================================================================
+
+readonly PGDATA="/data/postgres"
+declare max_connections
+max_connections="$(bashio::config 'max_connections')"
+
+bashio::log.info "Starting PostgreSQL 18 ..."
+exec su-exec postgres postgres -D "${PGDATA}" \
+  -c max_connections="${max_connections}"

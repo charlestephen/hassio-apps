@@ -1,0 +1,49 @@
+#!/usr/bin/with-contenv bashio
+# =============================================================================
+# Resolved Watchdog
+#
+# Periodically test the HOST resolver stub; if it stops answering, restart the
+# host's systemd-resolved over the host system D-Bus. This lets the node keep
+# its on-node DNS (UniFi blocks cross-VLAN resolvers) and self-heal the
+# systemd-resolved hang instead of needing the host console.
+# Only restarts the unit — never reconfigures resolved — so the install stays
+# "supported".
+# =============================================================================
+export DBUS_SYSTEM_BUS_ADDRESS="unix:path=/run/dbus/system_bus_socket"
+
+CANARY="$(bashio::config 'canary_host')"
+STUB="$(bashio::config 'stub_address')"
+INTERVAL="$(bashio::config 'interval')"
+TIMEOUT="$(bashio::config 'timeout')"
+THRESHOLD="$(bashio::config 'failures_before_restart')"
+UNIT="$(bashio::config 'restart_unit')"
+
+bashio::log.info "Watching host resolver ${STUB} (probe: ${CANARY}) every ${INTERVAL}s."
+bashio::log.info "Will restart ${UNIT} after ${THRESHOLD} consecutive failures."
+
+fails=0
+while true; do
+    if timeout "${TIMEOUT}" nslookup "${CANARY}" "${STUB}" >/dev/null 2>&1; then
+        if [ "${fails}" -ne 0 ]; then
+            bashio::log.info "Host resolver answered again (was failing ${fails}x)."
+            fails=0
+        fi
+    else
+        fails=$((fails + 1))
+        bashio::log.warning "Host resolver did not answer (${fails}/${THRESHOLD})."
+        if [ "${fails}" -ge "${THRESHOLD}" ]; then
+            bashio::log.error "Restarting ${UNIT} via host D-Bus..."
+            if dbus-send --system --print-reply --reply-timeout=10000 \
+                 --dest=org.freedesktop.systemd1 /org/freedesktop/systemd1 \
+                 org.freedesktop.systemd1.Manager.RestartUnit \
+                 string:"${UNIT}" string:"replace" >/dev/null 2>&1; then
+                bashio::log.info "Restart of ${UNIT} requested; pausing 30s."
+            else
+                bashio::log.error "Could not restart ${UNIT} over host D-Bus — check host_dbus access / D-Bus policy."
+            fi
+            fails=0
+            sleep 30
+        fi
+    fi
+    sleep "${INTERVAL}"
+done

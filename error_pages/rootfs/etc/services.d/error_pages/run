@@ -1,0 +1,23 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Start the error-pages HTTP server
+# ==============================================================================
+
+# The container always listens on 0.0.0.0:8080; the host port is set under the
+# add-on's Network settings.
+export LISTEN_ADDR="0.0.0.0"
+export LISTEN_PORT="8080"
+
+export TEMPLATE_NAME="$(bashio::config 'theme')"
+export DEFAULT_ERROR_PAGE="$(bashio::config 'default_error_page')"
+export SEND_SAME_HTTP_CODE="$(bashio::config 'send_same_http_code')"
+export SHOW_DETAILS="$(bashio::config 'show_details')"
+export ROTATION_MODE="$(bashio::config 'rotation_mode')"
+export DISABLE_L10N="$(bashio::config 'disable_l10n')"
+export PROXY_HTTP_HEADERS="$(bashio::config 'proxy_headers')"
+export LOG_LEVEL="$(bashio::config 'log_level')"
+export LOG_FORMAT="$(bashio::config 'log_format')"
+
+bashio::log.info "Starting error-pages (theme=${TEMPLATE_NAME}, rotation=${ROTATION_MODE}) ..."
+exec /usr/bin/error-pages serve

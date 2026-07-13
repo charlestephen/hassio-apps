@@ -1,0 +1,21 @@
+configuration:
+  loki_url:
+    name: Loki push URL
+    description: >-
+      Where the built-in default config sends logs, e.g.
+      http://loki:3100/loki/api/v1/push or https://loki.example.com/loki/api/v1/push.
+      Ignored when you supply your own config.
+  log_level:
+    name: Alloy log level
+    description: >-
+      Verbosity of Alloy's own logs in the built-in default config
+      (debug, info, warn, error). Ignored when you supply your own config.
+  alloy_config:
+    name: Alloy configuration
+    description: >-
+      Paste a complete Grafana Alloy (River) configuration to fully replace the
+      built-in default. Leave empty to ship all container logs to Loki. A file at
+      /config/config.alloy in the add-on config directory takes precedence over this.
+
+network:
+  12345/tcp: Alloy HTTP UI, /metrics and debug endpoints

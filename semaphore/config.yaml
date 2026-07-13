@@ -1,0 +1,211 @@
+name: Semaphore
+description: Modern web UI for Ansible, Terraform, OpenTofu, and other DevOps automation tools.
+url: https://semaphoreui.com
+version: "2.18.12.d"
+stage: stable
+homeassistant: "2026.6.0"
+slug: semaphore
+image: ghcr.io/charlestephen/hassio-addons-semaphore-{arch}
+startup: services
+init: false
+boot: auto
+panel_icon: mdi:ansible
+webui: http://[HOST]:[PORT:3000]
+arch:
+  - aarch64
+  - amd64
+map:
+  - type: data
+    read_only: false
+  - type: share
+    read_only: false
+  - type: ssl
+    read_only: true
+ports:
+  3000/tcp: 3000
+ports_description:
+  3000/tcp: Web UI
+backup: cold
+
+# ---------------------------------------------------------------------------
+# Security — Encryption
+# Generate values with: head -c32 /dev/urandom | base64
+# ---------------------------------------------------------------------------
+options:
+  # Security — keys (MUST be changed before first use)
+  cookie_hash: "CHANGE_ME_32BYTE_BASE64_COOKIE_HASH=="
+  cookie_encryption: "CHANGE_ME_16BYTE_BASE64_COOKIEENC="
+  access_key_encryption: "CHANGE_ME_32BYTE_BASE64_ACCESSKEY="
+
+  # Admin account (created on first boot only)
+  admin_username: admin
+  admin_password: changeme
+  admin_name: Administrator
+  admin_email: admin@localhost
+
+  # Logging (Semaphore server verbosity — set "debug" to troubleshoot login)
+  log_level: debug
+
+  # OIDC / SSO login. Set oidc_enable and fill provider_url + client_id/secret +
+  # redirect_url. provider_url must support OIDC discovery (/.well-known/...).
+  oidc_enable: false
+  oidc_provider_id: "sso"
+  oidc_display_name: "Sign in with SSO"
+  oidc_icon: ""
+  oidc_color: ""
+  oidc_order: 0
+  oidc_provider_url: ""
+  oidc_client_id: ""
+  oidc_client_secret: ""
+  oidc_redirect_url: ""
+  oidc_username_claim: "preferred_username"
+  oidc_email_claim: "email"
+  oidc_name_claim: "name"
+  oidc_scopes: "openid profile email"
+
+  # Server
+  web_root: ""
+  schedule_timezone: ""
+  max_parallel_tasks: 0
+  max_task_duration_sec: 0
+  max_tasks_per_template: 30
+  git_client: cmd_git
+  password_login_disabled: false
+  non_admin_can_create_project: false
+
+  # Security — 2FA
+  totp_enabled: false
+  totp_allow_recovery: false
+  totp_issuer: "Semaphore"
+
+  # Email / SMTP alerts
+  email_alert: false
+  email_sender: ""
+  email_host: ""
+  email_port: 25
+  email_username: ""
+  email_password: ""
+  email_secure: false
+  email_tls: false
+
+  # LDAP authentication
+  ldap_enable: false
+  ldap_server: ""
+  ldap_bind_dn: ""
+  ldap_bind_password: ""
+  ldap_search_dn: ""
+  ldap_search_filter: ""
+  ldap_needtls: false
+  ldap_mapping_dn: "dn"
+  ldap_mapping_mail: "mail"
+  ldap_mapping_uid: "uid"
+  ldap_mapping_cn: "cn"
+
+  # Telegram alerts
+  telegram_alert: false
+  telegram_chat: ""
+  telegram_token: ""
+
+  # Slack alerts
+  slack_alert: false
+  slack_url: ""
+
+  # Rocket.Chat alerts
+  rocketchat_alert: false
+  rocketchat_url: ""
+
+  # Microsoft Teams alerts
+  microsoft_teams_alert: false
+  microsoft_teams_url: ""
+
+  # Ansible
+  ansible_host_key_checking: false
+
+schema:
+  # Security — keys
+  cookie_hash: password
+  cookie_encryption: password
+  access_key_encryption: password
+
+  # Admin
+  admin_username: str
+  admin_password: password
+  admin_name: str
+  admin_email: str
+
+  # Logging
+  log_level: list(trace|debug|info|warn|error|fatal|panic)?
+
+  # OIDC / SSO login
+  oidc_enable: bool
+  oidc_provider_id: str?
+  oidc_display_name: str?
+  oidc_icon: str?
+  oidc_color: str?
+  oidc_order: int(0,)?
+  oidc_provider_url: str?
+  oidc_client_id: str?
+  oidc_client_secret: password?
+  oidc_redirect_url: str?
+  oidc_username_claim: str?
+  oidc_email_claim: str?
+  oidc_name_claim: str?
+  oidc_scopes: str?
+
+  # Server
+  web_root: str?
+  schedule_timezone: str?
+  max_parallel_tasks: int(0,)?
+  max_task_duration_sec: int(0,)?
+  max_tasks_per_template: int(0,)?
+  git_client: list(cmd_git|go_git)?
+  password_login_disabled: bool
+  non_admin_can_create_project: bool
+
+  # Security — 2FA
+  totp_enabled: bool
+  totp_allow_recovery: bool
+  totp_issuer: str?
+
+  # Email / SMTP
+  email_alert: bool
+  email_sender: str?
+  email_host: str?
+  email_port: int(1,65535)?
+  email_username: str?
+  email_password: password?
+  email_secure: bool?
+  email_tls: bool?
+
+  # LDAP
+  ldap_enable: bool
+  ldap_server: str?
+  ldap_bind_dn: str?
+  ldap_bind_password: password?
+  ldap_search_dn: str?
+  ldap_search_filter: str?
+  ldap_needtls: bool?
+  ldap_mapping_dn: str?
+  ldap_mapping_mail: str?
+  ldap_mapping_uid: str?
+  ldap_mapping_cn: str?
+
+  # Telegram
+  telegram_alert: bool
+  telegram_chat: str?
+  telegram_token: password?
+
+  # Slack
+  slack_alert: bool
+  slack_url: password?
+
+  # Rocket.Chat
+  rocketchat_alert: bool
+  rocketchat_url: password?
+
+  # Microsoft Teams
+  microsoft_teams_alert: bool
+  microsoft_teams_url: password?
+
+  # Ansible
+  ansible_host_key_checking: bool

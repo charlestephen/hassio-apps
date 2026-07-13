@@ -1,0 +1,18 @@
+configuration:
+  superuser_name:
+    name: Admin username
+    description: Username for the admin account created on first start.
+  superuser_password:
+    name: Admin password
+    description: Password for the admin account created on first start.
+  disable_background_tasks:
+    name: Disable background tasks
+    description: Turn off linkding's background worker (website snapshots, etc.).
+  env_vars:
+    name: Environment variables
+    description: >-
+      Extra variables injected into linkding at startup (name/value pairs). Use
+      for any LD_* setting, e.g. LD_CSRF_TRUSTED_ORIGINS. These override the
+      options above.
+network:
+  9090/tcp: Linkding web UI

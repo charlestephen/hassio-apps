@@ -1,0 +1,23 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Broadcast Technitium service discovery to HA Supervisor (oneshot)
+# ==============================================================================
+# Runs after Technitium is up. Tells the Supervisor where the Technitium
+# management API lives so Home Assistant can register the service.
+
+declare config
+
+# Wait for Technitium web UI / API to accept connections (up to 300 s)
+bashio::net.wait_for 5380 127.0.0.1 300
+
+config=$(bashio::var.json \
+    host "127.0.0.1" \
+    port "^5380" \
+)
+
+if bashio::discovery "technitium" "${config}" > /dev/null; then
+    bashio::log.info "Technitium service discovery sent to Home Assistant."
+else
+    bashio::log.warning "Technitium discovery broadcast to Home Assistant failed."
+fi

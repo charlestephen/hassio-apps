@@ -1,0 +1,16 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Start pgAdmin 4 via gunicorn
+# ==============================================================================
+
+bashio::log.info "Starting pgAdmin 4 ..."
+cd /pgadmin4 || bashio::exit.nok "Could not enter /pgadmin4"
+
+exec /venv/bin/gunicorn \
+  --bind 0.0.0.0:5050 \
+  --workers 1 \
+  --threads 25 \
+  --timeout 86400 \
+  --config /pgadmin4/gunicorn_config.py \
+  run_pgadmin:app

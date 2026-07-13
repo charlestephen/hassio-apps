@@ -1,0 +1,66 @@
+#include <tunables/global>
+
+profile technitium flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # The .NET runtime reads broadly at startup (/proc/self/*, /sys/fs/cgroup/*
+  # for GC heap sizing, etc.), so grant file access like the other complex
+  # add-ons. Network is still constrained by the rules below.
+  capability,
+  file,
+  signal,
+
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+
+  capability net_bind_service,
+  capability setgid,
+  capability setuid,
+
+  # S6-Overlay
+  /init rix,
+  /bin/** rix,
+  /usr/bin/** rix,
+  /usr/local/bin/** rix,
+  /run/{s6,s6-rc*,service}/** rix,
+  /package/** rix,
+  /command/** rix,
+  /etc/s6/** rix,
+  /run/s6/** rix,
+  /etc/s6-overlay/{,**} rix,
+  /etc/services.d/** rwix,
+  /etc/cont-init.d/** rwix,
+  /etc/cont-finish.d/** rwix,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  # Bashio
+  /usr/lib/bashio/** rix,
+  /tmp/** mrwk,
+
+  # Data access
+  /data/** rw,
+  /ssl/** r,
+
+  # .NET runtime and Technitium
+  /usr/share/dotnet/** rix,
+  /usr/lib/dotnet/** rix,
+  /usr/lib/aspnetcore/** rix,
+  /opt/technitium/** rwix,
+  /etc/dns/** rw,
+  /etc/dotnet/** r,
+
+  /etc/nsswitch.conf r,
+  /etc/resolv.conf r,
+  /etc/hosts r,
+  /etc/localtime r,
+  /usr/share/zoneinfo/** r,
+
+  /proc/sys/net/** r,
+}

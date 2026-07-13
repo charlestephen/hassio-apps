@@ -1,0 +1,64 @@
+#include <tunables/global>
+
+profile alloy flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  capability,
+  file,
+  signal,
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+
+  capability setgid,
+  capability setuid,
+  capability dac_read_search,
+
+  # S6-Overlay
+  /init rix,
+  /bin/** rix,
+  /usr/bin/** rix,
+  /usr/local/bin/** rix,
+  /run/{s6,s6-rc*,service}/** rix,
+  /package/** rix,
+  /command/** rix,
+  /etc/s6/** rix,
+  /run/s6/** rix,
+  /etc/s6-overlay/{,**} rix,
+  /etc/services.d/** rwix,
+  /etc/cont-init.d/** rwix,
+  /etc/cont-finish.d/** rwix,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  # Bashio
+  /usr/lib/bashio/** rix,
+  /tmp/** mrwk,
+
+  # Grafana Alloy binary and rendered config
+  /usr/bin/alloy rix,
+  /etc/alloy/** rw,
+
+  # Add-on data (WAL/state) and user-supplied config
+  /data/** rw,
+  /config/** rw,
+
+  # Host Docker socket — mounted by docker_api at /run/docker.sock; the default
+  # config reaches it via the /var/run symlink. Required to discover containers
+  # and tail their logs.
+  /run/docker.sock rw,
+  /var/run/docker.sock rw,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /usr/share/zoneinfo/** r,
+
+  /proc/sys/net/** r,
+}

@@ -1,0 +1,2 @@
+#!/command/execlineb -P
+/command/with-contenv /etc/s6-overlay/s6-rc.d/init-semaphore/run
