@@ -1,0 +1,213 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Run Semaphore UI (longrun: supervised by s6)
+# ==============================================================================
+# SEMAPHORE_* env vars initialize config on first boot only when the SQLite
+# database doesn't yet exist. They are ignored on subsequent starts.
+# Reference: https://semaphoreui.com/docs/admin-guide/configuration/env-vars
+
+readonly data_dir="/data/semaphore"
+
+# ---- Database (SQLite — single-file embedded, no external service needed) ----
+# Bolt is deprecated in Semaphore 2.18, and the pro edition's Terraform store
+# rejects it at startup ("panic: unknown store type" in NewTerraformStore), so
+# every launch crashed. SQLite is the recommended replacement. Its file path is
+# taken from SEMAPHORE_DB_HOST (the driver builds the DSN as "file:" + host).
+export SEMAPHORE_DB_DIALECT="sqlite"
+export SEMAPHORE_DB_HOST="${data_dir}/semaphore.sqlite"
+
+# ---- Playbook working directory ----------------------------------------------
+export SEMAPHORE_PLAYBOOK_PATH="${data_dir}/tmp"
+export SEMAPHORE_TMP_PATH="${data_dir}/tmp"
+
+# ---- Web server --------------------------------------------------------------
+export SEMAPHORE_PORT="3000"
+export SEMAPHORE_INTERFACE="0.0.0.0"
+
+# ---- Security keys -----------------------------------------------------------
+export SEMAPHORE_COOKIE_HASH="$(bashio::config 'cookie_hash')"
+export SEMAPHORE_COOKIE_ENCRYPTION="$(bashio::config 'cookie_encryption')"
+export SEMAPHORE_ACCESS_KEY_ENCRYPTION="$(bashio::config 'access_key_encryption')"
+bashio::log.info "Exported security keys (values hidden)"
+
+# ---- Admin account (seeds DB on first boot only) ----------------------------
+export SEMAPHORE_ADMIN="$(bashio::config 'admin_username')"
+export SEMAPHORE_ADMIN_PASSWORD="$(bashio::config 'admin_password')"
+export SEMAPHORE_ADMIN_NAME="$(bashio::config 'admin_name')"
+export SEMAPHORE_ADMIN_EMAIL="$(bashio::config 'admin_email')"
+bashio::log.info "Admin: ${SEMAPHORE_ADMIN} <${SEMAPHORE_ADMIN_EMAIL}>"
+
+# ---- Helper: export an optional string config value -------------------------
+export_if_set() {
+    local option="${1}" env_var="${2}" value
+    value="$(bashio::config "${option}")"
+    if bashio::var.has_value "${value}"; then
+        export "${env_var}=${value}"
+        if [[ "${env_var}" == *PASSWORD* || "${env_var}" == *TOKEN* || "${env_var}" == *SECRET* || "${env_var}" == *ENCRYPTION* || "${env_var}" == *URL* ]]; then
+            bashio::log.info "Exported ${env_var} (value hidden)"
+        else
+            bashio::log.info "Exported ${env_var}=${value}"
+        fi
+    fi
+}
+
+# ---- Server options ----------------------------------------------------------
+export_if_set 'web_root'               'SEMAPHORE_WEB_ROOT'
+export_if_set 'schedule_timezone'      'SEMAPHORE_SCHEDULE_TIMEZONE'
+export_if_set 'git_client'             'SEMAPHORE_GIT_CLIENT'
+export_if_set 'totp_issuer'            'SEMAPHORE_TOTP_ISSUER'
+export_if_set 'log_level'              'SEMAPHORE_LOG_LEVEL'
+
+# Integer options: skip if zero (means "not set")
+max_parallel="$(bashio::config 'max_parallel_tasks')"
+if [[ "${max_parallel}" -gt 0 ]]; then
+    export SEMAPHORE_MAX_PARALLEL_TASKS="${max_parallel}"
+    bashio::log.info "Exported SEMAPHORE_MAX_PARALLEL_TASKS=${max_parallel}"
+fi
+
+max_duration="$(bashio::config 'max_task_duration_sec')"
+if [[ "${max_duration}" -gt 0 ]]; then
+    export MAX_TASK_DURATION_SEC="${max_duration}"
+    bashio::log.info "Exported MAX_TASK_DURATION_SEC=${max_duration}"
+fi
+
+max_tasks="$(bashio::config 'max_tasks_per_template')"
+if [[ "${max_tasks}" -gt 0 ]]; then
+    export SEMAPHORE_MAX_TASKS_PER_TEMPLATE="${max_tasks}"
+    bashio::log.info "Exported SEMAPHORE_MAX_TASKS_PER_TEMPLATE=${max_tasks}"
+fi
+
+# Boolean options
+export_bool() {
+    local option="${1}" env_var="${2}"
+    if bashio::config.has_value "${option}"; then
+        if bashio::config.true "${option}"; then
+            export "${env_var}=true"
+        else
+            export "${env_var}=false"
+        fi
+        bashio::log.info "Exported ${env_var}=${!env_var}"
+    fi
+}
+
+export_bool 'password_login_disabled'        'SEMAPHORE_PASSWORD_LOGIN_DISABLED'
+export_bool 'non_admin_can_create_project'   'SEMAPHORE_NON_ADMIN_CAN_CREATE_PROJECT'
+export_bool 'totp_enabled'                   'SEMAPHORE_TOTP_ENABLED'
+export_bool 'totp_allow_recovery'            'SEMAPHORE_TOTP_ALLOW_RECOVERY'
+
+# ---- Email -------------------------------------------------------------------
+export_bool 'email_alert'    'SEMAPHORE_EMAIL_ALERT'
+if bashio::config.true 'email_alert'; then
+    export_if_set 'email_sender'   'SEMAPHORE_EMAIL_SENDER'
+    export_if_set 'email_host'     'SEMAPHORE_EMAIL_HOST'
+    export_if_set 'email_username' 'SEMAPHORE_EMAIL_USERNAME'
+    export_if_set 'email_password' 'SEMAPHORE_EMAIL_PASSWORD'
+    export_bool   'email_secure'   'SEMAPHORE_EMAIL_SECURE'
+    export_bool   'email_tls'      'SEMAPHORE_EMAIL_TLS'
+    email_port="$(bashio::config 'email_port')"
+    if [[ "${email_port}" -gt 0 ]]; then
+        export SEMAPHORE_EMAIL_PORT="${email_port}"
+        bashio::log.info "Exported SEMAPHORE_EMAIL_PORT=${email_port}"
+    fi
+fi
+
+# ---- LDAP -------------------------------------------------------------------
+export_bool 'ldap_enable'   'SEMAPHORE_LDAP_ENABLE'
+if bashio::config.true 'ldap_enable'; then
+    export_if_set 'ldap_server'         'SEMAPHORE_LDAP_SERVER'
+    export_if_set 'ldap_bind_dn'        'SEMAPHORE_LDAP_BIND_DN'
+    export_if_set 'ldap_bind_password'  'SEMAPHORE_LDAP_BIND_PASSWORD'
+    export_if_set 'ldap_search_dn'      'SEMAPHORE_LDAP_SEARCH_DN'
+    export_if_set 'ldap_search_filter'  'SEMAPHORE_LDAP_SEARCH_FILTER'
+    export_bool   'ldap_needtls'        'SEMAPHORE_LDAP_NEEDTLS'
+    export_if_set 'ldap_mapping_dn'     'SEMAPHORE_LDAP_MAPPING_DN'
+    export_if_set 'ldap_mapping_mail'   'SEMAPHORE_LDAP_MAPPING_MAIL'
+    export_if_set 'ldap_mapping_uid'    'SEMAPHORE_LDAP_MAPPING_UID'
+    export_if_set 'ldap_mapping_cn'     'SEMAPHORE_LDAP_MAPPING_CN'
+fi
+
+# ---- Telegram ---------------------------------------------------------------
+export_bool 'telegram_alert'  'SEMAPHORE_TELEGRAM_ALERT'
+if bashio::config.true 'telegram_alert'; then
+    export_if_set 'telegram_chat'   'SEMAPHORE_TELEGRAM_CHAT'
+    export_if_set 'telegram_token'  'SEMAPHORE_TELEGRAM_TOKEN'
+fi
+
+# ---- Slack ------------------------------------------------------------------
+export_bool 'slack_alert'  'SEMAPHORE_SLACK_ALERT'
+if bashio::config.true 'slack_alert'; then
+    export_if_set 'slack_url'  'SEMAPHORE_SLACK_URL'
+fi
+
+# ---- Rocket.Chat ------------------------------------------------------------
+export_bool 'rocketchat_alert'  'SEMAPHORE_ROCKETCHAT_ALERT'
+if bashio::config.true 'rocketchat_alert'; then
+    export_if_set 'rocketchat_url'  'SEMAPHORE_ROCKETCHAT_URL'
+fi
+
+# ---- Microsoft Teams --------------------------------------------------------
+export_bool 'microsoft_teams_alert'  'SEMAPHORE_MICROSOFT_TEAMS_ALERT'
+if bashio::config.true 'microsoft_teams_alert'; then
+    export_if_set 'microsoft_teams_url'  'SEMAPHORE_MICROSOFT_TEAMS_URL'
+fi
+
+# ---- Ansible ----------------------------------------------------------------
+if bashio::config.true 'ansible_host_key_checking'; then
+    export ANSIBLE_HOST_KEY_CHECKING="True"
+else
+    export ANSIBLE_HOST_KEY_CHECKING="False"
+fi
+bashio::log.info "Exported ANSIBLE_HOST_KEY_CHECKING=${ANSIBLE_HOST_KEY_CHECKING}"
+
+# ---- OIDC / SSO login --------------------------------------------------------
+# Semaphore's oidc_providers is a map; the whole map is accepted as JSON via the
+# SEMAPHORE_OIDC_PROVIDERS env var. Build a single provider from the flat add-on
+# options (auto-discovery via provider_url). Optional claim overrides are only
+# included when set. The client_secret is never logged.
+if bashio::config.true 'oidc_enable'; then
+    oidc_id="$(bashio::config 'oidc_provider_id')"
+    [[ -z "${oidc_id}" || "${oidc_id}" == "null" ]] && oidc_id="sso"
+
+    # scopes: space/comma-separated string -> JSON array (default openid/profile/email)
+    oidc_scopes_raw="$(bashio::config 'oidc_scopes')"
+    [[ -z "${oidc_scopes_raw}" || "${oidc_scopes_raw}" == "null" ]] && oidc_scopes_raw="openid profile email"
+    scopes_json="$(printf '%s' "${oidc_scopes_raw}" | tr ',' ' ' | jq -R 'split(" ") | map(select(length > 0))')"
+
+    providers_json="$(jq -nc \
+        --arg id     "${oidc_id}" \
+        --arg dn     "$(bashio::config 'oidc_display_name')" \
+        --arg purl   "$(bashio::config 'oidc_provider_url')" \
+        --arg cid    "$(bashio::config 'oidc_client_id')" \
+        --arg csec   "$(bashio::config 'oidc_client_secret')" \
+        --arg rurl   "$(bashio::config 'oidc_redirect_url')" \
+        --arg uclaim "$(bashio::config 'oidc_username_claim')" \
+        --arg eclaim "$(bashio::config 'oidc_email_claim')" \
+        --arg nclaim "$(bashio::config 'oidc_name_claim')" \
+        --arg icon   "$(bashio::config 'oidc_icon')" \
+        --arg color  "$(bashio::config 'oidc_color')" \
+        --arg order  "$(bashio::config 'oidc_order')" \
+        --argjson scopes "${scopes_json}" \
+        '{ ($id): (
+             {
+               display_name:  $dn,
+               provider_url:  $purl,
+               client_id:     $cid,
+               client_secret: $csec,
+               redirect_url:  $rurl,
+               scopes:        $scopes
+             }
+             + (if $uclaim != "" and $uclaim != "null" then {username_claim: $uclaim} else {} end)
+             + (if $eclaim != "" and $eclaim != "null" then {email_claim:    $eclaim} else {} end)
+             + (if $nclaim != "" and $nclaim != "null" then {name_claim:     $nclaim} else {} end)
+             + (if $icon   != "" and $icon   != "null" then {icon:  $icon}  else {} end)
+             + (if $color  != "" and $color  != "null" then {color: $color} else {} end)
+             + (if ($order | test("^[0-9]+$")) and ($order | tonumber) > 0 then {order: ($order | tonumber)} else {} end)
+           ) }')"
+    export SEMAPHORE_OIDC_PROVIDERS="${providers_json}"
+    bashio::log.info "OIDC enabled: provider '${oidc_id}' via $(bashio::config 'oidc_provider_url')"
+fi
+
+# ---- Start Semaphore --------------------------------------------------------
+bashio::log.info "Starting Semaphore UI v$(semaphore version 2>/dev/null || echo unknown) ..."
+exec semaphore server --no-config

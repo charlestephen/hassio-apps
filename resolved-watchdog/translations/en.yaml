@@ -1,0 +1,22 @@
+configuration:
+  canary_host:
+    name: Probe host
+    description: Hostname resolved as the health check (any reliably-resolvable name).
+  stub_address:
+    name: Resolver stub address
+    description: The host resolver to query (systemd-resolved stub is 127.0.0.53).
+  interval:
+    name: Check interval (seconds)
+    description: How often to probe the host resolver.
+  timeout:
+    name: Probe timeout (seconds)
+    description: How long to wait for each probe before counting it as a failure.
+  failures_before_restart:
+    name: Failures before restart
+    description: Consecutive failed probes before restarting the resolver unit.
+  restart_unit:
+    name: Unit to restart
+    description: Host systemd unit restarted on failure (default systemd-resolved.service).
+  log_level:
+    name: Log level
+    description: Add-on log verbosity.

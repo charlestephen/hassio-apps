@@ -1,0 +1,57 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "Linkding"
+version: "1.0.2"
+slug: "linkding"
+description: "Linkding bookmark manager (SQLite) with env-var injection via the config UI"
+url: "https://github.com/charlestephen/hassio-apps/src/branch/main/linkding"
+image: "ghcr.io/charlestephen/hassio-addons-linkding-{arch}"
+arch:
+  - amd64
+  - aarch64
+# s6-overlay (grafted from the HA Alpine base) supervises the linkding app.
+init: false
+startup: services
+boot: auto
+
+# ----------------------------------------------------------------------------
+# Storage
+# ----------------------------------------------------------------------------
+# Bookmarks + config live in the add-on's dedicated config dir (mounted at
+# /config inside the add-on; host path /addon_configs/<slug>_linkding, reachable
+# via the Samba/SSH add-ons). linkding's fixed /etc/linkding/data is symlinked
+# there (linkding's fixed /etc/linkding/data is symlinked to /config).
+map:
+  - addon_config:rw
+
+# ----------------------------------------------------------------------------
+# Web access
+# ----------------------------------------------------------------------------
+# Ingress puts linkding in the HA sidebar; 9090 is also published for direct/LAN
+# access (the reliable path if ingress asset-rewriting needs the v1.1 proxy shim).
+ingress: true
+ingress_port: 9090
+panel_icon: mdi:bookmark-multiple
+panel_title: "Linkding"
+ports:
+  9090/tcp: 9090
+ports_description:
+  9090/tcp: "Linkding web UI (direct/LAN access)"
+
+# ----------------------------------------------------------------------------
+# Options
+# ----------------------------------------------------------------------------
+# SQLite by default (linkding's default; data persisted to the addon_config dir).
+# `env_vars` injects ANY variable (e.g. LD_CSRF_TRUSTED_ORIGINS, LD_DB_ENGINE,
+# LD_ENABLE_OIDC, ...) straight into linkding at startup, no rebuild needed.
+options:
+  superuser_name: "admin"
+  superuser_password: ""
+  disable_background_tasks: false
+  env_vars: []
+schema:
+  superuser_name: str?
+  superuser_password: password?
+  disable_background_tasks: bool?
+  env_vars:
+    - name: str
+      value: str

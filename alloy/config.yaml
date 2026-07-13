@@ -1,0 +1,59 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "Grafana Alloy"
+version: "1.17.1"
+slug: "alloy"
+description: "Grafana Alloy — ship all container logs (and any other telemetry) to Loki"
+url: "https://github.com/charlestephen/hassio-apps/src/branch/main/alloy"
+# Prebuilt images are pulled from the private Forgejo registry. The Supervisor
+# replaces {arch} with the host arch (amd64/aarch64) and pulls the tag matching
+# the `version:` field above (i.e. ...-amd64:1.0.0 / ...-aarch64:1.0.0).
+image: "ghcr.io/charlestephen/hassio-addons-alloy-{arch}"
+arch:
+  - amd64
+  - aarch64
+# Alloy provides its own supervision via s6-overlay (from the HA base image),
+# so do not let Docker inject its own init.
+init: false
+# Start alongside the other long-running services on the host.
+startup: services
+boot: auto
+
+# ---------------------------------------------------------------------------
+# Host integration
+# ---------------------------------------------------------------------------
+# docker_api mounts the host Docker socket (read-only) at /run/docker.sock (also
+# reachable as /var/run/docker.sock, which the default config uses) so Alloy can
+# discover containers and tail their logs. The Supervisor only honors this when
+# the add-on is NOT in Protection mode — see DOCS.md.
+docker_api: true
+# Needed for bashio::info.hostname so the default config can label logs with the
+# real host name. Harmless if you only use a custom config.
+hassio_api: true
+# Maps the add-on's own config directory to /config inside the container. Drop a
+# config.alloy here to fully override everything (highest precedence).
+map:
+  - addon_config:rw
+
+# ---------------------------------------------------------------------------
+# Network
+# ---------------------------------------------------------------------------
+# Alloy's built-in HTTP UI / debug + metrics endpoint.
+ports:
+  12345/tcp: 12345
+ports_description:
+  12345/tcp: "Alloy HTTP UI, /metrics and debug endpoints"
+webui: "http://[HOST]:[PORT:12345]/"
+
+# ---------------------------------------------------------------------------
+# Options
+# ---------------------------------------------------------------------------
+# These only affect the *built-in* default config. As soon as you supply your
+# own config (inline option below or /config/config.alloy), they are ignored.
+options:
+  loki_url: "http://loki:3100/loki/api/v1/push"
+  log_level: debug
+  alloy_config: ""
+schema:
+  loki_url: url
+  log_level: list(debug|info|warn|error)
+  alloy_config: str?

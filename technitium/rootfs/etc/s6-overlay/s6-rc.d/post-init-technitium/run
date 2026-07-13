@@ -1,0 +1,92 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Post-start: restrict DNS listeners and clean up legacy zones (oneshot)
+# ==============================================================================
+# Runs after Technitium is up. Uses the REST API to:
+#   1. Bind DNS listeners only to real NIC IPs — excludes 172.30.32.2 so the HA
+#      Supervisor's dnsmasq retains port 53 on that address and continues
+#      resolving *.local.hass.io (homeassistant, supervisor, add-on names, etc.)
+#   2. Delete the stale local.hass.io forwarder zone created by 15.2.0.k if
+#      present — it is no longer needed when dnsmasq keeps its own address.
+
+readonly api_base="http://127.0.0.1:5380/api"
+readonly ha_supervisor_dns="172.30.32.2"
+readonly ha_zone="local.hass.io"
+
+admin_password="$(bashio::config 'dns_server_admin_password' 2>/dev/null || true)"
+if ! bashio::var.has_value "${admin_password}"; then
+    bashio::log.warning "No admin password set — skipping post-start API configuration."
+    bashio::log.warning "Technitium will listen on all interfaces including ${ha_supervisor_dns},"
+    bashio::log.warning "which conflicts with HA Supervisor dnsmasq. Set dns_server_admin_password"
+    bashio::log.warning "in add-on options to enable automatic interface binding."
+    exit 0
+fi
+
+# Poll until the Technitium API responds (up to 90 s)
+attempts=0
+until curl -sf --max-time 3 "${api_base}/user/login?user=admin&pass=${admin_password}" >/dev/null 2>&1; do
+    attempts=$((attempts + 1))
+    if [ "${attempts}" -ge 45 ]; then
+        bashio::log.warning "Technitium API not ready after 90 s; skipping post-start configuration."
+        exit 0
+    fi
+    sleep 2
+done
+
+# Obtain session token
+token_resp="$(curl -sf "${api_base}/user/login?user=admin&pass=${admin_password}" 2>/dev/null)"
+token="$(echo "${token_resp}" | jq -r '.response.token // empty' 2>/dev/null || true)"
+
+if ! bashio::var.has_value "${token}"; then
+    bashio::log.warning "Could not obtain Technitium API token (wrong password?); skipping post-start configuration."
+    exit 0
+fi
+
+# ---- 1. Build DNS listener endpoint list from real NIC addresses -------------
+# Always include loopback so local queries work.
+# Exclude 172.30.32.2 so dnsmasq keeps its address and *.local.hass.io resolves.
+# Exclude link-local IPv6 (fe80::) — not useful for DNS.
+declare -a endpoints=("127.0.0.1:53" "[::1]:53")
+
+for iface in $(bashio::network.interfaces 2>/dev/null || true); do
+    ipv4="$(bashio::network.ipv4_address "${iface}" 2>/dev/null | cut -d/ -f1 || true)"
+    if bashio::var.has_value "${ipv4}" && [ "${ipv4}" != "${ha_supervisor_dns}" ]; then
+        endpoints+=("${ipv4}:53")
+    fi
+
+    ipv6="$(bashio::network.ipv6_address "${iface}" 2>/dev/null | cut -d/ -f1 || true)"
+    if bashio::var.has_value "${ipv6}" && [[ "${ipv6}" != fe80* ]]; then
+        endpoints+=("[${ipv6}]:53")
+    fi
+done
+
+# Join into comma-separated string for the API parameter
+endpoint_list="$(IFS=','; echo "${endpoints[*]}")"
+
+bashio::log.info "Restricting Technitium DNS listeners to: ${endpoint_list}"
+settings_resp="$(curl -sf -G \
+    --data-urlencode "dnsServerLocalEndPoints=${endpoint_list}" \
+    "${api_base}/settings/set?token=${token}" \
+    2>/dev/null)"
+
+if echo "${settings_resp}" | jq -e '.status == "ok"' >/dev/null 2>&1; then
+    bashio::log.info "DNS endpoint binding updated successfully."
+else
+    bashio::log.warning "Failed to update DNS endpoint binding: ${settings_resp}"
+fi
+
+# ---- 2. Delete stale local.hass.io forwarder zone from 15.2.0.k if present --
+zone_list="$(curl -sf "${api_base}/zones/list?token=${token}" 2>/dev/null)"
+if echo "${zone_list}" | jq -r '.response.zones[].name // empty' 2>/dev/null | grep -qx "${ha_zone}"; then
+    bashio::log.info "Deleting stale '${ha_zone}' forwarder zone (created by pre-15.2.0.n; no longer needed)."
+    del_resp="$(curl -sf "${api_base}/zones/delete?token=${token}&zone=${ha_zone}" 2>/dev/null)"
+    if echo "${del_resp}" | jq -e '.status == "ok"' >/dev/null 2>&1; then
+        bashio::log.info "Deleted stale '${ha_zone}' zone; dnsmasq will handle *.local.hass.io natively."
+    else
+        bashio::log.warning "Failed to delete '${ha_zone}' zone: ${del_resp}"
+    fi
+fi
+
+curl -sf "${api_base}/user/logout?token=${token}" >/dev/null 2>&1 || true
+bashio::log.info "Technitium post-start configuration complete."

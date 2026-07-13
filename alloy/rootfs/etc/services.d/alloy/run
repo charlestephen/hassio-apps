@@ -1,0 +1,13 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Run the Grafana Alloy service
+# s6-overlay docs: https://github.com/just-containers/s6-overlay
+# ==============================================================================
+
+bashio::log.info "Starting Grafana Alloy..."
+
+# --storage.path lives in /data so the WAL and component state survive restarts.
+exec /usr/bin/alloy run \
+    --server.http.listen-addr="0.0.0.0:12345" \
+    --storage.path="/data" \
+    /etc/alloy/config.alloy

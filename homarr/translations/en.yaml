@@ -1,0 +1,172 @@
+---
+configuration:
+  log_level:
+    name: Log level
+    description: Verbosity of Homarr's logs (debug, info, warn, error).
+  puid:
+    name: PUID
+    description: User ID Homarr drops to. Keep 0 (root) unless you know your /data owner.
+  pgid:
+    name: PGID
+    description: Group ID Homarr drops to. Keep 0 unless you know your /data group.
+  no_external_connection:
+    name: No external connection
+    description: Disable all internet-dependent requests (fully offline mode).
+  enable_dns_caching:
+    name: Enable DNS caching
+    description: Cache DNS lookups inside Homarr. Disable only if it causes issues.
+  secret_encryption_key:
+    name: Secret encryption key
+    description: >-
+      Key used to encrypt secrets stored in the database. Leave blank to
+      auto-generate a stable key on first boot (persisted to /data). Never
+      change it once secrets have been saved.
+  auth_providers:
+    name: Auth providers
+    description: >-
+      Comma-separated login methods. "credentials" = built-in users. Add
+      "oidc" and/or "ldap" to enable SSO (e.g. "credentials,oidc").
+  auth_session_expiry_time:
+    name: Session expiry
+    description: How long a login session lasts (e.g. 30d, 12h).
+  auth_logout_redirect_url:
+    name: Logout redirect URL
+    description: Where to send users after logging out.
+  auth_cookie_prefix:
+    name: Cookie prefix
+    description: Prefix for Homarr's session cookies.
+  oidc_client_name:
+    name: OIDC display name
+    description: Provider name shown on the login screen.
+  oidc_issuer:
+    name: OIDC issuer URL
+    description: Issuer URI of your OIDC provider (no trailing slash).
+  oidc_client_id:
+    name: OIDC client ID
+    description: Client ID of the Homarr application registered with your IdP.
+  oidc_client_secret:
+    name: OIDC client secret
+    description: Client secret for the Homarr OIDC application.
+  oidc_scope_overwrite:
+    name: OIDC scopes
+    description: Override default scopes (default "openid email profile groups").
+  oidc_groups_attribute:
+    name: OIDC groups attribute
+    description: Claim that carries the user's group/role names.
+  oidc_name_attribute_overwrite:
+    name: OIDC name attribute
+    description: Claim to use for the user's display name.
+  oidc_auto_login:
+    name: OIDC auto-login
+    description: Skip the login screen and redirect straight to the IdP.
+  oidc_groups_local_management:
+    name: Manage groups locally
+    description: Manage group membership in Homarr instead of syncing from the IdP.
+  oidc_force_userinfo:
+    name: Force userinfo endpoint
+    description: Always fetch user data from the userinfo endpoint.
+  oidc_enable_dangerous_account_linking:
+    name: Enable account linking (dangerous)
+    description: Link accounts by email address. Only enable with trusted IdPs.
+  oidc_token_endpoint_auth_method:
+    name: Token endpoint auth method
+    description: Auth method for the token endpoint (e.g. client_secret_post).
+  ldap_uri:
+    name: LDAP URI
+    description: Connection address of your LDAP server (e.g. ldaps://ldap.example.com).
+  ldap_base:
+    name: LDAP base DN
+    description: Base distinguished name of the directory.
+  ldap_bind_dn:
+    name: LDAP bind DN
+    description: DN used to search for users and groups.
+  ldap_bind_password:
+    name: LDAP bind password
+    description: Password for the bind DN.
+  ldap_username_attribute:
+    name: LDAP username attribute
+    description: Attribute holding the username (default uid).
+  ldap_user_mail_attribute:
+    name: LDAP mail attribute
+    description: Attribute holding the email (default mail).
+  ldap_group_class:
+    name: LDAP group class
+    description: Object class used when querying groups.
+  ldap_group_member_attribute:
+    name: LDAP group member attribute
+    description: Attribute listing group members (default member).
+  ldap_group_member_user_attribute:
+    name: LDAP group member user attribute
+    description: User attribute compared against group members (default dn).
+  ldap_search_scope:
+    name: LDAP search scope
+    description: Directory search depth (base, one, or sub).
+  ldap_username_filter_extra_arg:
+    name: LDAP user filter extra
+    description: Additional filter appended to user searches.
+  ldap_group_filter_extra_arg:
+    name: LDAP group filter extra
+    description: Additional filter appended to group searches.
+  external_db:
+    name: Use external database
+    description: Use an external database instead of the embedded SQLite in /data.
+  db_driver:
+    name: DB driver
+    description: Database driver (e.g. mysql2, pg).
+  db_dialect:
+    name: DB dialect
+    description: Database dialect (e.g. mysql, postgresql).
+  db_host:
+    name: DB host
+    description: Hostname of the external database.
+  db_port:
+    name: DB port
+    description: Port of the external database.
+  db_name:
+    name: DB name
+    description: Name of the external database.
+  db_user:
+    name: DB user
+    description: Username for the external database.
+  db_password:
+    name: DB password
+    description: Password for the external database.
+  redis_is_external:
+    name: Use external Redis
+    description: Use an external Redis instead of the bundled one.
+  redis_host:
+    name: Redis host
+    description: Hostname of the external Redis.
+  redis_port:
+    name: Redis port
+    description: Port of the external Redis (default 6379).
+  redis_username:
+    name: Redis username
+    description: Username for the external Redis.
+  redis_password:
+    name: Redis password
+    description: Password for the external Redis.
+  redis_database_index:
+    name: Redis database index
+    description: Redis database index to use.
+  redis_tls_ca:
+    name: Redis TLS CA
+    description: CA certificate (PEM) for a TLS Redis connection.
+  docker_hostnames:
+    name: Docker hostnames
+    description: Comma-separated hostnames for remote Docker integrations.
+  docker_ports:
+    name: Docker ports
+    description: Comma-separated ports matching the Docker hostnames.
+  docker_socket_paths:
+    name: Docker socket paths
+    description: Comma-separated Docker socket paths.
+  http_proxy:
+    name: HTTP proxy
+    description: Outbound HTTP proxy URL.
+  https_proxy:
+    name: HTTPS proxy
+    description: Outbound HTTPS proxy URL.
+  no_proxy:
+    name: No proxy
+    description: Comma-separated hosts that bypass the proxy.

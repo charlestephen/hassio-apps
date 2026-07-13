@@ -1,0 +1,62 @@
+#include <tunables/global>
+
+profile pgadmin flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  capability,
+  file,
+  signal,
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+
+  capability setgid,
+  capability setuid,
+  capability dac_read_search,
+
+  # S6-Overlay
+  /init rix,
+  /bin/** rix,
+  /usr/bin/** rix,
+  /usr/local/bin/** rix,
+  /run/{s6,s6-rc*,service}/** rix,
+  /package/** rix,
+  /command/** rix,
+  /etc/s6/** rix,
+  /run/s6/** rix,
+  /etc/s6-overlay/{,**} rix,
+  /etc/services.d/** rwix,
+  /etc/cont-init.d/** rwix,
+  /etc/cont-finish.d/** rwix,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  # Bashio
+  /usr/lib/bashio/** rix,
+  /tmp/** mrwk,
+
+  # pgAdmin: bundled Python 3.14 interpreter, virtualenv and application
+  /usr/local/** mrix,
+  /venv/** mrix,
+  /pgadmin4/** mrwix,
+
+  # Persisted data: config DB, sessions, storage and logs
+  /data/** mrwk,
+
+  # Add-on config dir (optional /config/config_local.py override)
+  /config/** rw,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
+  /usr/share/zoneinfo/** r,
+  /proc/sys/net/** r,
+}

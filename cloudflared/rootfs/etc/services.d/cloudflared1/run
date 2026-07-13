@@ -1,0 +1,16 @@
+#!/usr/bin/with-contenv bashio
+# =============================================================================
+# Run Cloudflared connector replica 1
+#
+# Second replica of the SAME tunnel token (see cloudflared0). Distinct metrics
+# port so both Prometheus endpoints can be scraped independently.
+# s6-overlay docs: https://github.com/just-containers/s6-overlay
+# =============================================================================
+
+bashio::log.info "Starting Cloudflared connector replica 1..."
+
+export TUNNEL_TOKEN="$(bashio::config 'tunnel_token')"
+export TUNNEL_METRICS="0.0.0.0:36401"
+export TUNNEL_LOGLEVEL="$(bashio::config 'log_level')"
+
+exec cloudflared tunnel --no-autoupdate run

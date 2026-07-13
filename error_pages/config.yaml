@@ -1,0 +1,40 @@
+name: Error Pages
+description: Beautiful, customizable HTTP error pages (404, 500, ...) to serve from your reverse proxy.
+url: https://github.com/charlestephen/hassio-apps/src/branch/main/error_pages
+version: "4.2.2.a"
+stage: stable
+slug: error_pages
+image: ghcr.io/charlestephen/hassio-addons-error_pages-{arch}
+startup: services
+init: false
+boot: auto
+hassio_role: default
+panel_icon: mdi:alert-circle-outline
+webui: http://[HOST]:[PORT:8080]/
+arch:
+  - aarch64
+  - amd64
+ports:
+  8080/tcp: 8080
+ports_description:
+  8080/tcp: Error pages HTTP server
+options:
+  theme: app-down
+  default_error_page: "404"
+  send_same_http_code: false
+  show_details: false
+  rotation_mode: disabled
+  disable_l10n: false
+  proxy_headers: "X-Request-Id,X-Trace-Id,X-Correlation-Id,X-Amzn-Trace-Id"
+  log_level: info
+  log_format: console
+schema:
+  theme: list(app-down|cats|connection|ghost|hacker-terminal|l7|lost-in-space|matrix|noise|orient|shuffle|win98)
+  default_error_page: str
+  send_same_http_code: bool
+  show_details: bool
+  rotation_mode: list(disabled|random-on-startup|random-on-each-request|random-hourly|random-daily)
+  disable_l10n: bool
+  proxy_headers: str?
+  log_level: list(debug|info|warn|error)
+  log_format: list(console|json)

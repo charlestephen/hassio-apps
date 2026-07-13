@@ -1,0 +1,48 @@
+name: pgAdmin
+description: pgAdmin 4 — web-based management UI for PostgreSQL.
+url: https://github.com/charlestephen/hassio-apps/src/branch/main/pgadmin
+version: "9.15.0.f"
+stage: stable
+homeassistant: "2026.6.0"
+slug: pgadmin
+image: ghcr.io/charlestephen/hassio-addons-pgadmin-{arch}
+startup: services
+init: false
+boot: auto
+hassio_role: default
+panel_icon: mdi:database-eye
+webui: http://[HOST]:[PORT:5050]/
+arch:
+  - aarch64
+  - amd64
+map:
+  - type: data
+    read_only: false
+  - type: addon_config
+    read_only: false
+ports:
+  5050/tcp: 5050
+ports_description:
+  5050/tcp: pgAdmin web UI
+options:
+  email: admin@example.com
+  password: changeme
+  log_level: info
+  config: ""
+  register_postgres: true
+  postgres_host: ""
+  postgres_port: 5432
+  postgres_user: postgres
+  postgres_password: changeme
+  postgres_db: homeassistant
+schema:
+  email: email
+  password: password
+  log_level: list(trace|debug|info|warning|error|fatal)
+  config: str?
+  register_postgres: bool
+  postgres_host: str?
+  postgres_port: port?
+  postgres_user: str?
+  postgres_password: password?
+  postgres_db: str?

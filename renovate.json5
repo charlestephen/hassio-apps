@@ -1,0 +1,222 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "rebaseWhen": "behind-base-branch",
+  "dependencyDashboard": true,
+  "labels": ["dependencies", "no-stale"],
+  "commitMessagePrefix": "⬆️",
+  "commitMessageTopic": "{{depName}}",
+  "enabledManagers": ["custom.regex"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Track the Home Assistant base image in Dockerfile FROM lines (resolved-watchdog, linkding)",
+      "fileMatch": ["resolved-watchdog/Dockerfile$", "linkding/Dockerfile$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "FROM\\s+(?<depName>ghcr\\.io/home-assistant/base):(?<currentValue>[\\d.]+)"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Track cloudflared image pinned in the Cloudflared Dockerfile",
+      "fileMatch": ["cloudflared/Dockerfile$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "CLOUDFLARED_VERSION=[\"']?(?<currentValue>[\\d.]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "cloudflare/cloudflared"
+    },
+    {
+      "customType": "regex",
+      "description": "Track per-arch base/app images in build.yaml (HA base, forgejo, ...)",
+      "fileMatch": ["/Dockerfile$", "/build.yaml$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "(aarch64|amd64|armhf|armv7|i386):\\s[\"']?(?<depName>.*?):(?<currentValue>.*?)[\"']?\\s"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Track Technitium DNS Server Docker image version",
+      "fileMatch": ["technitium/Dockerfile$", "technitium/build.yaml$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "TECHNITIUM_VERSION[=:]\\s*[\"']?(?<currentValue>[\\d.]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "technitium/dns-server"
+    },
+    {
+      "customType": "regex",
+      "description": "Track Grafana Alloy release pinned in the Alloy Dockerfile",
+      "fileMatch": ["alloy/Dockerfile$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "ALLOY_VERSION=[\"']?(?<currentValue>v[\\d.]+)[\"']?"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "grafana/alloy"
+    },
+    {
+      "customType": "regex",
+      "description": "Track the Home Assistant base image in the Alloy Dockerfile FROM line",
+      "fileMatch": ["alloy/Dockerfile$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "FROM\\s+(?<depName>ghcr\\.io/home-assistant/base):(?<currentValue>[\\d.]+)"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "Track PostgreSQL version (label only; binary comes from Alpine)",
+      "fileMatch": ["postgres/Dockerfile$", "postgres/build.yaml$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "POSTGRES_VERSION[=:]\\s*[\"']?(?<currentValue>[\\d.]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "postgres"
+    },
+    {
+      "customType": "regex",
+      "description": "Track pgAdmin version (multistage source image)",
+      "fileMatch": ["pgadmin/Dockerfile$", "pgadmin/build.yaml$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "PGADMIN_VERSION[=:]\\s*[\"']?(?<currentValue>[\\d.]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "dpage/pgadmin4"
+    },
+    {
+      "customType": "regex",
+      "description": "Track error-pages version (multistage source image)",
+      "fileMatch": ["error_pages/Dockerfile$", "error_pages/build.yaml$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "ERROR_PAGES_VERSION[=:]\\s*[\"']?(?<currentValue>[\\d.]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "ghcr.io/tarampampam/error-pages"
+    },
+    {
+      "customType": "regex",
+      "description": "Track Terraform version (multistage source image, semaphore add-on)",
+      "fileMatch": ["semaphore/Dockerfile$", "semaphore/build.yaml$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "TERRAFORM_VERSION[=:]\\s*[\"']?(?<currentValue>[\\d.]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "hashicorp/terraform"
+    },
+    {
+      "customType": "regex",
+      "description": "Track OpenTofu version (GitHub release zip, semaphore add-on)",
+      "fileMatch": ["semaphore/Dockerfile$", "semaphore/build.yaml$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "OPENTOFU_VERSION[=:]\\s*[\"']?(?<currentValue>[\\d.]+)[\"']?"
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "opentofu/opentofu",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Track Semaphore UI version (multistage source image)",
+      "fileMatch": ["semaphore/Dockerfile$", "semaphore/build.yaml$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "SEMAPHORE_VERSION[=:]\\s*[\"']?(?<currentValue>[\\d.]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "semaphoreui/semaphore",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    }
+  ],
+  "packageRules": [
+    {
+      "groupName": "Cloudflared",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["cloudflare/cloudflared"]
+    },
+    {
+      "groupName": "Add-on base image",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "ghcr.io/hassio-addons/base",
+        "ghcr.io/home-assistant/base"
+      ]
+    },
+    {
+      "groupName": "Add-on base image",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "ghcr.io/hassio-addons/base",
+        "ghcr.io/home-assistant/base"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "groupName": "Forgejo",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["codeberg.org/forgejo/forgejo"]
+    },
+    {
+      "groupName": "Technitium DNS",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["technitium/dns-server"]
+    },
+    {
+      "groupName": "Grafana Alloy",
+      "matchDatasources": ["github-releases"],
+      "matchPackageNames": ["grafana/alloy"]
+    },
+    {
+      "groupName": "PostgreSQL",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["postgres"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "groupName": "PostgreSQL",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["postgres"]
+    },
+    {
+      "groupName": "pgAdmin",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["dpage/pgadmin4"]
+    },
+    {
+      "groupName": "Error Pages",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/tarampampam/error-pages"]
+    },
+    {
+      "groupName": "Semaphore UI",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["semaphoreui/semaphore"]
+    },
+    {
+      "groupName": "Terraform",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["hashicorp/terraform"]
+    },
+    {
+      "groupName": "OpenTofu",
+      "matchDatasources": ["github-releases"],
+      "matchPackageNames": ["opentofu/opentofu"]
+    }
+  ]
+}

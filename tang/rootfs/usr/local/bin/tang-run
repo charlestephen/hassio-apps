@@ -1,0 +1,30 @@
+#!/bin/sh
+set -e
+
+readonly DB_DIR="/data/tang/db"
+readonly PORT=8888
+
+log() { printf '[%s] [Tang] %s\n' "$(date -u +%H:%M:%S)" "$*"; }
+
+# Read log level from HA options.json (written by Supervisor from config.yaml options)
+LOG_LEVEL="info"
+if [ -f /data/options.json ]; then
+    _lvl=$(jq -r '.log_level // "info"' /data/options.json 2>/dev/null) \
+        && LOG_LEVEL="${_lvl:-info}"
+fi
+log "Log level: ${LOG_LEVEL}"
+
+log "Ensuring key directory: ${DB_DIR}"
+mkdir -p "${DB_DIR}"
+chmod 700 "${DB_DIR}"
+
+if [ -z "$(ls -A "${DB_DIR}" 2>/dev/null)" ]; then
+    log "No keys found — generating new Tang keys..."
+    /usr/libexec/tangd-keygen "${DB_DIR}"
+    log "Keys generated."
+else
+    log "Existing Tang keys found."
+fi
+
+log "Starting Tang NBDE server on port ${PORT}..."
+exec socat TCP-LISTEN:${PORT},reuseaddr,fork SYSTEM:"/usr/libexec/tangd ${DB_DIR}"

@@ -1,0 +1,96 @@
+name: Build add-on images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*/config.yaml'
+      - '*/Dockerfile'
+      - '*/build.yaml'
+      - '*/rootfs/**'
+  workflow_dispatch:
+    inputs:
+      addon:
+        description: 'Single add-on slug to build (blank = all)'
+        required: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      addons: ${{ steps.set.outputs.addons }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set
+        run: |
+          if [ -n "${{ github.event.inputs.addon }}" ]; then
+            echo "addons=[\"${{ github.event.inputs.addon }}\"]" >> "$GITHUB_OUTPUT"
+          else
+            list=$(for d in */; do [ -f "${d}config.yaml" ] && [ -f "${d}build.yaml" ] && echo "${d%/}"; done | jq -R . | jq -sc .)
+            echo "addons=${list}" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: discover
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addon: ${{ fromJson(needs.discover.outputs.addons) }}
+        arch: [amd64, aarch64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Assemble build metadata
+        id: meta
+        run: |
+          A="${{ matrix.addon }}"; ARCH="${{ matrix.arch }}"
+          case "$ARCH" in
+            amd64)   echo "platform=linux/amd64" >> "$GITHUB_OUTPUT" ;;
+            aarch64) echo "platform=linux/arm64" >> "$GITHUB_OUTPUT" ;;
+          esac
+          VERSION=$(grep '^version:' "$A/config.yaml" | sed 's/^version: *//; s/"//g')
+          BUILD_FROM=$(grep "^  ${ARCH}:" "$A/build.yaml" | sed 's/.*: *//')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "build_from=${BUILD_FROM}" >> "$GITHUB_OUTPUT"
+          echo "date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+          # Pass through every arg declared in the add-on's build.yaml.
+          python3 - "$A/build.yaml" > extra_build_args <<'PY'
+          import sys, yaml
+          d = yaml.safe_load(open(sys.argv[1])) or {}
+          for k, v in (d.get("args") or {}).items():
+              print(f"--build-arg={k}={v}")
+          PY
+
+      - name: Build and push
+        run: |
+          A="${{ matrix.addon }}"; ARCH="${{ matrix.arch }}"
+          IMG="ghcr.io/${{ github.repository_owner }}/hassio-addons-${A}-${ARCH}"
+          mapfile -t EXTRA < extra_build_args
+          docker buildx build \
+            --platform "${{ steps.meta.outputs.platform }}" \
+            --build-arg BUILD_ARCH="${ARCH}" \
+            --build-arg BUILD_FROM="${{ steps.meta.outputs.build_from }}" \
+            --build-arg BUILD_VERSION="${{ steps.meta.outputs.version }}" \
+            --build-arg BUILD_NAME="${A}" \
+            --build-arg BUILD_DESCRIPTION="${A} Home Assistant add-on" \
+            --build-arg BUILD_REPOSITORY="${{ github.repository }}" \
+            --build-arg BUILD_REF="${{ github.sha }}" \
+            --build-arg BUILD_DATE="${{ steps.meta.outputs.date }}" \
+            "${EXTRA[@]}" \
+            -t "${IMG}:${{ steps.meta.outputs.version }}" \
+            -t "${IMG}:latest" \
+            --push \
+            "$A"

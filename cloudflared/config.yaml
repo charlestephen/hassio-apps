@@ -1,0 +1,44 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "Cloudflared"
+version: "2026.7.1"
+slug: "cloudflared"
+description: "Dual-replica Cloudflare Tunnel (HA) built on the stock cloudflared image"
+url: "https://github.com/charlestephen/hassio-apps/src/branch/main/cloudflared"
+# Prebuilt per-arch images are pulled from the private Forgejo registry. The
+# Supervisor substitutes {arch} and pulls the tag matching `version:` above.
+image: "ghcr.io/charlestephen/hassio-addons-cloudflared-{arch}"
+arch:
+  - amd64
+  - aarch64
+# s6-overlay (from the HA base image) supervises the two connector replicas, so
+# don't let Docker inject its own init.
+init: false
+startup: services
+boot: auto
+
+# ----------------------------------------------------------------------------
+# Networking
+# ----------------------------------------------------------------------------
+# Bridge networking (default). cloudflared only makes OUTBOUND connections to the
+# Cloudflare edge and to your origins; from the bridge it resolves `homeassistant`
+# via CoreDNS and reaches LAN origins via NAT. Switch to host_network ONLY if you
+# must tunnel to a service bound to the host loopback.
+#
+# Two Prometheus metrics endpoints are published for VictoriaMetrics to scrape.
+ports:
+  36400/tcp: 36400
+  36401/tcp: 36401
+ports_description:
+  36400/tcp: "cloudflared0 Prometheus metrics (/metrics, /ready)"
+  36401/tcp: "cloudflared1 Prometheus metrics (/metrics, /ready)"
+
+# ----------------------------------------------------------------------------
+# Options
+# ----------------------------------------------------------------------------
+options:
+  tunnel_token: ""
+  log_level: info
+schema:
+  # `password` masks the token in the Home Assistant UI.
+  tunnel_token: password
+  log_level: list(debug|info|warn|error)

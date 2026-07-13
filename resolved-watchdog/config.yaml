@@ -1,0 +1,38 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "Resolved Watchdog"
+version: "1.0.2"
+slug: "resolved_watchdog"
+description: "Auto-restarts the host's systemd-resolved when it hangs, so on-node DNS self-heals"
+url: "https://github.com/charlestephen/hassio-apps/src/branch/main/resolved-watchdog"
+image: "ghcr.io/charlestephen/hassio-addons-resolved-watchdog-{arch}"
+arch:
+  - aarch64
+init: false
+startup: services
+boot: auto
+
+# host_network: lets the add-on reach the host resolver stub (127.0.0.53) to test
+#   whether the HOST can resolve (a bridge add-on would test CoreDNS instead).
+# host_dbus:    lets it talk to the host system bus to restart systemd-resolved.
+host_network: true
+host_dbus: true
+# full_access surfaces the Protection-mode toggle in the HA UI; with Protection
+# mode OFF the add-on can drive systemd over the host bus (restart the resolver).
+full_access: true
+
+options:
+  canary_host: "cloudflare.com"
+  stub_address: "127.0.0.53"
+  interval: 30
+  timeout: 5
+  failures_before_restart: 2
+  restart_unit: "systemd-resolved.service"
+  log_level: info
+schema:
+  canary_host: str
+  stub_address: str
+  interval: int(5,3600)
+  timeout: int(1,60)
+  failures_before_restart: int(1,10)
+  restart_unit: str
+  log_level: list(debug|info|warn|error)
