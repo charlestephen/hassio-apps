@@ -1,0 +1,48 @@
+name: Homarr upstream watcher
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for a new Homarr release and bump
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          latest=$(gh api repos/homarr-labs/homarr/releases/latest --jq .tag_name)   # e.g. v1.71.0
+          [ -n "$latest" ] && [ "$latest" != "null" ] || { echo "no upstream release"; exit 0; }
+          ver="${latest#v}"
+          cur=$(grep -oE 'homarr-labs/homarr:v[0-9.]+' homarr/build.yaml | head -1 | sed 's#.*:##')
+          echo "upstream=$latest  current=$cur"
+          if [ "$latest" = "$cur" ]; then echo "already up to date"; exit 0; fi
+          # bump build.yaml (image tags + HOMARR_VERSION arg) and config.yaml version
+          sed -i -E "s#(homarr-labs/homarr:)v[0-9.]+#\1${latest}#g" homarr/build.yaml
+          sed -i -E "s#(HOMARR_VERSION: \")[0-9.]+#\1${ver}#" homarr/build.yaml
+          sed -i -E "s#^version: \".*\"#version: \"${ver}\"#" homarr/config.yaml
+          # prepend a changelog entry after the first H2
+          python3 - "$ver" "$latest" <<'PY'
+          import sys, re
+          ver, tag = sys.argv[1], sys.argv[2]
+          p = "homarr/CHANGELOG.md"; s = open(p).read()
+          entry = f"## {ver}\n\n- Update to upstream Homarr {tag}.\n\n"
+          m = re.search(r'(?m)^## ', s)
+          s = s[:m.start()] + entry + s[m.start():] if m else s + "\n" + entry
+          open(p, "w").write(s)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add homarr/build.yaml homarr/config.yaml homarr/CHANGELOG.md
+          git commit -m "Homarr: update to upstream ${latest}"
+          git push
+          # explicitly dispatch the build (a GITHUB_TOKEN push does not trigger other workflows)
+          gh workflow run build.yml -f addon=homarr
