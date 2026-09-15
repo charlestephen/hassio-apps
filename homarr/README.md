@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Homarr
+# Home Assistant App: Homarr
 
 Modern, feature-rich, self-hosted dashboard for your homelab — widgets, service
 integrations, and single sign-on (OIDC/LDAP).

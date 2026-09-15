@@ -162,7 +162,7 @@ bashio::log.info "Exported ANSIBLE_HOST_KEY_CHECKING=${ANSIBLE_HOST_KEY_CHECKING
 
 # ---- OIDC / SSO login --------------------------------------------------------
 # Semaphore's oidc_providers is a map; the whole map is accepted as JSON via the
-# SEMAPHORE_OIDC_PROVIDERS env var. Build a single provider from the flat add-on
+# SEMAPHORE_OIDC_PROVIDERS env var. Build a single provider from the flat app
 # options (auto-discovery via provider_url). Optional claim overrides are only
 # included when set. The client_secret is never logged.
 if bashio::config.true 'oidc_enable'; then

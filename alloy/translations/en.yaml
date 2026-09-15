@@ -15,7 +15,7 @@ configuration:
     description: >-
       Paste a complete Grafana Alloy (River) configuration to fully replace the
       built-in default. Leave empty to ship all container logs to Loki. A file at
-      /config/config.alloy in the add-on config directory takes precedence over this.
+      /config/config.alloy in the app config directory takes precedence over this.
 
 network:
   12345/tcp: Alloy HTTP UI, /metrics and debug endpoints

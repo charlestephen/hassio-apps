@@ -1,19 +1,19 @@
-# Home Assistant Add-on: Homarr
+# Home Assistant App: Homarr
 
 Modern, self-hosted dashboard for your homelab — widgets, service integrations,
-and single sign-on. This add-on is a thin wrapper around the official
+and single sign-on. This app is a thin wrapper around the official
 [Homarr](https://homarr.dev) image.
 
 ## Installation
 
-1. Add this add-on repository to Home Assistant.
-2. Install the **Homarr** add-on.
+1. Add this app repository to Home Assistant.
+2. Install the **Homarr** app.
 3. (Optional) Adjust options in the **Configuration** tab.
-4. Start the add-on and open the Web UI (port `7575`).
+4. Start the app and open the Web UI (port `7575`).
 
 ## How data is stored
 
-- The **SQLite database is persisted** under the add-on's `/data` volume
+- The **SQLite database is persisted** under the app's `/data` volume
   (`/data/db/db.sqlite`), so it survives restarts, updates and reinstalls.
 - If you leave **Secret encryption key** blank, a stable key is generated once
   and stored at `/data/.secret_encryption_key`. Keep a backup — losing it makes

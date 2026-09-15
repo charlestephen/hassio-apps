@@ -1,0 +1,77 @@
+name: UniFi Voucher Manager
+description: Modern web app to manage UniFi WiFi vouchers (Next.js frontend + Rust backend), with QR codes and rolling vouchers.
+url: https://github.com/etiennecollin/unifi-voucher-manager
+version: "1.0.0-1"
+slug: unifi-voucher-manager
+arch:
+  - amd64
+  - aarch64
+image: ghcr.io/charlestephen/hassio-addons-unifi-voucher-manager-{arch}
+init: true                              # Fixed: enable tini for zombie reaping
+startup: application
+boot: auto
+panel_icon: mdi:ticket-account
+webui: http://[HOST]:[PORT:3000]
+ports:
+  3000/tcp: 3000
+  8080/tcp: 8080
+ports_description:
+  3000/tcp: Frontend (web UI)
+  8080/tcp: Backend (REST API)
+map:
+  - type: share
+    read_only: false                    # Added: persist frontend config + runtime state
+backup: cold
+stage: experimental                     # Added: HA store compatibility
+
+# ---------------------------------------------------------------------------
+# Full environment surface from etiennecollin/unifi-voucher-manager README.
+# Ref: https://github.com/etiennecollin/unifi-voucher-manager
+# ---------------------------------------------------------------------------
+options:
+  # UniFi (required)
+  unifi_controller_url: ""
+  unifi_api_key: ""
+  unifi_has_valid_cert: true
+  unifi_site_id: "default"
+  guest_subnetwork: ""
+
+  # WiFi (for QR codes)
+  wifi_ssid: ""
+  wifi_password: ""
+  wifi_type: "WPA"
+  wifi_hidden: false
+
+  # Vouchers
+  rolling_voucher_duration_minutes: 480
+
+  # Service
+  timezone: "UTC"
+  backend_log_level: info
+  frontend_bind_host: "0.0.0.0"
+  frontend_bind_port: 3000
+  frontend_to_backend_url: "http://127.0.0.1"
+  backend_bind_host: "0.0.0.0"
+  backend_bind_port: 8080
+
+schema:
+  unifi_controller_url: str?
+  unifi_api_key: password?
+  unifi_has_valid_cert: bool
+  unifi_site_id: str?
+  guest_subnetwork: str?
+
+  wifi_ssid: str?
+  wifi_password: password?
+  wifi_type: list(WPA|WEP|nopass)?
+  wifi_hidden: bool
+
+  rolling_voucher_duration_minutes: int(1,)?
+
+  timezone: str?
+  backend_log_level: list(error|warn|info|debug|trace)?
+  frontend_bind_host: str?
+  frontend_bind_port: int(1,65535)?
+  frontend_to_backend_url: str?
+  backend_bind_host: str?
+  backend_bind_port: int(1,65535)?

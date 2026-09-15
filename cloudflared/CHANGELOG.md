@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026.7.1-1
+
+- CI/registry: image now builds via **GitHub Actions** and publishes to
+  **GHCR** (`ghcr.io/charlestephen/hassio-addons-cloudflared-{arch}`), replacing
+  the Forgejo self-hosted runner / private registry pipeline. The image is
+  now public, so no registry credentials are needed to install this app.
+
+- Docs: renamed "add-on" → "app" throughout (branding only, no
+  functional change).
+
 ## 2026.7.1
 
 - Update cloudflared to 2026.7.1.

@@ -1,13 +1,13 @@
-# Home Assistant Add-on: PostgreSQL
+# Home Assistant App: PostgreSQL
 
 ## Overview
 
 PostgreSQL 18 object-relational database server, suitable as the recorder
-backend for Home Assistant or as a database for other add-ons and services on
+backend for Home Assistant or as a database for other apps and services on
 your network.
 
 The cluster is created on first start in `/data/postgres` (persisted by the
-add-on) and the server listens on port **5432**.
+app) and the server listens on port **5432**.
 
 ## Configuration
 
@@ -16,7 +16,7 @@ add-on) and the server listens on port **5432**.
 | `superuser_password` | password | `changeme` | Password for the `postgres` superuser. **Change this before exposing the server.** |
 | `database` | string | `homeassistant` | A database created on first init (leave empty to skip). |
 | `max_connections` | int | `100` | Maximum concurrent connections. |
-| `log_level` | list | `info` | Add-on log verbosity. |
+| `log_level` | list | `info` | App log verbosity. |
 
 > ⚠️ The `superuser_password` is only applied when the cluster is **first
 > initialized**. To change it later, connect and run
@@ -33,7 +33,7 @@ log_level: info
 
 ## Connecting
 
-From another add-on or container on the Home Assistant network, or from your LAN:
+From another app or container on the Home Assistant network, or from your LAN:
 
 ```
 host:     <home-assistant-ip>
@@ -60,7 +60,7 @@ recorder:
 
 The server is initialized with `scram-sha-256` password authentication and
 accepts network connections (`host all all 0.0.0.0/0 scram-sha-256`). Keep the
-add-on on a trusted network and use a strong password.
+app on a trusted network and use a strong password.
 
 ## Data & backups
 
@@ -73,4 +73,4 @@ add-on on a trusted network and use a strong password.
 
 PostgreSQL major upgrades (e.g. 18 → 19) require `pg_upgrade` or a
 dump/restore — the data directory is **not** automatically migrated. This
-add-on tracks the 18.x series; a new major would be a deliberate, separate step.
+app tracks the 18.x series; a new major would be a deliberate, separate step.

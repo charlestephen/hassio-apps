@@ -2,7 +2,7 @@ ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager-agent:1.7.2
 
 # Thin Home Assistant wrapper on the official Traefik Manager Agent image
 # (TMA). It's a single static Go binary with its own HEALTHCHECK, so we do
-# NOT add s6-overlay; we only translate the add-on options into its
+# NOT add s6-overlay; we only translate the app options into its
 # environment variables and then exec the binary.
 FROM ${BUILD_FROM}
 

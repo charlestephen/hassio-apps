@@ -19,4 +19,4 @@ configuration:
     description: Host systemd unit restarted on failure (default systemd-resolved.service).
   log_level:
     name: Log level
-    description: Add-on log verbosity.
+    description: App log verbosity.

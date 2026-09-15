@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Resolved Watchdog
+# Home Assistant App: Resolved Watchdog
 
 Auto-restarts the host's `systemd-resolved` when it hangs, so a node that
 resolves through its **own on-node DNS** self-heals instead of wedging.
