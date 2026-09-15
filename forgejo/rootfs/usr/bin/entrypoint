@@ -2,15 +2,15 @@
 set -e
 
 # ==============================================================================
-# Forgejo add-on entrypoint
-# Reads /data/options.json (Home Assistant add-on options) and exports every
+# Forgejo app entrypoint
+# Reads /data/options.json (Home Assistant app options) and exports every
 # key as an environment variable so the app.ini template and Forgejo itself
 # pick them up. Safe defaults are applied for variables not present in options.
 # ==============================================================================
 
 OPTIONS_SOURCE=/data/options.json
 
-echo "=== Loading Forgejo add-on options ==="
+echo "=== Loading Forgejo app options ==="
 
 mapfile -t KEYS < <(jq -r 'keys[]' "${OPTIONS_SOURCE}")
 

@@ -1,14 +1,14 @@
-# Home Assistant Add-on: pgAdmin
+# Home Assistant App: pgAdmin
 
 ## Overview
 
 pgAdmin 4 is the standard web UI for administering PostgreSQL — browse and edit
 data, run queries, manage roles and databases, and monitor activity. It pairs
-with the **PostgreSQL** add-on in this repository.
+with the **PostgreSQL** app in this repository.
 
 It runs in multi-user (server) mode behind gunicorn and stores its
 configuration database and per-user storage in `/data/pgadmin` (persisted by the
-add-on).
+app).
 
 ## Configuration
 
@@ -16,7 +16,7 @@ add-on).
 |--------|------|---------|-------------|
 | `email` | email | `admin@example.com` | Login email for the initial administrator account. |
 | `password` | password | `changeme` | Password for the initial administrator. **Change this.** |
-| `log_level` | list | `info` | Add-on log verbosity. |
+| `log_level` | list | `info` | App log verbosity. |
 | `config` | string | _(empty)_ | A full pgAdmin `config_local.py` to use instead of the default (wholesale replacement — see below). |
 
 > The administrator account is created from `email`/`password` only on **first
@@ -33,12 +33,12 @@ log_level: info
 
 ## Custom configuration (OIDC / OAuth2, LDAP, ...)
 
-pgAdmin is configured through a Python `config_local.py`. This add-on lets you
+pgAdmin is configured through a Python `config_local.py`. This app lets you
 **replace it wholesale** so you can enable authentication sources like OIDC.
 
 Precedence (highest first):
 
-1. **`/config/config_local.py`** — drop a complete file into the add-on config
+1. **`/config/config_local.py`** — drop a complete file into the app config
    directory (`/addon_configs/<slug>_pgadmin/config_local.py`). Best for large
    configs. Used verbatim.
 2. **`config` option** — paste the same Python config on the Configuration page.
@@ -91,12 +91,12 @@ http://<home-assistant-ip>:5050/
 
 Log in with the `email` / `password` configured above.
 
-## Connecting to the PostgreSQL add-on
+## Connecting to the PostgreSQL app
 
-By default this add-on **auto-registers** the PostgreSQL add-on as a server, so
+By default this app **auto-registers** the PostgreSQL app as a server, so
 "Home Assistant PostgreSQL" appears in the tree the first time you log in — just
-expand it. Add-ons reach each other by the hostname `<repo>-<slug>`; the host is
-derived automatically from this add-on's own hostname (so you don't need to know
+expand it. Apps reach each other by the hostname `<repo>-<slug>`; the host is
+derived automatically from this app's own hostname (so you don't need to know
 the repository prefix), and a `.pgpass` is written so the connection needs no
 password prompt.
 
@@ -105,18 +105,18 @@ Control it with these options:
 | Option | Default | Description |
 |--------|---------|-------------|
 | `register_postgres` | `true` | Auto-register the PostgreSQL server. Set `false` to manage servers manually. |
-| `postgres_host` | _(empty → auto)_ | Override the host. Empty derives `<repo>-postgres` from this add-on's hostname. |
+| `postgres_host` | _(empty → auto)_ | Override the host. Empty derives `<repo>-postgres` from this app's hostname. |
 | `postgres_port` | `5432` | PostgreSQL port. |
 | `postgres_user` | `postgres` | Username. |
-| `postgres_password` | `changeme` | Used for passwordless connect (matches the PostgreSQL add-on's `superuser_password`). Leave empty to be prompted. |
+| `postgres_password` | `changeme` | Used for passwordless connect (matches the PostgreSQL app's `superuser_password`). Leave empty to be prompted. |
 | `postgres_db` | `homeassistant` | Maintenance database. |
 
-> Keep `postgres_password` in sync with the PostgreSQL add-on's
+> Keep `postgres_password` in sync with the PostgreSQL app's
 > `superuser_password`. The registration is refreshed on every start.
 
 To register manually instead, set `register_postgres: false` and use
 **Add New Server** with Host `<repo>-postgres` (or your Home Assistant IP),
-Port `5432`, Username `postgres`, and the PostgreSQL add-on's password.
+Port `5432`, Username `postgres`, and the PostgreSQL app's password.
 
 ## Data
 

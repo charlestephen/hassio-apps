@@ -1,12 +1,22 @@
 # Changelog
 
+## 1.0.2-1
+
+- CI/registry: image now builds via **GitHub Actions** and publishes to
+  **GHCR** (`ghcr.io/charlestephen/hassio-addons-resolved-watchdog-{arch}`), replacing
+  the Forgejo self-hosted runner / private registry pipeline. The image is
+  now public, so no registry credentials are needed to install this app.
+
+- Docs: renamed "add-on" → "app" throughout (branding only, no
+  functional change).
+
 ## 1.0.2
 
-- Add `full_access` so Home Assistant shows the Protection-mode (host access) toggle. After installing/updating, open the add-on's Info tab and turn Protection mode OFF to grant the host D-Bus access used to restart systemd-resolved.
+- Add `full_access` so Home Assistant shows the Protection-mode (host access) toggle. After installing/updating, open the app's Info tab and turn Protection mode OFF to grant the host D-Bus access used to restart systemd-resolved.
 
 ## 1.0.1
 
-- aarch64-only: the `host_dbus` recovery needs `dbus-send` (an apk `RUN` step), which segfaults cross-building to amd64 under emulation on the libkrun/podman builders. The add-on targets the aarch64 node anyway, so amd64 is dropped.
+- aarch64-only: the `host_dbus` recovery needs `dbus-send` (an apk `RUN` step), which segfaults cross-building to amd64 under emulation on the libkrun/podman builders. The app targets the aarch64 node anyway, so amd64 is dropped.
 
 ## 1.0.0
 

@@ -1,7 +1,7 @@
 name: Technitium DNS
 description: Technitium DNS Server is an open source authoritative and recursive DNS server with a web-based management UI.
-url: https://github.com/charlestephen/hassio-apps/src/branch/main/technitium
-version: 15.4.0
+url: https://git.lan.cst.wtf/charlestephen/hassio-addons/src/branch/main/technitium
+version: 15.4.0-1
 stage: stable
 homeassistant: "2026.6.0"
 slug: technitium
@@ -17,7 +17,7 @@ discovery:
 # host_network lets Technitium bind directly to host ports so it can serve as
 # Home Assistant's built-in DNS resolver. Under host networking the `ports:`
 # and `ports_description:` keys are ignored; the ports listed below are the
-# host ports the add-on will listen on. Ensure each is free before starting:
+# host ports the app will listen on. Ensure each is free before starting:
 #   53/tcp + 53/udp   - DNS (must be free; conflicts with any host resolver)
 #   853/tcp           - DNS-over-TLS
 #   853/udp           - DNS-over-QUIC (libmsquic)

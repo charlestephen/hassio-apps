@@ -1,0 +1,180 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: Traefik Manager
+description: Clean, self-hosted web UI for managing Traefik routes, middlewares, certificates and logs.
+url: https://traefik-manager.xyzlab.dev/
+version: "1.13.5"
+stage: stable
+homeassistant: "2026.6.0"
+slug: traefik-manager
+image: ghcr.io/charlestephen/hassio-addons-traefik-manager-{arch}
+# Traefik Manager is a self-contained Flask app served by gunicorn, so we do
+# NOT layer HA's s6 init on top of it.
+init: false
+startup: application
+boot: auto
+panel_icon: mdi:router-network
+webui: http://[HOST]:[PORT:5000]
+arch:
+  - aarch64
+  - amd64
+map:
+  - type: data
+    read_only: false
+  - type: share
+    read_only: false
+  - type: config
+    read_only: false
+ports:
+  5000/tcp: 5000
+ports_description:
+  5000/tcp: Web UI
+backup: cold
+
+# ---------------------------------------------------------------------------
+# Traefik Manager environment variables surfaced as app options.
+# Full reference: https://traefik-manager.xyzlab.dev/env-vars.html
+# Empty strings / false are treated as "not set" and are not exported, so the
+# app falls back to Traefik Manager's own defaults (the setup wizard runs on
+# first start with nothing configured).
+# ---------------------------------------------------------------------------
+options:
+  # --- Connection ---
+  traefik_api_url: "http://traefik:8080"
+  traefik_api_user: ""
+  traefik_api_password: ""
+  traefik_insecure_skip_verify: false
+  domains: "example.com"
+  cert_resolver: ""
+
+  # --- Config files (persisted under this app's /data volume by default) ---
+  config_path: "/data/config/dynamic.yml"
+  config_paths: ""
+  config_dir: ""
+  settings_path: "/data/config/manager.yml"
+
+  # --- Optional file paths ---
+  acme_json_path: ""
+  access_log_path: ""
+  static_config_path: ""
+  plugins_dir: ""
+
+  # --- Backups ---
+  backup_dir: "/data/backups"
+  backup_keep_count: 0
+
+  # --- Authentication ---
+  auth_enabled: true
+  admin_password: ""
+  secret_key: ""
+  otp_encryption_key: ""
+  cookie_secure: false
+  inactivity_timeout_minutes: 120
+  proxy_fix_hops: 1
+
+  # --- Traefik restart (Static Config editor) ---
+  restart_method: ""
+  traefik_container: "traefik"
+  docker_host: ""
+  signal_file_path: ""
+
+  # --- CrowdSec (optional) ---
+  crowdsec_lapi_url: ""
+  crowdsec_api_key: ""
+  crowdsec_machine_id: ""
+  crowdsec_machine_password: ""
+  crowdsec_client_cert: ""
+  crowdsec_client_key: ""
+  crowdsec_ca_cert: ""
+  crowdsec_read_timeout: 20
+  crowdsec_connect_timeout: 5
+  crowdsec_alert_limit: 500
+
+  # --- OIDC / SSO (optional) ---
+  oidc_enabled: false
+  oidc_provider_url: ""
+  oidc_client_id: ""
+  oidc_client_secret: ""
+  oidc_display_name: "OIDC"
+  oidc_allowed_emails: ""
+  oidc_allowed_groups: ""
+  oidc_allow_any_authenticated: false
+  oidc_groups_claim: "groups"
+  oidc_auto_login: false
+
+  # --- Geolocation / Agents / Misc ---
+  geoip_db_path: ""
+  agent_api_rate_limit: 30
+  base_path: ""
+  log_level: "INFO"
+  requests_ca_bundle: ""
+
+schema:
+  # Connection
+  traefik_api_url: str?
+  traefik_api_user: str?
+  traefik_api_password: password?
+  traefik_insecure_skip_verify: bool
+  domains: str?
+  cert_resolver: str?
+
+  # Config files
+  config_path: str?
+  config_paths: str?
+  config_dir: str?
+  settings_path: str?
+
+  # Optional file paths
+  acme_json_path: str?
+  access_log_path: str?
+  static_config_path: str?
+  plugins_dir: str?
+
+  # Backups
+  backup_dir: str?
+  backup_keep_count: int(0,)?
+
+  # Authentication
+  auth_enabled: bool
+  admin_password: password?
+  secret_key: password?
+  otp_encryption_key: password?
+  cookie_secure: bool
+  inactivity_timeout_minutes: int(0,)?
+  proxy_fix_hops: int(0,)?
+
+  # Traefik restart
+  restart_method: list(|proxy|poison-pill|socket)?
+  traefik_container: str?
+  docker_host: str?
+  signal_file_path: str?
+
+  # CrowdSec
+  crowdsec_lapi_url: str?
+  crowdsec_api_key: password?
+  crowdsec_machine_id: str?
+  crowdsec_machine_password: password?
+  crowdsec_client_cert: str?
+  crowdsec_client_key: str?
+  crowdsec_ca_cert: str?
+  crowdsec_read_timeout: int(1,120)?
+  crowdsec_connect_timeout: int(1,120)?
+  crowdsec_alert_limit: int(0,)?
+
+  # OIDC / SSO
+  oidc_enabled: bool
+  oidc_provider_url: str?
+  oidc_client_id: str?
+  oidc_client_secret: password?
+  oidc_display_name: str?
+  oidc_allowed_emails: str?
+  oidc_allowed_groups: str?
+  oidc_allow_any_authenticated: bool
+  oidc_groups_claim: str?
+  oidc_auto_login: bool
+
+  # Geolocation / Agents / Misc
+  geoip_db_path: str?
+  agent_api_rate_limit: int(0,)?
+  base_path: str?
+  log_level: list(DEBUG|INFO|WARNING|ERROR)?
+  requests_ca_bundle: str?

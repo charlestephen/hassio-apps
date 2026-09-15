@@ -1,8 +1,23 @@
 # Changelog
 
-All notable changes to the Homarr add-on are documented here.
+All notable changes to the Homarr app are documented here.
 The version tracks the upstream Homarr release it is built from
-(with a `-N` suffix for add-on-only revisions between upstream releases).
+(with a `-N` suffix for app-only revisions between upstream releases).
+
+## 1.70.0-2
+
+- **Revert a bad prior edit**: an earlier commit (labeled "FIXED") had
+  quietly switched the registry from the private Forgejo registry to a
+  public GHCR path, downgraded the required Home Assistant version, and
+  flipped `init` to `true` (which fights Homarr's own entrypoint). All
+  three are reverted back to the working configuration.
+- CI/registry: image now builds via **GitHub Actions** and publishes to
+  **GHCR** (`ghcr.io/charlestephen/hassio-addons-homarr-{arch}`), replacing
+  the Forgejo self-hosted runner / private registry pipeline. The image is
+  now public, so no registry credentials are needed to install this app.
+
+- Docs: renamed "add-on" → "app" throughout (branding only, no
+  functional change).
 
 ## 1.70.0-1
 
@@ -18,13 +33,13 @@ Initial release.
 
 - Thin Home Assistant wrapper around the official
   `ghcr.io/homarr-labs/homarr:1.70.0` image (multi-arch: `aarch64`, `amd64`).
-- Homarr's own entrypoint (redis + nginx + Next.js) is preserved; the add-on
+- Homarr's own entrypoint (redis + nginx + Next.js) is preserved; the app
   only injects configuration as environment variables.
-- SQLite database is persisted to the add-on `/data` volume
+- SQLite database is persisted to the app `/data` volume
   (`DB_URL=/data/db/db.sqlite`) so it survives updates and restarts.
 - `SECRET_ENCRYPTION_KEY` is auto-generated once and persisted to `/data`
   when left blank, so encrypted secrets remain readable across restarts.
-- Full environment-variable surface exposed as add-on options, including:
+- Full environment-variable surface exposed as app options, including:
   - Authentication: `AUTH_PROVIDERS`, session expiry, cookie prefix, logout URL.
   - **OIDC/SSO**: issuer, client id/secret/name, scope overwrite, groups
     attribute, auto-login, local group management, force-userinfo, account

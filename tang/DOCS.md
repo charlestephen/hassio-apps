@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Tang
+# Home Assistant App: Tang
 
 ## Overview
 
@@ -37,4 +37,4 @@ clevis luks list -d /dev/sdX
 
 ## Key management
 
-Tang keys are stored persistently in `/data/tang/db`. Keys are auto-generated on first startup. To rotate keys, stop the add-on, remove old keys from the data directory, and restart.
+Tang keys are stored persistently in `/data/tang/db`. Keys are auto-generated on first startup. To rotate keys, stop the app, remove old keys from the data directory, and restart.

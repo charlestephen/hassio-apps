@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.2.3-1
+
+- CI/registry: image now builds via **GitHub Actions** and publishes to
+  **GHCR** (`ghcr.io/charlestephen/hassio-addons-error_pages-{arch}`), replacing
+  the Forgejo self-hosted runner / private registry pipeline. The image is
+  now public, so no registry credentials are needed to install this app.
+
+- Docs: renamed "add-on" → "app" throughout (branding only, no
+  functional change).
+
 ## 4.2.2.a
 
 - Upgrade base image from `ghcr.io/hassio-addons/base:20.0.1` to

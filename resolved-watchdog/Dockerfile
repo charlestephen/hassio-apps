@@ -1,6 +1,6 @@
-# Home Assistant Add-on: Resolved Watchdog
+# Home Assistant App: Resolved Watchdog
 #
-# Tiny script add-on: probes the host resolver and restarts systemd-resolved over
+# Tiny script app: probes the host resolver and restarts systemd-resolved over
 # the host system D-Bus when it hangs. Only extra dependency is dbus-send.
 FROM ghcr.io/home-assistant/base:3.24
 
@@ -19,7 +19,7 @@ LABEL \
   io.hass.version="${BUILD_VERSION}" \
   io.hass.type="addon" \
   io.hass.arch="${BUILD_ARCH}" \
-  org.opencontainers.image.title="Home Assistant Add-on: Resolved Watchdog" \
+  org.opencontainers.image.title="Home Assistant App: Resolved Watchdog" \
   org.opencontainers.image.description="Auto-restarts host systemd-resolved when it hangs" \
   org.opencontainers.image.source="https://github.com/charlestephen/hassio-apps" \
   org.opencontainers.image.revision="${BUILD_REF}" \
