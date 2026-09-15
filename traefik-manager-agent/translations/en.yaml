@@ -1,0 +1,107 @@
+---
+configuration:
+  tma_api_key:
+    name: TMA API key
+    description: Generated in Traefik Manager under Settings -> Agents when you add this server. Required.
+  tma_port:
+    name: Agent port
+    description: Port the agent listens on. Must match the port in this server's URL in Traefik Manager.
+  tma_rate_limit:
+    name: Rate limit
+    description: Requests per minute per client IP. 0 disables the limit.
+  tma_debug:
+    name: Debug logging
+    description: Log every failed Traefik API call (URL and status) to the journal.
+  traefik_api_url:
+    name: Traefik API URL
+    description: Traefik's API on this server. Use the internal address, not a public dashboard URL behind auth.
+  traefik_api_user:
+    name: Traefik API user
+    description: Basic auth username, if this Traefik API requires it.
+  traefik_api_password:
+    name: Traefik API password
+    description: Basic auth password, if this Traefik API requires it.
+  traefik_insecure_skip_verify:
+    name: Skip TLS verification
+    description: Skip TLS verification for an https API with a self-signed or origin certificate.
+  config_path:
+    name: Config path
+    description: Directory (every .yml/.yaml in it) or single file that Traefik's file provider watches on this host.
+  static_config_path:
+    name: Static config path
+    description: Traefik's static config on this host. Enables the Static Config editor for this server.
+  acme_json_path:
+    name: ACME JSON path
+    description: This host's acme.json (or comma-separated files, or a directory). Enables the Certificates tab.
+  access_log_path:
+    name: Access log path
+    description: This host's Traefik access log. Enables the Logs tab.
+  plugins_dir:
+    name: Plugins directory
+    description: This host's Traefik plugins directory.
+  backup_dir:
+    name: Backup directory
+    description: Where .bak files are written before each change on this host.
+  backup_keep_count:
+    name: Backups to keep
+    description: Keep only the last N backups per file. 0 keeps everything.
+  restart_method:
+    name: Traefik restart method
+    description: How to restart this host's Traefik after a static config change (proxy, poison-pill, or socket).
+  traefik_container:
+    name: Traefik container name
+    description: Container name used by the proxy and socket restart methods.
+  docker_host:
+    name: Docker host
+    description: Docker socket-proxy endpoint, used by the proxy restart method.
+  signal_file_path:
+    name: Restart signal file path
+    description: Signal file the poison-pill restart method writes.
+  crowdsec_lapi_url:
+    name: CrowdSec LAPI URL
+    description: Base URL of this host's CrowdSec Local API.
+  crowdsec_api_key:
+    name: CrowdSec bouncer key
+    description: Bouncer API key — reads active decisions on this host.
+  crowdsec_machine_id:
+    name: CrowdSec machine ID
+    description: Machine login — required to read alerts and to unban.
+  crowdsec_machine_password:
+    name: CrowdSec machine password
+    description: Password for the CrowdSec machine login.
+  crowdsec_client_cert:
+    name: CrowdSec client certificate
+    description: Client certificate path, if this LAPI is behind mutual TLS.
+  crowdsec_client_key:
+    name: CrowdSec client key
+    description: Client key path, if this LAPI is behind mutual TLS.
+  crowdsec_ca_cert:
+    name: CrowdSec CA certificate
+    description: CA certificate that verifies this LAPI's own certificate, for a private CA.
+  crowdsec_read_timeout:
+    name: CrowdSec read timeout (seconds)
+    description: Seconds to wait for a LAPI read on this host.
+  crowdsec_alert_limit:
+    name: CrowdSec alert limit
+    description: Most recent alerts to fetch. 0 disables alert reading entirely.
+  git_backup_enabled:
+    name: Enable git backup
+    description: Push this agent's own config to its own git repository after changes.
+  git_backup_repo:
+    name: Git backup repository
+    description: https:// or ssh:// remote URL. file:// and ext:: are rejected.
+  git_backup_branch:
+    name: Git backup branch
+    description: Branch to push to.
+  git_backup_username:
+    name: Git backup username
+    description: Username for an https remote.
+  git_backup_token:
+    name: Git backup token
+    description: Token for an https remote, passed through an askpass helper.
+  git_backup_auto_push:
+    name: Auto-push on change
+    description: Push automatically after every config change.
+  git_backup_commit_message:
+    name: Commit message template
+    description: "{action} and {timestamp} are substituted."
