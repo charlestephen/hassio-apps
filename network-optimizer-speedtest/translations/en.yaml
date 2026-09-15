@@ -1,0 +1,28 @@
+---
+configuration:
+  timezone:
+    name: Timezone
+    description: Application timezone (TZ).
+  host_name:
+    name: Host name
+    description: Hostname advertised for the speedtest.
+  host_ip:
+    name: Host IP
+    description: This server's IP address.
+  openspeedtest_port:
+    name: OpenSpeedTest port
+    description: Port the speedtest is reached on (default 3005; must match the optimizer).
+  openspeedtest_host:
+    name: OpenSpeedTest host
+    description: Alternate hostname for speedtest access.
+  openspeedtest_https:
+    name: OpenSpeedTest HTTPS
+    description: Enable HTTPS mode when behind a TLS-terminating proxy.
+  openspeedtest_https_port:
+    name: OpenSpeedTest HTTPS port
+    description: HTTPS proxy port (default 443).
+  reverse_proxied_host_name:
+    name: Reverse-proxied host name
+    description: Public hostname when behind a reverse proxy.
+network:
+  3000/tcp: Speedtest Web UI

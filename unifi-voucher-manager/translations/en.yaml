@@ -1,0 +1,22 @@
+---
+configuration:
+  unifi_controller_url: { name: UniFi controller URL, description: "Controller URL with protocol, e.g. https://unifi.example.com." }
+  unifi_api_key: { name: UniFi API key, description: API authentication key from the controller. }
+  unifi_has_valid_cert: { name: Valid TLS cert, description: Whether the controller has a valid TLS certificate. }
+  unifi_site_id: { name: UniFi site ID, description: Controller site ID (default "default"). }
+  guest_subnetwork: { name: Guest subnetwork, description: IPv4 CIDR restricting guest access (optional). }
+  wifi_ssid: { name: WiFi SSID, description: Network name (required for QR codes). }
+  wifi_password: { name: WiFi password, description: Network password (required for QR codes). }
+  wifi_type: { name: WiFi security, description: Security type (WPA, WEP, or nopass). }
+  wifi_hidden: { name: WiFi hidden, description: Whether the SSID is hidden. }
+  rolling_voucher_duration_minutes: { name: Rolling voucher duration, description: Voucher validity in minutes (default 480). }
+  timezone: { name: Timezone, description: Timezone identifier (default UTC). }
+  backend_log_level: { name: Backend log level, description: Backend logging verbosity. }
+  frontend_bind_host: { name: Frontend bind host, description: Frontend bind address (default 0.0.0.0). }
+  frontend_bind_port: { name: Frontend bind port, description: Frontend port (default 3000). }
+  frontend_to_backend_url: { name: Frontend→backend URL, description: Internal URL the frontend uses to reach the backend. }
+  backend_bind_host: { name: Backend bind host, description: Backend bind address (0.0.0.0 to expose the API port). }
+  backend_bind_port: { name: Backend bind port, description: Backend API port (default 8080). }
+network:
+  3000/tcp: Frontend (web UI)
+  8080/tcp: Backend (REST API)

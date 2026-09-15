@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.17.1-1
+
+- CI/registry: image now builds via **GitHub Actions** and publishes to
+  **GHCR** (`ghcr.io/charlestephen/hassio-addons-alloy-{arch}`), replacing
+  the Forgejo self-hosted runner / private registry pipeline. The image is
+  now public, so no registry credentials are needed to install this app.
+
+- Docs: renamed "add-on" → "app" throughout (branding only, no
+  functional change).
+
 ## 1.17.0.a
 
 - Upgrade base image from `ghcr.io/home-assistant/base:3.23` to `3.24` (Alpine
@@ -31,11 +41,11 @@
 
 ## 1.16.2.b
 
-- Add an AppArmor profile (`apparmor.txt`) so the add-on runs confined under
+- Add an AppArmor profile (`apparmor.txt`) so the app runs confined under
   Home Assistant. It grants Alloy access to the host Docker socket
   (`/run/docker.sock` / `/var/run/docker.sock`), `/data`, `/config` and outbound
   networking. If you hit unexpected permission errors, set `apparmor: false` in
-  the add-on config to fall back to the default profile.
+  the app config to fall back to the default profile.
 
 ## 1.16.2.a
 
@@ -48,7 +58,7 @@
 
 ## 1.16.2
 
-- Align the add-on version with the bundled Grafana Alloy release (`v1.16.2`) so
+- Align the app version with the bundled Grafana Alloy release (`v1.16.2`) so
   upstream auto-updates bump a version Home Assistant can see.
 
 ## 1.0.0

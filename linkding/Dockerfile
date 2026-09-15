@@ -1,6 +1,6 @@
-# Home Assistant Add-on: Linkding
+# Home Assistant App: Linkding
 #
-# Runtime base = the upstream linkding alpine image. The HA add-on framework
+# Runtime base = the upstream linkding alpine image. The HA app framework
 # (s6-overlay) is grafted in from the HA Alpine base via multi-stage COPY.
 # s6-overlay binaries are static, so there are NO RUN steps -> amd64 + aarch64
 # both cross-build cleanly. Config is read with the python3 already bundled in
@@ -21,7 +21,7 @@ COPY --from=habase /etc/s6-overlay /etc/s6-overlay
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0
 
-# Add-on filesystem: config generator (cont-init) + the s6 long-run service.
+# App filesystem: config generator (cont-init) + the s6 long-run service.
 COPY rootfs /
 
 ENTRYPOINT ["/init"]
@@ -34,7 +34,7 @@ LABEL \
   io.hass.version="${BUILD_VERSION}" \
   io.hass.type="addon" \
   io.hass.arch="${BUILD_ARCH}" \
-  org.opencontainers.image.title="Home Assistant Add-on: Linkding" \
+  org.opencontainers.image.title="Home Assistant App: Linkding" \
   org.opencontainers.image.description="Linkding bookmark manager (SQLite) for Home Assistant" \
   org.opencontainers.image.source="https://github.com/charlestephen/hassio-apps" \
   org.opencontainers.image.licenses="MIT"

@@ -1,5 +1,15 @@
 # Changelog
 
+## 18.4.f
+
+- CI/registry: image now builds via **GitHub Actions** and publishes to
+  **GHCR** (`ghcr.io/charlestephen/hassio-addons-postgres-{arch}`), replacing
+  the Forgejo self-hosted runner / private registry pipeline. The image is
+  now public, so no registry credentials are needed to install this app.
+
+- Docs: renamed "add-on" → "app" throughout (branding only, no
+  functional change).
+
 ## 18.4.e
 
 - Upgrade base image from `ghcr.io/hassio-addons/base:20.0.1` to
@@ -14,7 +24,7 @@
 
 ## 18.4.c
 
-- Promote add-on from `experimental` to `stable`.
+- Promote app from `experimental` to `stable`.
 - Add `homeassistant: "2024.1.0"` minimum version to satisfy Supervisor
   quality scoring requirements.
 

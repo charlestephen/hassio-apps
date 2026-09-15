@@ -1,0 +1,152 @@
+name: UniFi Voucher Site
+description: Web-based generation and administration of UniFi guest network vouchers, with internal auth and OIDC/SSO.
+url: https://github.com/glenndehaan/unifi-voucher-site
+version: "8.11.0-1"
+slug: unifi-voucher-site
+arch:
+  - amd64
+  - aarch64
+image: ghcr.io/charlestephen/hassio-addons-unifi-voucher-site-{arch}
+init: true
+startup: application
+boot: auto
+panel_icon: mdi:ticket-confirmation
+ingress: true
+ingress_port: 3000
+webui: http://[HOST]:[PORT:3000]
+ports:
+  3000/tcp: null
+ports_description:
+  3000/tcp: Web UI (optional; ingress is used by default)
+backup: cold
+stage: experimental 
+
+# ---------------------------------------------------------------------------
+# Full environment surface from glenndehaan/unifi-voucher-site.
+# Ref: https://github.com/glenndehaan/unifi-voucher-site
+# Empty/false => unset => upstream default.
+# ---------------------------------------------------------------------------
+options:
+  # UniFi connection
+  unifi_ip: ""
+  unifi_port: 443
+  unifi_token: ""
+  unifi_site_id: "default"
+  unifi_ssid: ""
+  unifi_ssid_password: ""
+
+  # Authentication — internal
+  auth_internal_enabled: true
+  auth_internal_password: "0000"
+  auth_internal_bearer_token: "00000000-0000-0000-0000-000000000000"
+
+  # Authentication — OIDC / SSO
+  auth_oidc_enabled: false
+  auth_oidc_issuer_base_url: ""
+  auth_oidc_app_base_url: ""
+  auth_oidc_client_id: ""
+  auth_oidc_client_secret: ""
+  auth_oidc_redirect_login: false
+  auth_oidc_restrict_visibility: false
+
+  # Authentication — global
+  auth_disable: false
+
+  # Voucher generation
+  voucher_types: "480,1,,,;"            # Fixed: matches upstream default (single-use)
+  voucher_custom: true
+  voucher_note_required: false
+
+  # Services
+  service_web: true
+  service_api: false
+
+  # Printers
+  printers: ""
+  printers_layout: "full"
+
+  # SMTP / email
+  smtp_from: ""
+  smtp_host: ""
+  smtp_port: 587
+  smtp_secure: false
+  smtp_username: ""
+  smtp_password: ""
+
+  # Kiosk mode
+  kiosk_enabled: false
+  kiosk_voucher_types: ""
+  kiosk_name_required: false
+  kiosk_timeout: 60
+  kiosk_homepage: false
+  kiosk_email: false
+  kiosk_printer: ""
+
+  # Application
+  bind_address: "0.0.0.0"
+  log_level: info
+  translation_default: "en"
+  translation_hidden_languages: ""
+  translation_debug: false
+
+  # Automated cleanup tasks
+  task_cleanup_expired: false
+  task_cleanup_unused: false
+  task_cleanup_unused_days: 1
+
+schema:
+  unifi_ip: str?
+  unifi_port: int(1,65535)?
+  unifi_token: password?
+  unifi_site_id: str?
+  unifi_ssid: str?
+  unifi_ssid_password: password?
+
+  auth_internal_enabled: bool
+  auth_internal_password: password?
+  auth_internal_bearer_token: password?
+
+  auth_oidc_enabled: bool
+  auth_oidc_issuer_base_url: str?
+  auth_oidc_app_base_url: str?
+  auth_oidc_client_id: str?
+  auth_oidc_client_secret: password?
+  auth_oidc_redirect_login: bool
+  auth_oidc_restrict_visibility: bool
+
+  auth_disable: bool
+
+  voucher_types: str?
+  voucher_custom: bool
+  voucher_note_required: bool
+
+  service_web: bool
+  service_api: bool
+
+  printers: str?
+  printers_layout: list(full|slim_qr|slim)?
+
+  smtp_from: str?
+  smtp_host: str?
+  smtp_port: int(1,65535)?
+  smtp_secure: bool
+  smtp_username: str?
+  smtp_password: password?
+
+  kiosk_enabled: bool
+  kiosk_voucher_types: str?
+  kiosk_name_required: bool
+  kiosk_timeout: int(1,)?
+  kiosk_homepage: bool
+  kiosk_email: bool
+  kiosk_printer: str?
+
+  bind_address: str?
+  log_level: list(error|warn|info|debug|trace)?
+  translation_default: str?
+  translation_hidden_languages: str?
+  translation_debug: bool
+
+  task_cleanup_expired: bool
+  task_cleanup_unused: bool
+  task_cleanup_unused_days: int(1,)?

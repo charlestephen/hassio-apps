@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Cloudflared
+# Home Assistant App: Cloudflared
 
 Runs the official [`cloudflared`](https://hub.docker.com/r/cloudflare/cloudflared)
 connector as **two replicas of one remotely-managed Cloudflare tunnel** for high
@@ -12,11 +12,11 @@ automatically — no Cloudflare Load Balancer product required.
 2. Copy the **connector token** — the long value in the
    `cloudflared service install <TOKEN>` / `... run <TOKEN>` command the
    dashboard shows.
-3. In this add-on's **Configuration** tab, paste it into **Tunnel token**, save.
-4. Start the add-on. Two connectors — `cloudflared0` and `cloudflared1` — will
+3. In this app's **Configuration** tab, paste it into **Tunnel token**, save.
+4. Start the app. Two connectors — `cloudflared0` and `cloudflared1` — will
    register on the tunnel's page.
 5. Configure your **public hostnames / routes** in the dashboard. Routing is
-   dashboard-managed; this add-on only runs the connectors.
+   dashboard-managed; this app only runs the connectors.
 
 ## High availability
 
@@ -56,5 +56,5 @@ in `config.yaml`.
 
 The cloudflared binary is pinned in the image (`CLOUDFLARED_VERSION`) and tracked
 by Renovate; a new upstream release triggers a rebuild + version bump like your
-other add-ons. cloudflared's own self-updater is disabled (`--no-autoupdate`)
+other apps. cloudflared's own self-updater is disabled (`--no-autoupdate`)
 because the image is immutable.

@@ -4,9 +4,9 @@
 
 My Home Assistant Apps repository.
 
-The add-on images are published to the **GitHub Container Registry** at
+The app images are published to the **GitHub Container Registry** at
 `ghcr.io`. Home Assistant pulls a prebuilt, per-architecture image for
-each add-on (`ghcr.io/charlestephen/hassio-addons-<addon>-{arch}`), so
+each app (`ghcr.io/charlestephen/hassio-addons-<addon>-{arch}`), so
 the Supervisor does **not** build them locally.
 
 ## Installation
@@ -60,7 +60,7 @@ Or add it manually:
 
 ### &#10003; [pgAdmin](pgadmin/)
 
-- pgAdmin 4 web UI to administer and query the PostgreSQL add-on.
+- pgAdmin 4 web UI to administer and query the PostgreSQL app.
 
 ### &#10003; [PostgreSQL](postgres/)
 

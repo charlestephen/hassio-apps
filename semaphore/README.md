@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Semaphore
+# Home Assistant App: Semaphore
 
 Modern web UI for Ansible, Terraform, OpenTofu, PowerShell, and other DevOps automation tools — running directly inside Home Assistant.
 

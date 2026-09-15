@@ -1,7 +1,7 @@
 name: Homarr
 description: Modern, feature-rich, self-hosted dashboard for your homelab with widgets, integrations and SSO/OIDC.
 url: https://homarr.dev
-version: "1.70.0-1"
+version: "1.70.0-2"
 stage: stable
 homeassistant: "2026.6.0"
 slug: homarr
@@ -28,11 +28,11 @@ ports_description:
 backup: cold
 
 # ---------------------------------------------------------------------------
-# Homarr environment variables surfaced as add-on options.
+# Homarr environment variables surfaced as app options.
 # Full reference: https://homarr.dev/docs/advanced/environment-variables/
 #                 https://homarr.dev/docs/advanced/single-sign-on/
 # Empty strings / false are treated as "not set" and are not exported, so the
-# add-on falls back to Homarr's own defaults.
+# app falls back to Homarr's own defaults.
 # ---------------------------------------------------------------------------
 options:
   # --- General ---

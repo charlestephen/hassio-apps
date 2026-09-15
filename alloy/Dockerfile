@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Grafana Alloy
+# Home Assistant App: Grafana Alloy
 #
 # The base image is pinned directly in the FROM line. As of Supervisor 2026.04.0
 # the BUILD_FROM build-arg is no longer injected unless a build.yaml declares
@@ -26,7 +26,7 @@ RUN \
     && chmod +x /usr/bin/alloy \
     && rm -f /tmp/alloy.zip
 
-# Add-on filesystem: default config, config generator (cont-init) and the
+# App filesystem: default config, config generator (cont-init) and the
 # s6 long-run service.
 COPY rootfs /
 
@@ -36,7 +36,7 @@ LABEL \
   io.hass.version="${BUILD_VERSION}" \
   io.hass.type="addon" \
   io.hass.arch="${BUILD_ARCH}" \
-  org.opencontainers.image.title="Home Assistant Add-on: Grafana Alloy" \
+  org.opencontainers.image.title="Home Assistant App: Grafana Alloy" \
   org.opencontainers.image.description="Ship all container logs to Loki with Grafana Alloy" \
   org.opencontainers.image.source="https://github.com/charlestephen/hassio-apps" \
   org.opencontainers.image.licenses="MIT"
