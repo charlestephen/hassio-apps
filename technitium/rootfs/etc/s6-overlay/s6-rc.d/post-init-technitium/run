@@ -6,7 +6,7 @@
 # Runs after Technitium is up. Uses the REST API to:
 #   1. Bind DNS listeners only to real NIC IPs — excludes 172.30.32.2 so the HA
 #      Supervisor's dnsmasq retains port 53 on that address and continues
-#      resolving *.local.hass.io (homeassistant, supervisor, add-on names, etc.)
+#      resolving *.local.hass.io (homeassistant, supervisor, app names, etc.)
 #   2. Delete the stale local.hass.io forwarder zone created by 15.2.0.k if
 #      present — it is no longer needed when dnsmasq keeps its own address.
 
@@ -19,7 +19,7 @@ if ! bashio::var.has_value "${admin_password}"; then
     bashio::log.warning "No admin password set — skipping post-start API configuration."
     bashio::log.warning "Technitium will listen on all interfaces including ${ha_supervisor_dns},"
     bashio::log.warning "which conflicts with HA Supervisor dnsmasq. Set dns_server_admin_password"
-    bashio::log.warning "in add-on options to enable automatic interface binding."
+    bashio::log.warning "in app options to enable automatic interface binding."
     exit 0
 fi
 

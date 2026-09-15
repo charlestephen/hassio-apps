@@ -1,9 +1,9 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Linkding"
-version: "1.0.2"
+version: "1.0.2-1"
 slug: "linkding"
 description: "Linkding bookmark manager (SQLite) with env-var injection via the config UI"
-url: "https://github.com/charlestephen/hassio-apps/src/branch/main/linkding"
+url: "https://git.lan.cst.wtf/charlestephen/hassio-addons/src/branch/main/linkding"
 image: "ghcr.io/charlestephen/hassio-addons-linkding-{arch}"
 arch:
   - amd64
@@ -16,9 +16,9 @@ boot: auto
 # ----------------------------------------------------------------------------
 # Storage
 # ----------------------------------------------------------------------------
-# Bookmarks + config live in the add-on's dedicated config dir (mounted at
-# /config inside the add-on; host path /addon_configs/<slug>_linkding, reachable
-# via the Samba/SSH add-ons). linkding's fixed /etc/linkding/data is symlinked
+# Bookmarks + config live in the app's dedicated config dir (mounted at
+# /config inside the app; host path /addon_configs/<slug>_linkding, reachable
+# via the Samba/SSH apps). linkding's fixed /etc/linkding/data is symlinked
 # there (linkding's fixed /etc/linkding/data is symlinked to /config).
 map:
   - addon_config:rw

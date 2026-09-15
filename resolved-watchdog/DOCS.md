@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Resolved Watchdog
+# Home Assistant App: Resolved Watchdog
 
 Keeps the node's **on-node DNS** working by auto-restarting the host's
 `systemd-resolved` whenever it hangs — so a wedged host resolver self-heals
@@ -6,11 +6,11 @@ instead of needing host-console access.
 
 ## Why this exists
 
-This node runs its own DNS (Technitium) as a host-network add-on, and the host
+This node runs its own DNS (Technitium) as a host-network app, and the host
 is configured to resolve through it (required, because UniFi blocks using a
 resolver in another VLAN). That's a self-dependency: if the local resolver or
 the host network blips, `systemd-resolved` can hang, which stalls the Supervisor
-in `setup` and breaks DNS for every host-network container. This add-on detects
+in `setup` and breaks DNS for every host-network container. This app detects
 that and restarts `systemd-resolved`.
 
 It **only restarts the unit** — it never disables the stub listener or edits
@@ -38,6 +38,6 @@ It **only restarts the unit** — it never disables the stub listener or edits
 ## Requirements
 
 - **Protection mode OFF** (so `host_dbus`/`host_network` are honored).
-- The host D-Bus policy must permit `RestartUnit` from the add-on. Verify once by
+- The host D-Bus policy must permit `RestartUnit` from the app. Verify once by
   watching the log after forcing a failure; if you see "Could not restart … over
   host D-Bus", the policy is blocking it.

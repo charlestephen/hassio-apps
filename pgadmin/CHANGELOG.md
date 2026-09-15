@@ -1,5 +1,15 @@
 # Changelog
 
+## 9.15.0.g
+
+- CI/registry: image now builds via **GitHub Actions** and publishes to
+  **GHCR** (`ghcr.io/charlestephen/hassio-addons-pgadmin-{arch}`), replacing
+  the Forgejo self-hosted runner / private registry pipeline. The image is
+  now public, so no registry credentials are needed to install this app.
+
+- Docs: renamed "add-on" → "app" throughout (branding only, no
+  functional change).
+
 ## 9.15.0.f
 
 - Upgrade base image from `ghcr.io/hassio-addons/base:20.0.1` to
@@ -14,14 +24,14 @@
 
 ## 9.15.0.d
 
-- Promote add-on from `experimental` to `stable`.
+- Promote app from `experimental` to `stable`.
 - Add `homeassistant: "2024.1.0"` minimum version to satisfy Supervisor
   quality scoring requirements.
 
 ## 9.15.0.c
 
-- Auto-register the PostgreSQL add-on as a managed server. The host is derived
-  from this add-on's own hostname (`<repo>-pgadmin` → `<repo>-postgres`) so it
+- Auto-register the PostgreSQL app as a managed server. The host is derived
+  from this app's own hostname (`<repo>-pgadmin` → `<repo>-postgres`) so it
   works without knowing the repository prefix; a `.pgpass` enables passwordless
   connect. Configure via the `postgres_*` options or disable with
   `register_postgres: false`.

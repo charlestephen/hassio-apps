@@ -1,5 +1,15 @@
 # Changelog
 
+## 15.0.4-1
+
+- CI/registry: image now builds via **GitHub Actions** and publishes to
+  **GHCR** (`ghcr.io/charlestephen/hassio-addons-forgejo-{arch}`), replacing
+  the Forgejo self-hosted runner / private registry pipeline. The image is
+  now public, so no registry credentials are needed to install this app.
+
+- Docs: renamed "add-on" → "app" throughout (branding only, no
+  functional change).
+
 ## 15.0.3.a
 
 - **Expand config UI** — expose 20 new Forgejo options in the HA Configuration
@@ -49,7 +59,7 @@
   several regressions introduced in 15.0.x: a deadlock when mirroring large
   repositories, an incorrect HTTP 500 on certain pull-request comment edits, and
   a missing index that caused slow pagination on the explore/repos endpoint. No
-  add-on configuration changes. Existing data in `/data` and `/share/forgejo` is
+  app configuration changes. Existing data in `/data` and `/share/forgejo` is
   fully compatible — no migration needed.
 
 ## 15.0.2.b
@@ -62,7 +72,7 @@
 - Refresh the AppArmor profile (`apparmor.txt`) so Forgejo runs confined under
   Home Assistant — covers s6/bashio, `/data` (SQLite), `/config`,
   `/share/forgejo`, SSH and web networking (added `network unix stream`). Set
-  `apparmor: false` in the add-on config to fall back to the default profile if
+  `apparmor: false` in the app config to fall back to the default profile if
   needed.
 
 ## 15.0.2
@@ -72,7 +82,7 @@
   (previously `/share/gitea`), which caused Forgejo to crash on first start with
   `mkdir /share/forgejo: permission denied`.
 - Publish the image to the private Forgejo registry
-  (`ghcr.io/charlestephen/hassio-addons-forgejo-{arch}`).
+  (`git.lan.cst.wtf/charlestephen/hassio-addons-forgejo-{arch}`).
 
 ## 14.0.4
 

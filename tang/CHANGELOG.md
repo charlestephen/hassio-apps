@@ -1,9 +1,19 @@
 # Changelog
 
+## 1.0.11-1
+
+- CI/registry: image now builds via **GitHub Actions** and publishes to
+  **GHCR** (`ghcr.io/charlestephen/hassio-addons-tang-{arch}`), replacing
+  the Forgejo self-hosted runner / private registry pipeline. The image is
+  now public, so no registry credentials are needed to install this app.
+
+- Docs: renamed "add-on" → "app" throughout (branding only, no
+  functional change).
+
 ## 1.0.11
 
 - Switch the base to Alpine 3.24 by pinning `FROM alpine:3.24` directly in the
-  Dockerfile. Because the Tang add-on no longer uses the hassio-addons base
+  Dockerfile. Because the Tang app no longer uses the hassio-addons base
   image, the base OS is upgraded by bumping this single line rather than tracking
   `ghcr.io/hassio-addons/base` releases. No behaviour change.
 
@@ -21,7 +31,7 @@
 ## 1.0.9
 
 - **Complete architectural rebuild.** Drop `ghcr.io/hassio-addons/base` and all
-  s6-overlay machinery. The add-on now runs on plain `alpine:3.24` with a single
+  s6-overlay machinery. The app now runs on plain `alpine:3.24` with a single
   hand-written shell entrypoint (`/usr/local/bin/tang-run`) as PID 1.
 - Remove s6-rc.d services, `cont-init.d` scripts, and all `bashio` calls. Tang
   has no reason to query the Supervisor API; removing the dependency eliminates
@@ -66,7 +76,7 @@
 
 - Refresh the AppArmor profile (`apparmor.txt`) so Tang runs confined under Home
   Assistant — drop the removed `tangd-update` rule, allow `tangd-rotate-keys`,
-  and add `network unix stream`. Set `apparmor: false` in the add-on config to
+  and add `network unix stream`. Set `apparmor: false` in the app config to
   fall back to the default profile if needed.
 
 ## 1.0.4
@@ -75,7 +85,7 @@
   `tang` package does not ship (it caused the init script to fail). `tangd`
   serves the advertisement directly from the key directory.
 - Publish the image to the private Forgejo registry
-  (`ghcr.io/charlestephen/hassio-addons-tang-{arch}`).
+  (`git.lan.cst.wtf/charlestephen/hassio-addons-tang-{arch}`).
 
 ## 1.0.1
 

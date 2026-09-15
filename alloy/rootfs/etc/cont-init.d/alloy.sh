@@ -3,7 +3,7 @@
 # Generate the active Alloy config before the service starts.
 #
 # Precedence (highest first):
-#   1. /config/config.alloy   — a file dropped in the add-on config directory
+#   1. /config/config.alloy   — a file dropped in the app config directory
 #   2. alloy_config option    — a full config pasted on the Configuration page
 #   3. built-in default       — ship all container logs to Loki
 # ==============================================================================
@@ -22,9 +22,9 @@ if bashio::fs.file_exists "${USER_FILE}"; then
     exit 0
 fi
 
-# 2. Inline config from the add-on options ------------------------------------
+# 2. Inline config from the app options ------------------------------------
 if bashio::config.has_value 'alloy_config'; then
-    bashio::log.info "Using inline Alloy config from add-on options"
+    bashio::log.info "Using inline Alloy config from app options"
     bashio::config 'alloy_config' > "${ACTIVE}"
     exit 0
 fi

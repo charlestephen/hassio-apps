@@ -1,9 +1,9 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Grafana Alloy"
-version: "1.17.1"
+version: "1.17.1-1"
 slug: "alloy"
 description: "Grafana Alloy — ship all container logs (and any other telemetry) to Loki"
-url: "https://github.com/charlestephen/hassio-apps/src/branch/main/alloy"
+url: "https://git.lan.cst.wtf/charlestephen/hassio-addons/src/branch/main/alloy"
 # Prebuilt images are pulled from the private Forgejo registry. The Supervisor
 # replaces {arch} with the host arch (amd64/aarch64) and pulls the tag matching
 # the `version:` field above (i.e. ...-amd64:1.0.0 / ...-aarch64:1.0.0).
@@ -24,12 +24,12 @@ boot: auto
 # docker_api mounts the host Docker socket (read-only) at /run/docker.sock (also
 # reachable as /var/run/docker.sock, which the default config uses) so Alloy can
 # discover containers and tail their logs. The Supervisor only honors this when
-# the add-on is NOT in Protection mode — see DOCS.md.
+# the app is NOT in Protection mode — see DOCS.md.
 docker_api: true
 # Needed for bashio::info.hostname so the default config can label logs with the
 # real host name. Harmless if you only use a custom config.
 hassio_api: true
-# Maps the add-on's own config directory to /config inside the container. Drop a
+# Maps the app's own config directory to /config inside the container. Drop a
 # config.alloy here to fully override everything (highest precedence).
 map:
   - addon_config:rw

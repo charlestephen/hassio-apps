@@ -1,7 +1,7 @@
-# Home Assistant Add-on: Grafana Alloy
+# Home Assistant App: Grafana Alloy
 
 Grafana Alloy is the OpenTelemetry Collector distribution from Grafana and the
-official replacement for Promtail. This add-on runs Alloy on your Home Assistant
+official replacement for Promtail. This app runs Alloy on your Home Assistant
 host and, out of the box, ships the logs of **every container on the host** to a
 Loki endpoint. You can also replace the bundled config with any Alloy
 configuration of your own.
@@ -9,21 +9,21 @@ configuration of your own.
 ## Installation
 
 1. Add this repository to **Settings → Add-ons → Add-on Store → ⋮ → Repositories**:
-   `https://github.com/charlestephen/hassio-apps`. The prebuilt images are
-   public on `ghcr.io`, so no registry credentials are required.
-2. Install the **Grafana Alloy** add-on.
-3. **Disable Protection mode** for the add-on (see below) — this is required for
+   `https://git.lan.cst.wtf/charlestephen/hassio-addons`. The prebuilt image is
+   public (GHCR), so no registry credentials are needed.
+2. Install the **Grafana Alloy** app.
+3. **Disable Protection mode** for the app (see below) — this is required for
    Docker log collection.
-4. Set the `loki_url` option (or supply your own config) and start the add-on.
+4. Set the `loki_url` option (or supply your own config) and start the app.
 
 ## ⚠️ Protection mode must be disabled
 
 The default config tails container logs through the host Docker socket. The
-Supervisor only mounts the Docker socket into the add-on when **Protection mode
-is turned off** (add-on **Info** tab → toggle **Protection mode** off). The
+Supervisor only mounts the Docker socket into the app when **Protection mode
+is turned off** (app **Info** tab → toggle **Protection mode** off). The
 socket is mounted at `/run/docker.sock`; the built-in config references it as
 `/var/run/docker.sock`, which is the symlinked equivalent on the base image.
-This is the same trade-off every Docker-monitoring add-on requires: Alloy gets
+This is the same trade-off every Docker-monitoring app requires: Alloy gets
 read access to the Docker API of your host. If you only forward logs from files
 or other sources and don't need the Docker socket, you can leave Protection mode
 on and use a custom config that doesn't reference `unix:///var/run/docker.sock`.
@@ -39,9 +39,9 @@ There are three ways to configure Alloy, in order of precedence:
 
 ### 1. `/config/config.alloy` (file — highest precedence)
 
-Drop a complete `config.alloy` into this add-on's config directory
+Drop a complete `config.alloy` into this app's config directory
 (`/addon_configs/<slug>_alloy/config.alloy`, reachable as `/config/config.alloy`
-inside the container, e.g. via the Studio Code Server / Samba add-ons). If this
+inside the container, e.g. via the Studio Code Server / Samba apps). If this
 file exists it is used verbatim and all options below are ignored. Best for large
 or version-controlled configs.
 
@@ -52,7 +52,7 @@ on the **Configuration** tab. Used verbatim when no `/config/config.alloy` exist
 
 ### 3. Built-in default (no custom config)
 
-When neither of the above is set, the add-on generates this config, substituting
+When neither of the above is set, the app generates this config, substituting
 your options:
 
 ```alloy
@@ -99,9 +99,9 @@ logging {
 | `alloy_config` | _(empty)_                                | Full inline Alloy config; overrides the default when set.                  |
 
 > **Note on `loki_url`:** the default `http://loki:3100/...` only resolves if a
-> service named `loki` is reachable on the add-on's Docker network. Most setups
+> service named `loki` is reachable on the app's Docker network. Most setups
 > should point this at a routable address such as
-> `https://loki.cst.nyc/loki/api/v1/push`.
+> `https://loki.lan.cst.wtf/loki/api/v1/push`.
 
 ## The Alloy UI
 
@@ -112,10 +112,10 @@ button. Use it to confirm `loki.source.docker` is discovering containers and tha
 
 ## State
 
-Alloy's WAL and component state are stored in the add-on's `/data` volume, so
+Alloy's WAL and component state are stored in the app's `/data` volume, so
 positions survive restarts and Alloy won't re-send already-shipped logs.
 
 ## Updating Alloy
 
 The Alloy version is pinned in the `Dockerfile` (`ALLOY_VERSION`). Bump it, then
-rebuild/update the add-on.
+rebuild/update the app.
