@@ -9,8 +9,10 @@
 
 ## Authentication
 
-- **Internal** (default): set **Internal password** (default `0000` — change it).
-  The **Internal bearer token** authenticates API calls.
+- **Internal** (default): you must set **Internal password** and **Internal
+  bearer token** before starting — both ship as `CHANGE_ME` placeholders with
+  no safe default, and the app will not stop you from running with them
+  unchanged.
 - **OIDC / SSO**: set **Enable OIDC/SSO**, then **OIDC issuer base URL**,
   **OIDC app base URL** (this site's public URL), **OIDC client ID/secret**.
   Use **OIDC redirect login** to skip the local login page, and **OIDC restrict
