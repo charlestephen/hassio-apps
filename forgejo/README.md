@@ -1,4 +1,4 @@
-# Home Assistant add-on: Forgejo by Charles Stephen Thompson
+# Home Assistant app: Forgejo by Charles Stephen Thompson
 ![Addon Stage][stable-badge]
 ![Supports aarch64 Architecture][aarch64-badge]
 ![Supports amd64 Architecture][amd64-badge]

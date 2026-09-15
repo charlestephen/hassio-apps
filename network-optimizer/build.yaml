@@ -1,0 +1,11 @@
+---
+# Thin wrapper on the upstream Ozark-Connect image.
+# Pin to a specific tag once a working version is verified.
+build_from:
+  amd64: ghcr.io/ozark-connect/network-optimizer:latest
+  aarch64: ghcr.io/ozark-connect/network-optimizer:latest
+args:
+  NETOPT_VERSION: "2.0.1"
+# NOTE: NETOPT_VERSION removed — was unused in the Dockerfile.
+# If you want to track upstream version at build time, add it as a
+# LABEL in the Dockerfile and consume it here. Otherwise it's dead weight.

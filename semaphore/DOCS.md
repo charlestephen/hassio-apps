@@ -1,8 +1,8 @@
-# Home Assistant Add-on: Semaphore
+# Home Assistant App: Semaphore
 
 Semaphore UI is a modern open-source web interface for Ansible, Terraform,
-OpenTofu, and other DevOps automation tools. This add-on runs Semaphore as
-a supervised Home Assistant add-on with persistent state.
+OpenTofu, and other DevOps automation tools. This app runs Semaphore as
+a supervised Home Assistant app with persistent state.
 
 The image bundles the toolchains Semaphore's task templates call, so Ansible
 (with Python 3), Terraform, and OpenTofu templates all work out of the box —
@@ -21,7 +21,7 @@ no extra installs. Versions are pinned in `build.yaml`.
 
 2. **Set a strong admin password** — change `admin_password` from `changeme`.
 
-3. **Start the add-on** — the admin account is created on first boot only.
+3. **Start the app** — the admin account is created on first boot only.
 
 4. **Open the Web UI** at `http://<home-assistant-ip>:3000`.
 
@@ -155,10 +155,10 @@ Keycloak, Authentik, Google, …). The provider must expose OIDC discovery at
    `oidc_client_id`, `oidc_client_secret`, and enable `oidc_enable`.
 3. Set `web_root` to your public Semaphore URL so callbacks resolve correctly
    behind a reverse proxy.
-4. Restart the add-on; the button appears on the login screen.
+4. Restart the app; the button appears on the login screen.
 
 > The whole provider map is passed to Semaphore as JSON via
-> `SEMAPHORE_OIDC_PROVIDERS`; this add-on exposes a single provider through the
+> `SEMAPHORE_OIDC_PROVIDERS`; this app exposes a single provider through the
 > flat options above.
 
 ---
@@ -184,7 +184,7 @@ value to generate absolute links in emails and UI.
 
 ## Troubleshooting
 
-- **Admin password forgotten**: Stop the add-on, delete `/data/semaphore/semaphore.sqlite`,
+- **Admin password forgotten**: Stop the app, delete `/data/semaphore/semaphore.sqlite`,
   update `admin_password` in the Configuration tab, restart. All data is lost.
 - **Tasks stuck "running"**: Check `max_task_duration_sec` and look at the
   task log in the UI for SSH or inventory errors.

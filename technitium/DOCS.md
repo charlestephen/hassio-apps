@@ -1,14 +1,14 @@
-# Home Assistant Add-on: Technitium DNS
+# Home Assistant App: Technitium DNS
 
 ## Overview
 
 Technitium DNS Server is an open source authoritative and recursive DNS server. It features a web-based management interface, DNSSEC validation, DNS-over-HTTPS (DoH), **DNS-over-HTTPS/3 (DoH3)**, DNS-over-TLS (DoT), **DNS-over-QUIC (DoQ)**, and advanced DNS filtering.
 
-This add-on tracks the upstream `technitium/dns-server` image and adds Microsoft's `libmsquic` library so QUIC-based DNS protocols (DoQ and DoH3) are available out of the box.
+This app tracks the upstream `technitium/dns-server` image and adds Microsoft's `libmsquic` library so QUIC-based DNS protocols (DoQ and DoH3) are available out of the box.
 
 ## Configuration
 
-Example add-on configuration:
+Example app configuration:
 
 ```yaml
 log_level: info
@@ -59,7 +59,7 @@ Comma-separated IP addresses for the Technitium web console to listen on during 
 
 #### `reset_webservice_config`
 
-Set this to `true` once if the Technitium web UI is unreachable because an existing `webservice.config` has the wrong bind address. The add-on backs up `/data/technitium/webservice.config`, lets Technitium regenerate it on startup, and records a marker so the reset is not repeated on every restart.
+Set this to `true` once if the Technitium web UI is unreachable because an existing `webservice.config` has the wrong bind address. The app backs up `/data/technitium/webservice.config`, lets Technitium regenerate it on startup, and records a marker so the reset is not repeated on every restart.
 
 ### Upstream `DNS_SERVER_*` options (first-boot seed only)
 
@@ -91,23 +91,23 @@ See the full list in upstream's [DockerEnvironmentVariables.md](https://github.c
 
 ## Web UI
 
-After starting the add-on, access the Technitium web management interface at `http://<hassio-ip>:5380`. On first run, you will be prompted to set an admin password (unless `dns_server_admin_password` was provided).
+After starting the app, access the Technitium web management interface at `http://<hassio-ip>:5380`. On first run, you will be prompted to set an admin password (unless `dns_server_admin_password` was provided).
 
 ## DNS Configuration
 
 To use Technitium as your network DNS:
 
-1. Start the add-on.
+1. Start the app.
 2. Access the web UI and complete initial setup.
 3. Configure your router's DHCP to advertise the Home Assistant IP as DNS server, or manually configure devices to use `<hassio-ip>:53`.
 
 ## Networking
 
-This add-on runs with **host networking enabled** (`host_network: true`). That
+This app runs with **host networking enabled** (`host_network: true`). That
 means Technitium binds directly to host ports rather than going through
 Docker's userland NAT. Two practical consequences:
 
-1. **The add-on must have exclusive use of every port it listens on.** On HA OS
+1. **The app must have exclusive use of every port it listens on.** On HA OS
    this is the default; on Supervised installs you may need to disable a host
    resolver listening on `53/udp` first. If startup fails with
    "address already in use", check `ss -tulpn | grep ':53\b'` on the host.

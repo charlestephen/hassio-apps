@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.18.12.e
+
+- CI/registry: image now builds via **GitHub Actions** and publishes to
+  **GHCR** (`ghcr.io/charlestephen/hassio-addons-semaphore-{arch}`), replacing
+  the Forgejo self-hosted runner / private registry pipeline. The image is
+  now public, so no registry credentials are needed to install this app.
+
+- Docs: renamed "add-on" → "app" throughout (branding only, no
+  functional change).
+
 ## 2.18.12.d
 
 - **Terraform 1.15.7 and OpenTofu 1.12.3 included**, so Semaphore's
@@ -15,7 +25,7 @@
 - **Log level** exposed in the config UI: `log_level` → `SEMAPHORE_LOG_LEVEL`,
   a dropdown (`trace`/`debug`/`info`/`warn`/`error`/`fatal`/`panic`), defaulting
   to `debug` to help troubleshoot login.
-- **OIDC / SSO login** exposed in the config UI. The add-on assembles the
+- **OIDC / SSO login** exposed in the config UI. The app assembles the
   `oidc_providers` map from these options and passes it to Semaphore as JSON via
   `SEMAPHORE_OIDC_PROVIDERS` (auto-discovery via the issuer URL):
   `oidc_enable`, `oidc_provider_id`, `oidc_display_name`, `oidc_icon`,
@@ -43,7 +53,7 @@
 
 ## 2.18.12
 
-- **Initial release** of the Semaphore UI add-on.
+- **Initial release** of the Semaphore UI app.
 - Ships **Semaphore UI v2.18.12** (released 2026-06-08) via a multi-stage
   build: binary copied from `semaphoreui/semaphore:v2.18.12`; final image
   built on `ghcr.io/hassio-addons/base:21.0.0` (Alpine 3.24, s6-overlay v3,
@@ -91,7 +101,7 @@
 
 - **s6-overlay v3 service pipeline** (`init: false`):
   - `init-semaphore` (oneshot) — creates data directories, validates config.
-  - `semaphore` (longrun) — exports all `SEMAPHORE_*` env vars from add-on
+  - `semaphore` (longrun) — exports all `SEMAPHORE_*` env vars from app
     options, then `exec`s the Semaphore binary supervised by s6.
 
 - **Renovate tracking** — `renovate.json5` updated with a custom regex rule
