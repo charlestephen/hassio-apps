@@ -1,7 +1,7 @@
 name: UniFi Voucher Site
 description: Web-based generation and administration of UniFi guest network vouchers, with internal auth and OIDC/SSO.
 url: https://github.com/glenndehaan/unifi-voucher-site
-version: "8.11.0-1"
+version: "8.11.0-2"
 slug: unifi-voucher-site
 arch:
   - amd64
@@ -36,9 +36,11 @@ options:
   unifi_ssid_password: ""
 
   # Authentication — internal
+  # No safe default exists for a password/token — you MUST set both before
+  # starting, or anyone on the network can access vouchers.
   auth_internal_enabled: true
-  auth_internal_password: "0000"
-  auth_internal_bearer_token: "00000000-0000-0000-0000-000000000000"
+  auth_internal_password: "CHANGE_ME"
+  auth_internal_bearer_token: "CHANGE_ME"
 
   # Authentication — OIDC / SSO
   auth_oidc_enabled: false

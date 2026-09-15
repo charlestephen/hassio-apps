@@ -1,7 +1,7 @@
 name: UniFi Voucher Manager
 description: Modern web app to manage UniFi WiFi vouchers (Next.js frontend + Rust backend), with QR codes and rolling vouchers.
 url: https://github.com/etiennecollin/unifi-voucher-manager
-version: "1.0.0-1"
+version: "1.0.0-2"
 slug: unifi-voucher-manager
 arch:
   - amd64
@@ -14,13 +14,13 @@ panel_icon: mdi:ticket-account
 webui: http://[HOST]:[PORT:3000]
 ports:
   3000/tcp: 3000
-  8080/tcp: 8080
+  8080/tcp: null
 ports_description:
   3000/tcp: Frontend (web UI)
-  8080/tcp: Backend (REST API)
+  8080/tcp: Backend REST API (internal by default; set a host port here only if you need external access)
 map:
-  - type: share
-    read_only: false                    # Added: persist frontend config + runtime state
+  - type: data
+    read_only: false
 backup: cold
 stage: experimental                     # Added: HA store compatibility
 
@@ -51,7 +51,7 @@ options:
   frontend_bind_host: "0.0.0.0"
   frontend_bind_port: 3000
   frontend_to_backend_url: "http://127.0.0.1"
-  backend_bind_host: "0.0.0.0"
+  backend_bind_host: "127.0.0.1"
   backend_bind_port: 8080
 
 schema:

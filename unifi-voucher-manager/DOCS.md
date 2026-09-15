@@ -11,9 +11,12 @@
 
 ## Networking
 
-Both ports are published on the host. The frontend reaches the backend
-internally via **Frontend→backend URL** (`http://127.0.0.1:8080` by default);
-to expose the API externally, keep **Backend bind host** at `0.0.0.0`.
+By default only the frontend (port 3000) is published on the host. The
+backend REST API binds to `127.0.0.1` inside the container and is reached by
+the frontend via **Frontend→backend URL** (`http://127.0.0.1:8080`) — it has
+no auth of its own, so it isn't exposed externally unless you deliberately
+set **Backend bind host** to `0.0.0.0` and give the `8080/tcp` port a host
+port in the add-on's Network settings.
 
 ## Credits
 
