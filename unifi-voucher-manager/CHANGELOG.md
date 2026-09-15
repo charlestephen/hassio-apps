@@ -2,6 +2,17 @@
 
 Version tracks the upstream etiennecollin/unifi-voucher-manager release.
 
+## 1.0.0-2
+
+- Security: the backend REST API (no auth of its own) is no longer exposed
+  to the network by default. `backend_bind_host` now defaults to
+  `127.0.0.1` and the `8080/tcp` host port mapping defaults to unset —
+  previously both defaulted to open (`0.0.0.0` + a fixed host port).
+  Set both explicitly if you need external access to the API.
+- Security: the persistent volume mount changed from `type: share`
+  (writable access to HA's repo-wide `/share` folder) to `type: data`
+  (scoped to this app only).
+
 ## 1.0.0-1
 
 - CI: this app's image now builds and publishes automatically via

@@ -2,6 +2,14 @@
 
 Version tracks the upstream glenndehaan/unifi-voucher-site release.
 
+## 8.11.0-2
+
+- Security: replaced the shipped default internal auth credentials
+  (`0000` password, all-zero bearer token) with `CHANGE_ME` placeholders.
+  The old defaults were real, guessable values that would work if a user
+  never changed them, unlike this repo's other secret options which either
+  auto-generate or use an obviously-fake `CHANGE_ME_*` placeholder.
+
 ## 8.11.0-1
 
 - CI: this app's image now builds and publishes automatically via
