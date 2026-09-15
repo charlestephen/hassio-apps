@@ -1,0 +1,6 @@
+---
+build_from:
+  amd64: ghcr.io/ozark-connect/speedtest:latest
+  aarch64: ghcr.io/ozark-connect/speedtest:latest
+args:
+  NETOPT_VERSION: "2.0.1"

@@ -4,9 +4,9 @@
 
 My Home Assistant Apps repository.
 
-The add-on images are published to the **GitHub Container Registry** at
+The app images are published to the **GitHub Container Registry** at
 `ghcr.io`. Home Assistant pulls a prebuilt, per-architecture image for
-each add-on (`ghcr.io/charlestephen/hassio-addons-<addon>-{arch}`), so
+each app (`ghcr.io/charlestephen/hassio-addons-<addon>-{arch}`), so
 the Supervisor does **not** build them locally.
 
 ## Installation
@@ -60,7 +60,7 @@ Or add it manually:
 
 ### &#10003; [pgAdmin](pgadmin/)
 
-- pgAdmin 4 web UI to administer and query the PostgreSQL add-on.
+- pgAdmin 4 web UI to administer and query the PostgreSQL app.
 
 ### &#10003; [PostgreSQL](postgres/)
 
@@ -85,6 +85,16 @@ Or add it manually:
 
 - An authoritative + recursive DNS server with a web management UI, DNSSEC, and
   DNS-over-TLS / DNS-over-HTTPS.
+
+### &#10003; [Traefik Manager](traefik-manager/)
+
+- Clean, self-hosted web UI for managing Traefik routes, middlewares,
+  certificates and logs, without editing YAML by hand.
+
+### &#10003; [Traefik Manager Agent](traefik-manager-agent/)
+
+- Remote-host companion for Traefik Manager, letting it manage a Traefik
+  instance running elsewhere on the network.
 
 [//]: # "ADDONLIST_END"
 

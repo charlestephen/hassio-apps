@@ -1,0 +1,46 @@
+---
+configuration:
+  timezone:
+    name: Timezone
+    description: Application timezone (TZ), e.g. America/New_York.
+  bind_localhost_only:
+    name: Bind localhost only
+    description: Bind services to localhost only instead of all interfaces.
+  app_password:
+    name: App password
+    description: Fallback admin password. The value set in the database takes precedence.
+  host_ip:
+    name: Host IP
+    description: This server's IP address, used for speed testing and CORS.
+  host_name:
+    name: Host name
+    description: Hostname used for canonical URL enforcement (e.g. "nas").
+  reverse_proxied_host_name:
+    name: Reverse-proxied host name
+    description: Public hostname when the app is behind a reverse proxy.
+  iperf3_server_enabled:
+    name: Enable iperf3 server
+    description: Run an iperf3 server on port 5201 for speed testing.
+  openspeedtest_port:
+    name: OpenSpeedTest port
+    description: Port for direct speedtest access (default 3005).
+  openspeedtest_host:
+    name: OpenSpeedTest host
+    description: Alternate hostname for speedtest access.
+  openspeedtest_https:
+    name: OpenSpeedTest HTTPS
+    description: Enable HTTPS mode when behind a TLS-terminating proxy.
+  openspeedtest_https_port:
+    name: OpenSpeedTest HTTPS port
+    description: HTTPS proxy port (default 443).
+  log_level:
+    name: Log level
+    description: General framework logging verbosity.
+  app_log_level:
+    name: App log level
+    description: Application-specific logging verbosity.
+  demo_mode_mappings:
+    name: Demo mode mappings
+    description: Demo-mode mappings (advanced; usually left blank).
+network:
+  8042/tcp: Web UI

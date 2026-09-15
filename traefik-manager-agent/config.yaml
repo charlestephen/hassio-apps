@@ -1,0 +1,144 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: Traefik Manager Agent
+description: Remote-host agent that lets Traefik Manager manage a Traefik instance running elsewhere on the network.
+url: https://traefik-manager.xyzlab.dev/agent.html
+version: "1.7.2"
+stage: stable
+homeassistant: "2026.6.0"
+slug: traefik-manager-agent
+image: ghcr.io/charlestephen/hassio-addons-traefik-manager-agent-{arch}
+# TMA is a single static Go binary with its own HEALTHCHECK, so we do NOT
+# layer HA's s6 init on top of it.
+init: false
+startup: services
+boot: auto
+panel_icon: mdi:router-network
+webui: http://[HOST]:[PORT:8090]
+arch:
+  - aarch64
+  - amd64
+map:
+  - type: data
+    read_only: false
+  - type: share
+    read_only: true
+ports:
+  8090/tcp: 8090
+ports_description:
+  8090/tcp: Agent API (used by Traefik Manager, not a browser UI)
+backup: cold
+
+# ---------------------------------------------------------------------------
+# TMA environment variables surfaced as app options.
+# Full reference: https://traefik-manager.xyzlab.dev/agent.html
+# Only TMA_API_KEY is required. Empty strings / false are treated as "not
+# set" and are not exported, so the corresponding tab simply doesn't appear
+# in the Traefik Manager UI for this server.
+# ---------------------------------------------------------------------------
+options:
+  # --- Required ---
+  tma_api_key: ""
+
+  # --- Agent server ---
+  tma_port: 8090
+  tma_rate_limit: 300
+  tma_debug: false
+
+  # --- Traefik connection ---
+  traefik_api_url: "http://traefik:8080"
+  traefik_api_user: ""
+  traefik_api_password: ""
+  traefik_insecure_skip_verify: false
+
+  # --- Config files ---
+  config_path: "/data/config"
+  static_config_path: ""
+
+  # --- Optional paths ---
+  acme_json_path: ""
+  access_log_path: ""
+  plugins_dir: ""
+
+  # --- Backups (persisted under this app's /data volume by default) ---
+  backup_dir: "/data/backups"
+  backup_keep_count: 0
+
+  # --- Traefik restart ---
+  restart_method: ""
+  traefik_container: "traefik"
+  docker_host: ""
+  signal_file_path: ""
+
+  # --- CrowdSec (optional) ---
+  crowdsec_lapi_url: ""
+  crowdsec_api_key: ""
+  crowdsec_machine_id: ""
+  crowdsec_machine_password: ""
+  crowdsec_client_cert: ""
+  crowdsec_client_key: ""
+  crowdsec_ca_cert: ""
+  crowdsec_read_timeout: 20
+  crowdsec_alert_limit: 500
+
+  # --- Git backup (agent-managed; optional) ---
+  git_backup_enabled: false
+  git_backup_repo: ""
+  git_backup_branch: "main"
+  git_backup_username: ""
+  git_backup_token: ""
+  git_backup_auto_push: true
+  git_backup_commit_message: "traefik-manager: {action} at {timestamp}"
+
+schema:
+  # Required
+  tma_api_key: password
+
+  # Agent server
+  tma_port: port
+  tma_rate_limit: int(0,)?
+  tma_debug: bool
+
+  # Traefik connection
+  traefik_api_url: str?
+  traefik_api_user: str?
+  traefik_api_password: password?
+  traefik_insecure_skip_verify: bool
+
+  # Config files
+  config_path: str?
+  static_config_path: str?
+
+  # Optional paths
+  acme_json_path: str?
+  access_log_path: str?
+  plugins_dir: str?
+
+  # Backups
+  backup_dir: str?
+  backup_keep_count: int(0,)?
+
+  # Traefik restart
+  restart_method: list(|proxy|poison-pill|socket)?
+  traefik_container: str?
+  docker_host: str?
+  signal_file_path: str?
+
+  # CrowdSec
+  crowdsec_lapi_url: str?
+  crowdsec_api_key: password?
+  crowdsec_machine_id: str?
+  crowdsec_machine_password: password?
+  crowdsec_client_cert: str?
+  crowdsec_client_key: str?
+  crowdsec_ca_cert: str?
+  crowdsec_read_timeout: int(1,120)?
+  crowdsec_alert_limit: int(0,)?
+
+  # Git backup
+  git_backup_enabled: bool
+  git_backup_repo: str?
+  git_backup_branch: str?
+  git_backup_username: str?
+  git_backup_token: password?
+  git_backup_auto_push: bool
+  git_backup_commit_message: str?

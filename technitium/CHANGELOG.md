@@ -1,5 +1,15 @@
 # Changelog
 
+## 15.4.0-1
+
+- CI/registry: image now builds via **GitHub Actions** and publishes to
+  **GHCR** (`ghcr.io/charlestephen/hassio-addons-technitium-{arch}`), replacing
+  the Forgejo self-hosted runner / private registry pipeline. The image is
+  now public, so no registry credentials are needed to install this app.
+
+- Docs: renamed "add-on" → "app" throughout (branding only, no
+  functional change).
+
 ## 15.4.0
 
 Update Technitium DNS Server from 15.3.0 to 15.4.0 (upstream release
@@ -62,7 +72,7 @@ Update Technitium DNS Server from 15.2.0 to 15.3.0 (upstream release
   Markdown READMEs; app updates include online certificate signing,
   custom groups, and ASN support.
 
-### Add-on
+### App
 
 - `build_technitium.yml` now reads `BUILD_FROM` and `TECHNITIUM_VERSION`
   from `build.yaml` instead of hardcoded stale values (base `20.0.1` /
@@ -77,7 +87,7 @@ Full upstream changelog:
 - Upgrade base image from `ghcr.io/hassio-addons/base:20.0.1` to
   `ghcr.io/hassio-addons/base:21.0.0`, which bundles Alpine 3.24 (musl 1.2.5,
   OpenSSL 3.4, s6-overlay 3.2.x). The Technitium application version and all
-  add-on behaviour are unchanged; this is a base OS refresh only.
+  app behaviour are unchanged; this is a base OS refresh only.
 
 ## 15.2.0.q
 
@@ -118,7 +128,7 @@ Full upstream changelog:
   - `init-technitium` (oneshot): creates the data directory and handles the
     `reset_webservice_config` one-shot recovery path.
   - `technitium` (longrun): exports `DNS_SERVER_*` environment variables from
-    add-on options and `exec`s the .NET process — s6 supervises and restarts it.
+    app options and `exec`s the .NET process — s6 supervises and restarts it.
   - `post-init-technitium` (oneshot): polls the Technitium REST API until ready,
     then restricts DNS listeners to real NIC IPs (via `bashio::network.interfaces`)
     excluding `172.30.32.2` so the HA Supervisor's dnsmasq retains ownership of
@@ -126,15 +136,15 @@ Full upstream changelog:
     Also deletes the stale `local.hass.io` forwarder zone created by 15.2.0.k
     if it is still present — it is no longer needed under the correct binding.
 - **Add `hassio_api: true` and `hassio_role: manager`** to `config.yaml` so
-  the add-on can call the Supervisor API (`bashio::network.*`) to enumerate
+  the app can call the Supervisor API (`bashio::network.*`) to enumerate
   host interface addresses at runtime.
 - **Declare `ports:`** (`53/udp`, `853/tcp`, `5380/tcp`) in `config.yaml` so
-  Supervisor knows which host ports the add-on uses (informational under
+  Supervisor knows which host ports the app uses (informational under
   `host_network: true`).
 
 ## 15.2.0.m
 
-- Promote add-on from `experimental` to `stable`.
+- Promote app from `experimental` to `stable`.
 - Add `homeassistant: "2024.1.0"` minimum version to satisfy Supervisor
   quality scoring requirements.
 
@@ -152,19 +162,19 @@ Full upstream changelog:
 - **Fix "server misbehaving" for external names.** If `dns_server_forwarders`
   is empty, Technitium attempts full recursive resolution from root servers,
   which frequently fails inside HA OS. Set upstream forwarders
-  (e.g. `1.1.1.1,1.0.0.1`) in the add-on options to resolve this.
+  (e.g. `1.1.1.1,1.0.0.1`) in the app options to resolve this.
 
 ## 15.2.0.k
 
 - **Fix HA-internal DNS resolution under host networking.** When Technitium
   binds to port 53 on the host it fully replaces the Supervisor's dnsmasq,
-  which means queries for `*.local.hass.io` (add-on names, `homeassistant`,
+  which means queries for `*.local.hass.io` (app names, `homeassistant`,
   `supervisor`, etc.) would previously return NXDOMAIN.
   The `run` script now starts Technitium in the background, waits for its API
   to become ready, and creates a **conditional forwarder zone** for
   `local.hass.io` → `172.30.32.2` (HA Supervisor DNS) via the Technitium REST
   API. The operation is idempotent — it is a no-op if the zone already exists.
-  An admin password must be set in add-on options for the auto-configuration
+  An admin password must be set in app options for the auto-configuration
   to run; without one a warning is logged and a link to the manual UI step is
   provided.
 
@@ -173,7 +183,7 @@ Full upstream changelog:
 - Downshift `startup:` from `system` to `services`. The `system` tier is for
   early-boot infrastructure (AppArmor, D-Bus); a DNS server belongs in the
   `services` tier, which runs after Supervisor's own plugins and networking
-  are up, but before user-facing `application`-tier add-ons. This lets
+  are up, but before user-facing `application`-tier apps. This lets
   Home Assistant Core resolve DNS through Technitium once Core starts, and
   it isolates a misbehaving DNS startup from Supervisor's own boot sequence.
 
@@ -181,7 +191,7 @@ Full upstream changelog:
 
 - **Bugfix:** Restore the `[PORT:5380]` template in the `webui:` URL. 15.2.0.h
   used `webui: http://[HOST]:5380` (a plain literal port), which doesn't match
-  Supervisor's webui regex — Supervisor silently dropped the entire add-on
+  Supervisor's webui regex — Supervisor silently dropped the entire app
   from the repository listing, so 15.2.0.h never appeared as an available
   update. The `[PORT:NNNN]` placeholder is required by Supervisor even under
   host networking; it just renders to the same number under host networking
@@ -191,7 +201,7 @@ Full upstream changelog:
 ## 15.2.0.h
 
 - **Switch to host networking (`host_network: true`)** so Technitium can serve
-  as Home Assistant's built-in DNS resolver. Under host networking the add-on
+  as Home Assistant's built-in DNS resolver. Under host networking the app
   binds directly to host ports (no Docker NAT in front), which means:
   - The DNS server sees the **real client IP** of every query, enabling
     per-client rules, logging and split-horizon resolution to work correctly.
@@ -199,7 +209,7 @@ Full upstream changelog:
     path — important for recursive DNS under load.
   - The `ports:` / `ports_description:` keys are ignored by Supervisor; the
     listening ports are documented as comments at the top of `config.yaml`.
-  - Port 53 (and any other port the add-on listens on) **must be free on the
+  - Port 53 (and any other port the app listens on) **must be free on the
     host**. On HA OS this is the default; Supervised installs may have a host
     resolver bound to 53 that needs to be disabled first.
 - The web UI URL is unchanged — still `http://<hassio-ip>:5380` — but now it
@@ -219,13 +229,13 @@ Full upstream changelog:
   lockstep with the primary developer's container.
 - Publish the full set of upstream container ports so DoQ, DoH3, DNS-over-HTTP
   (for reverse-proxy setups) and the optional DHCP server can be enabled
-  without editing the add-on:
+  without editing the app:
   - 853/udp — DNS-over-QUIC
   - 443/udp — DNS-over-HTTPS/3
   - 80/tcp, 8053/tcp — DNS-over-HTTP (behind a TLS-terminating proxy)
   - 67/udp — DHCP server
 - Expose the most common upstream `DNS_SERVER_*` initialization variables as
-  typed add-on options (`dns_server_domain`, `dns_server_admin_password`,
+  typed app options (`dns_server_domain`, `dns_server_admin_password`,
   `dns_server_prefer_ipv6`, `dns_server_recursion`, `dns_server_forwarders`,
   `dns_server_forwarder_protocol`, `dns_server_enable_blocking`,
   `dns_server_block_list_urls`, `dns_server_optional_protocol_dns_over_http`).
@@ -244,7 +254,7 @@ Full upstream changelog:
 ## 15.2.0.f
 
 - Fix the web UI hanging under AppArmor enforcement: the profile lacked the broad
-  `file,` rule the other complex add-ons have, so the .NET runtime was denied the
+  `file,` rule the other complex apps have, so the .NET runtime was denied the
   `/proc/self/*` and `/sys/fs/cgroup/*` reads it needs at startup. Added
   `file,`/`capability,`/`signal,` (network stays constrained).
 
@@ -284,7 +294,7 @@ Full upstream changelog:
 - Refresh the AppArmor profile (`apparmor.txt`) so Technitium runs confined under
   Home Assistant — covers the .NET 10 runtime, `/opt/technitium`, `/etc/dns`,
   `/data`, DNS/web networking and `net_bind_service` (added `network unix
-  stream`). Set `apparmor: false` in the add-on config to fall back to the
+  stream`). Set `apparmor: false` in the app config to fall back to the
   default profile if needed.
 
 ## 15.2.0
@@ -293,7 +303,7 @@ Full upstream changelog:
 - Switch the runtime to `aspnetcore10-runtime` — Technitium 15.x targets .NET 10
   (14.x targeted .NET 9), so the older runtime would no longer start the server.
 - Publish the image to the private Forgejo registry
-  (`ghcr.io/charlestephen/hassio-addons-technitium-{arch}`).
+  (`git.lan.cst.wtf/charlestephen/hassio-addons-technitium-{arch}`).
 
 ## 14.3.1
 

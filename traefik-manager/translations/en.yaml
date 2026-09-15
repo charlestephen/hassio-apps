@@ -1,0 +1,158 @@
+---
+configuration:
+  traefik_api_url:
+    name: Traefik API URL
+    description: Internal URL of the Traefik API. Must be reachable from inside this container.
+  traefik_api_user:
+    name: Traefik API user
+    description: Basic auth username, if your Traefik API requires it.
+  traefik_api_password:
+    name: Traefik API password
+    description: Basic auth password, if your Traefik API requires it.
+  traefik_insecure_skip_verify:
+    name: Skip TLS verification
+    description: Skip TLS verification when the Traefik API URL is https with a self-signed or origin certificate.
+  domains:
+    name: Base domains
+    description: Comma-separated base domains offered in the Add Route form.
+  cert_resolver:
+    name: Certificate resolver
+    description: Comma-separated ACME cert resolver names. The first is the default for new routes.
+  config_path:
+    name: Dynamic config path
+    description: Single dynamic config file Traefik Manager edits.
+  config_paths:
+    name: Dynamic config paths
+    description: Several explicit config files, comma-separated. Takes precedence over Dynamic config path.
+  config_dir:
+    name: Dynamic config directory
+    description: A whole directory of .yml/.yaml files. Takes precedence over both path options above.
+  settings_path:
+    name: Settings file path
+    description: Where manager.yml and its companion files live.
+  acme_json_path:
+    name: ACME JSON path
+    description: Traefik's acme.json (or comma-separated files, or a directory). Enables the Certificates tab.
+  access_log_path:
+    name: Access log path
+    description: Traefik's access log. Enables the Logs tab.
+  static_config_path:
+    name: Static config path
+    description: Traefik's static config. Enables the Static Config editor and Plugins tab.
+  plugins_dir:
+    name: Plugins directory
+    description: Traefik's plugins directory. Enables local plugin listing.
+  backup_dir:
+    name: Backup directory
+    description: Where .bak files are written before each change.
+  backup_keep_count:
+    name: Backups to keep
+    description: Keep only the last N backups per config file. 0 keeps everything.
+  auth_enabled:
+    name: Require login
+    description: Disable only when another auth layer (Authelia, Authentik) sits in front.
+  admin_password:
+    name: Admin password
+    description: Initial password. Only used before setup completes; a random one is generated and logged if left blank.
+  secret_key:
+    name: Session secret key
+    description: Flask session signing key. Generated and persisted if left blank.
+  otp_encryption_key:
+    name: Secrets encryption key
+    description: Encrypts secrets at rest (TOTP, agent API keys, git tokens). Generated and persisted if left blank.
+  cookie_secure:
+    name: Secure cookies
+    description: Send session cookies only over HTTPS. Set false for plain-http LAN access.
+  inactivity_timeout_minutes:
+    name: Inactivity timeout (minutes)
+    description: Log out after this many minutes of inactivity.
+  proxy_fix_hops:
+    name: Trusted proxy hops
+    description: Reverse-proxy hops to trust when reading X-Forwarded-For. 0 ignores the header.
+  restart_method:
+    name: Traefik restart method
+    description: How to restart Traefik after a static config change (proxy, poison-pill, or socket).
+  traefik_container:
+    name: Traefik container name
+    description: Container name used by the proxy and socket restart methods.
+  docker_host:
+    name: Docker host
+    description: Docker socket-proxy endpoint, used by the proxy restart method.
+  signal_file_path:
+    name: Restart signal file path
+    description: Signal file the poison-pill restart method writes.
+  crowdsec_lapi_url:
+    name: CrowdSec LAPI URL
+    description: Base URL of the CrowdSec Local API.
+  crowdsec_api_key:
+    name: CrowdSec bouncer key
+    description: Bouncer API key — reads active decisions (bans, captchas, bypasses).
+  crowdsec_machine_id:
+    name: CrowdSec machine ID
+    description: Machine login — required to read alerts and to unban.
+  crowdsec_machine_password:
+    name: CrowdSec machine password
+    description: Password for the CrowdSec machine login.
+  crowdsec_client_cert:
+    name: CrowdSec client certificate
+    description: Client certificate path, if the LAPI is behind mutual TLS.
+  crowdsec_client_key:
+    name: CrowdSec client key
+    description: Client key path, if the LAPI is behind mutual TLS.
+  crowdsec_ca_cert:
+    name: CrowdSec CA certificate
+    description: CA certificate that verifies the LAPI's own certificate, for a private CA.
+  crowdsec_read_timeout:
+    name: CrowdSec read timeout (seconds)
+    description: Seconds to wait for a LAPI read.
+  crowdsec_connect_timeout:
+    name: CrowdSec connect timeout (seconds)
+    description: Seconds to wait for the LAPI connection itself.
+  crowdsec_alert_limit:
+    name: CrowdSec alert limit
+    description: Most recent alerts to fetch. 0 disables alert reading entirely.
+  oidc_enabled:
+    name: Enable OIDC / SSO
+    description: Enable single sign-on via an OpenID Connect provider.
+  oidc_provider_url:
+    name: OIDC provider URL
+    description: Issuer URL of your OIDC provider.
+  oidc_client_id:
+    name: OIDC client ID
+    description: Client ID registered with your identity provider.
+  oidc_client_secret:
+    name: OIDC client secret
+    description: Client secret registered with your identity provider.
+  oidc_display_name:
+    name: OIDC display name
+    description: Label shown on the login button.
+  oidc_allowed_emails:
+    name: OIDC allowed emails
+    description: Comma-separated email allow-list. Leaving both allow-lists empty denies every login.
+  oidc_allowed_groups:
+    name: OIDC allowed groups
+    description: Comma-separated group allow-list.
+  oidc_allow_any_authenticated:
+    name: OIDC allow any authenticated user
+    description: Skip the allow-lists and admit any user the provider authenticates.
+  oidc_groups_claim:
+    name: OIDC groups claim
+    description: Claim carrying the user's groups.
+  oidc_auto_login:
+    name: OIDC auto-login
+    description: Skip the login page and go straight to the provider.
+  geoip_db_path:
+    name: GeoIP database path
+    description: Custom MaxMind-format .mmdb. Leave blank to use the free DB-IP Lite database.
+  agent_api_rate_limit:
+    name: Agent API rate limit
+    description: Requests per minute this instance allows against its own agent API.
+  base_path:
+    name: Base path
+    description: Serve Traefik Manager under a sub-path instead of its own hostname.
+  log_level:
+    name: Log level
+    description: Verbosity of Traefik Manager's own logs.
+  requests_ca_bundle:
+    name: Custom CA bundle
+    description: Path to a custom CA bundle, for a private CA in front of Traefik or a git remote.

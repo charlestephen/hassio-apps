@@ -3,7 +3,7 @@
 # ==============================================================================
 # Home Assistant wrapper entrypoint for Homarr.
 #
-# Reads the add-on options from /data/options.json, exports the matching Homarr
+# Reads the app options from /data/options.json, exports the matching Homarr
 # environment variables, then hands off to Homarr's own entrypoint (which
 # supervises redis + nginx + Next.js). Empty / false options are treated as
 # "unset" so Homarr falls back to its own defaults.
@@ -159,7 +159,7 @@ mkdir -p /data/db /appdata/db /appdata/redis /appdata/trusted-certificates
 if [ "${PUID}:${PGID}" != "0:0" ]; then
     log "ensuring /data and /appdata are owned by ${PUID}:${PGID} ..."
     chown -R "${PUID}:${PGID}" /data /appdata 2>/dev/null || \
-        log "WARNING: could not chown /data or /appdata (is the add-on running as root?)"
+        log "WARNING: could not chown /data or /appdata (is the app running as root?)"
 fi
 
 log "Starting Homarr v${HOMARR_VERSION} ..."

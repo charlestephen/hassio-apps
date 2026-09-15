@@ -1,20 +1,20 @@
-# Home Assistant Add-on: Linkding
+# Home Assistant App: Linkding
 
 [Linkding](https://github.com/sissbruecker/linkding) is a self-hosted bookmark
-manager. This add-on runs the upstream `ghcr.io/sissbruecker/linkding:latest-alpine`
-image wrapped with the Home Assistant add-on framework, using **SQLite** by default.
+manager. This app runs the upstream `ghcr.io/sissbruecker/linkding:latest-alpine`
+image wrapped with the Home Assistant app framework, using **SQLite** by default.
 
 ## Data
 
-Bookmarks live in SQLite under the add-on's dedicated **config directory**,
-mounted at `/config` inside the add-on (host path `/addon_configs/<slug>_linkding`,
-browsable via the Samba/SSH add-ons). linkding's `/etc/linkding/data` is
+Bookmarks live in SQLite under the app's dedicated **config directory**,
+mounted at `/config` inside the app (host path `/addon_configs/<slug>_linkding`,
+browsable via the Samba/SSH apps). linkding's `/etc/linkding/data` is
 symlinked there, so data survives restarts and updates.
 
 ## First run
 
 Set **`superuser_name`** + **`superuser_password`** to auto-create an admin on
-first start. Then open the add-on (sidebar via ingress, or `http://<host>:9090`)
+first start. Then open the app (sidebar via ingress, or `http://<host>:9090`)
 and log in.
 
 ## Options
@@ -31,7 +31,7 @@ and log in.
 ```yaml
 env_vars:
   - name: LD_CSRF_TRUSTED_ORIGINS
-    value: "https://linkding.cst.nyc"
+    value: "https://linkding.lan.cst.wtf"
   - name: LD_DISABLE_URL_VALIDATION
     value: "True"
 ```

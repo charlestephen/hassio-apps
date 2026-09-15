@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Tang
+# Home Assistant App: Tang
 
 [![Release][release-shield]][release]
 
@@ -10,4 +10,4 @@ Tang server for Network Bound Disk Encryption (NBDE) with LUKS2 support.
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
 [release-shield]: https://img.shields.io/badge/version-v1.0.4-blue.svg
-[release]: https://github.com/charlestephen/hassio-apps/src/branch/main/tang
+[release]: https://git.lan.cst.wtf/charlestephen/hassio-addons/src/branch/main/tang

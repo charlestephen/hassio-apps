@@ -1,13 +1,13 @@
 #!/command/with-contenv sh
 # =============================================================================
 # Prepare linkding before the service starts:
-#   1. Persist the SQLite database / data in the add-on's config dir (/config).
-#   2. Translate add-on options (+ injected env_vars) into an env file the
+#   1. Persist the SQLite database / data in the app's config dir (/config).
+#   2. Translate app options (+ injected env_vars) into an env file the
 #      service sources. Config is read with python3 (bundled in the image).
 # =============================================================================
 set -e
 
-# HA always mounts the add-on options at /data/options.json, regardless of the
+# HA always mounts the app options at /data/options.json, regardless of the
 # `map:` config; the bookmark data lives in the addon_config dir (/config).
 OPTIONS=/data/options.json
 ENVFILE=/var/run/linkding.env

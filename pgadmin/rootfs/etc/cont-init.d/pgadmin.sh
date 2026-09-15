@@ -11,7 +11,7 @@ mkdir -p "${DATA_DIR}/sessions" "${DATA_DIR}/storage"
 # pgAdmin configuration (config_local.py), in order of precedence:
 #   1. /config/config_local.py  — a full Python config you drop in (wholesale
 #      replacement; use this for OIDC / OAUTH2_CONFIG, LDAP, etc.)
-#   2. the `config` add-on option — the same, supplied inline
+#   2. the `config` app option — the same, supplied inline
 #   3. the built-in default below — persisted storage in /data/pgadmin
 #
 # A custom config replaces the whole file, so include the storage settings you
@@ -20,7 +20,7 @@ if bashio::fs.file_exists "${USER_CFG}"; then
   bashio::log.info "Using custom pgAdmin config from ${USER_CFG}"
   cp "${USER_CFG}" /pgadmin4/config_local.py
 elif bashio::config.has_value 'config'; then
-  bashio::log.info "Using inline pgAdmin config from the add-on options"
+  bashio::log.info "Using inline pgAdmin config from the app options"
   bashio::config 'config' > /pgadmin4/config_local.py
 else
   bashio::log.info "Using the built-in default pgAdmin config"
@@ -45,11 +45,11 @@ if ! bashio::fs.file_exists "${DATA_DIR}/pgadmin4.db"; then
   bashio::log.info "pgAdmin initialization complete."
 fi
 
-# Auto-register the PostgreSQL add-on as a managed server (idempotent: --replace
+# Auto-register the PostgreSQL app as a managed server (idempotent: --replace
 # updates the entry every start).
 #
-# Add-ons reach each other by hostname = "<repo>-<slug>" on the HA network. This
-# add-on's own hostname already carries the right "<repo>-" prefix, so when
+# Apps reach each other by hostname = "<repo>-<slug>" on the HA network. This
+# app's own hostname already carries the right "<repo>-" prefix, so when
 # postgres_host is left empty we derive the PostgreSQL host from it by swapping
 # the "-pgadmin" suffix for "-postgres" (e.g. e6d9f622-pgadmin -> e6d9f622-postgres).
 if bashio::config.true 'register_postgres'; then

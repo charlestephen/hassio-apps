@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Cloudflared (dual-replica HA)
+# Home Assistant App: Cloudflared (dual-replica HA)
 #
 # Built on the official, multi-arch cloudflare/cloudflared image: the static
 # binary is COPY'd onto the Home Assistant base (which provides s6-overlay +
@@ -18,10 +18,10 @@ ARG BUILD_ARCH
 COPY --from=docker.io/cloudflare/cloudflared:${CLOUDFLARED_VERSION} \
      /usr/local/bin/cloudflared /usr/bin/cloudflared
 
-# Add-on filesystem: config validator (cont-init) + the two s6 replica services.
+# App filesystem: config validator (cont-init) + the two s6 replica services.
 COPY rootfs /
 
-# Build metadata (matches the alloy add-on's label set).
+# Build metadata (matches the alloy app's label set).
 ARG BUILD_VERSION
 ARG BUILD_DATE
 ARG BUILD_REF
@@ -30,7 +30,7 @@ LABEL \
   io.hass.version="${BUILD_VERSION}" \
   io.hass.type="addon" \
   io.hass.arch="${BUILD_ARCH}" \
-  org.opencontainers.image.title="Home Assistant Add-on: Cloudflared" \
+  org.opencontainers.image.title="Home Assistant App: Cloudflared" \
   org.opencontainers.image.description="Dual-replica Cloudflare Tunnel (HA) on the stock cloudflared image" \
   org.opencontainers.image.source="https://github.com/charlestephen/hassio-apps" \
   org.opencontainers.image.revision="${BUILD_REF}" \
