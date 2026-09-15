@@ -17,6 +17,6 @@ export TUNNEL_TOKEN="$(bashio::config 'tunnel_token')"
 export TUNNEL_METRICS="0.0.0.0:36400"
 export TUNNEL_LOGLEVEL="$(bashio::config 'log_level')"
 
-# --no-autoupdate: the binary is pinned in the image; the add-on (Renovate +
+# --no-autoupdate: the binary is pinned in the image; the app (Renovate +
 # Forgejo CI) controls upgrades, so cloudflared must NOT self-update.
 exec cloudflared tunnel --no-autoupdate run

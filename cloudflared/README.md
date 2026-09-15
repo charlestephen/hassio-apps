@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Cloudflared
+# Home Assistant App: Cloudflared
 
 Dual-replica [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
 for high availability, built on the stock `cloudflare/cloudflared` image.

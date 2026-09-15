@@ -24,7 +24,7 @@ if [[ "${cookie_hash}" == "CHANGE_ME"* ]]; then
     bashio::log.warning " access_key_encryption are using placeholder defaults."
     bashio::log.warning " Generate real keys with:"
     bashio::log.warning "   head -c32 /dev/urandom | base64"
-    bashio::log.warning " and set them in the add-on Configuration tab."
+    bashio::log.warning " and set them in the app Configuration tab."
     bashio::log.warning "============================================================"
 fi
 

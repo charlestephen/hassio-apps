@@ -1,4 +1,4 @@
-# Home Assistant Add-on: Error Pages
+# Home Assistant App: Error Pages
 
 ## Overview
 
@@ -6,10 +6,10 @@
 that renders good-looking error pages (404, 500, 502, …) in a range of themes.
 It's meant to sit behind a **reverse proxy** (Traefik, nginx, Caddy, HAProxy):
 when an upstream returns an error, the proxy fetches the matching page from this
-add-on and shows it to the visitor.
+app and shows it to the visitor.
 
 The server listens on port **8080** inside the container; set the host port under
-the add-on's **Network** tab (default 8080).
+the app's **Network** tab (default 8080).
 
 ## Configuration
 
@@ -57,7 +57,7 @@ Each error page is served at `/{code}.html`, e.g.:
 
 ### Traefik
 
-Define an `errors` middleware that points at this add-on and attach it to your
+Define an `errors` middleware that points at this app and attach it to your
 routers:
 
 ```yaml
@@ -87,5 +87,5 @@ location @error_pages {
 }
 ```
 
-With `send_same_http_code: true` the add-on returns the real status code, so the
+With `send_same_http_code: true` the app returns the real status code, so the
 client sees e.g. a genuine `404` rather than `200`.

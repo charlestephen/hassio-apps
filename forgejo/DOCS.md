@@ -1,7 +1,7 @@
-# Home Assistant Add-on: Forgejo
+# Home Assistant App: Forgejo
 
 [Forgejo] is a lightweight self-hosted Git service — an open-source fork of
-Gitea. This add-on runs Forgejo inside Home Assistant with persistent storage,
+Gitea. This app runs Forgejo inside Home Assistant with persistent storage,
 optional SSH access, and a fully-configurable web UI via HA's Configuration tab.
 
 ---
@@ -134,6 +134,5 @@ When running behind Nginx Proxy Manager or Traefik:
 ## Adding the Repository
 
 1. Go to **Settings → Add-ons → Add-on Store → ⋮ → Repositories**.
-2. Add `https://github.com/charlestephen/hassio-apps`.
-3. The prebuilt images are public on `ghcr.io`, so no registry credentials are
-   required.
+2. Add `https://git.lan.cst.wtf/charlestephen/hassio-addons`. The prebuilt
+   image is public (GHCR), so no registry credentials are needed.

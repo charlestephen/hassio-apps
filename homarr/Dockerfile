@@ -2,7 +2,7 @@ ARG BUILD_FROM=ghcr.io/homarr-labs/homarr:v1.70.0
 
 # Thin Home Assistant wrapper on Homarr's official image. Homarr is a
 # self-contained monolith (its own entrypoint supervises redis + nginx +
-# Next.js), so we do NOT add s6-overlay; we only inject the add-on options as
+# Next.js), so we do NOT add s6-overlay; we only inject the app options as
 # environment variables and then hand off to Homarr's own entrypoint.
 FROM ${BUILD_FROM}
 
@@ -37,7 +37,7 @@ LABEL \
     maintainer="CharleStephen (https://github.com/charlestephen)" \
     org.opencontainers.image.title="${BUILD_NAME}" \
     org.opencontainers.image.description="${BUILD_DESCRIPTION}" \
-    org.opencontainers.image.vendor="Home Assistant Add-ons" \
+    org.opencontainers.image.vendor="Home Assistant Apps" \
     org.opencontainers.image.authors="CharleStephen (https://github.com/charlestephen)" \
     org.opencontainers.image.licenses="MIT" \
     org.opencontainers.image.url="https://github.com/charlestephen" \
