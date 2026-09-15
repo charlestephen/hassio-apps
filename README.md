@@ -86,6 +86,16 @@ Or add it manually:
 - An authoritative + recursive DNS server with a web management UI, DNSSEC, and
   DNS-over-TLS / DNS-over-HTTPS.
 
+### &#10003; [Traefik Manager](traefik-manager/)
+
+- Clean, self-hosted web UI for managing Traefik routes, middlewares,
+  certificates and logs, without editing YAML by hand.
+
+### &#10003; [Traefik Manager Agent](traefik-manager-agent/)
+
+- Remote-host companion for Traefik Manager, letting it manage a Traefik
+  instance running elsewhere on the network.
+
 [//]: # "ADDONLIST_END"
 
 [instructions]: https://home-assistant.io/hassio/installing_third_party_addons
