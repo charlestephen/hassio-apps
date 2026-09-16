@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Grafana Alloy"
-version: "1.17.1-1"
+version: "1.19.2"
 slug: "alloy"
 description: "Grafana Alloy — ship all container logs (and any other telemetry) to Loki"
 url: "https://git.lan.cst.wtf/charlestephen/hassio-addons/src/branch/main/alloy"

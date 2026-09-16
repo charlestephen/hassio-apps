@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.2.5
+
+- Upgrade Error Pages 4.2.3 -> 4.2.5.
+
 ## 4.2.3-1
 
 - CI/registry: image now builds via **GitHub Actions** and publishes to
