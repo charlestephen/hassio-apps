@@ -4,6 +4,10 @@ All notable changes to the Homarr app are documented here.
 The version tracks the upstream Homarr release it is built from
 (with a `-N` suffix for app-only revisions between upstream releases).
 
+## 1.77.1
+
+- Upgrade Homarr v1.70.0 -> v1.77.1.
+
 ## 1.70.0-2
 
 - **Revert a bad prior edit**: an earlier commit (labeled "FIXED") had

@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.0.4
+
+- Upgrade Forgejo 15.0.4 -> 16.0.4.
+
 ## 15.0.4-1
 
 - CI/registry: image now builds via **GitHub Actions** and publishes to

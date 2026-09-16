@@ -9,7 +9,7 @@ FROM ghcr.io/home-assistant/base:3.24
 
 # Pinned for reproducible builds; Renovate bumps this on upstream releases.
 # Source image: docker.io/cloudflare/cloudflared.
-ARG CLOUDFLARED_VERSION="2026.7.1"
+ARG CLOUDFLARED_VERSION="2026.9.1"
 # BUILD_ARCH is injected by the Supervisor / CI (amd64, aarch64).
 ARG BUILD_ARCH
 

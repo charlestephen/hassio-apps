@@ -1,4 +1,4 @@
-name: Build add-on images
+name: Build app images
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       addon:
-        description: 'Single add-on slug to build (blank = all)'
+        description: 'Single app slug to build (blank = all)'
         required: false
 
 permissions:
@@ -62,11 +62,19 @@ jobs:
             aarch64) echo "platform=linux/arm64" >> "$GITHUB_OUTPUT" ;;
           esac
           VERSION=$(grep '^version:' "$A/config.yaml" | sed 's/^version: *//; s/"//g')
-          BUILD_FROM=$(grep "^  ${ARCH}:" "$A/build.yaml" | sed 's/.*: *//')
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "build_from=${BUILD_FROM}" >> "$GITHUB_OUTPUT"
           echo "date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
-          # Pass through every arg declared in the add-on's build.yaml.
+          # Parsed with PyYAML instead of grep/sed: the previous grep/sed
+          # truncated at the LAST colon in the line, mangling any BUILD_FROM
+          # value that is itself an image:tag (e.g. "codeberg.org/forgejo/forgejo:15.0.4"
+          # became just "15.0.4"), which broke every app's build.
+          BUILD_FROM=$(python3 -c "
+          import sys, yaml
+          d = yaml.safe_load(open(sys.argv[1])) or {}
+          print((d.get('build_from') or {}).get(sys.argv[2], ''))
+          " "$A/build.yaml" "$ARCH")
+          echo "build_from=${BUILD_FROM}" >> "$GITHUB_OUTPUT"
+          # Pass through every arg declared in the app's build.yaml.
           python3 - "$A/build.yaml" > extra_build_args <<'PY'
           import sys, yaml
           d = yaml.safe_load(open(sys.argv[1])) or {}
@@ -85,7 +93,7 @@ jobs:
             --build-arg BUILD_FROM="${{ steps.meta.outputs.build_from }}" \
             --build-arg BUILD_VERSION="${{ steps.meta.outputs.version }}" \
             --build-arg BUILD_NAME="${A}" \
-            --build-arg BUILD_DESCRIPTION="${A} Home Assistant add-on" \
+            --build-arg BUILD_DESCRIPTION="${A} Home Assistant app" \
             --build-arg BUILD_REPOSITORY="${{ github.repository }}" \
             --build-arg BUILD_REF="${{ github.sha }}" \
             --build-arg BUILD_DATE="${{ steps.meta.outputs.date }}" \

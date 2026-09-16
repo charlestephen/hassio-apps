@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026.9.1
+
+- Upgrade cloudflared 2026.7.1 -> 2026.9.1.
+
 ## 2026.7.1-1
 
 - CI/registry: image now builds via **GitHub Actions** and publishes to

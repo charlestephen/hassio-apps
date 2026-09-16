@@ -1,7 +1,0 @@
----
-# Pin the tag at build time once the registry is reachable.
-build_from:
-  amd64: docker.io/etiennecollin/unifi-voucher-manager:latest
-  aarch64: docker.io/etiennecollin/unifi-voucher-manager:latest
-args:
-  VOUCHER_MANAGER_VERSION: "1.0.0"
