@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.19.12
+
+- Upgrade Semaphore 2.18.12 -> 2.19.12, Terraform 1.15.7 -> 1.16.2,
+  OpenTofu 1.12.3 -> 1.12.6.
+
 ## 2.18.12.e
 
 - CI/registry: image now builds via **GitHub Actions** and publishes to

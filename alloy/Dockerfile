@@ -8,7 +8,7 @@
 FROM ghcr.io/home-assistant/base:3.24
 
 # Pin the Alloy release for reproducible builds.
-ARG ALLOY_VERSION="v1.17.1"
+ARG ALLOY_VERSION="v1.19.2"
 # BUILD_ARCH is always injected by the Supervisor (amd64, aarch64, ...).
 ARG BUILD_ARCH
 

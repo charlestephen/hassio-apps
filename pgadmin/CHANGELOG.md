@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.17
+
+- Upgrade pgAdmin 9.15.0 -> 9.17.
+
 ## 9.15.0.g
 
 - CI/registry: image now builds via **GitHub Actions** and publishes to
