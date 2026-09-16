@@ -39,6 +39,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      # Capped below GitHub's per-account concurrent-job limit: this matrix
+      # is apps x 2 arches, which at ~14 apps (28 jobs) was hitting that
+      # limit and causing the whole run to conclude "startup_failure" even
+      # though most jobs had actually run.
+      max-parallel: 6
       matrix:
         addon: ${{ fromJson(needs.discover.outputs.addons) }}
         arch: [amd64, aarch64]
