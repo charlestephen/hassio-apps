@@ -1,7 +1,7 @@
 name: Homarr
 description: Modern, feature-rich, self-hosted dashboard for your homelab with widgets, integrations and SSO/OIDC.
 url: https://homarr.dev
-version: "1.70.0-2"
+version: "1.77.1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: homarr

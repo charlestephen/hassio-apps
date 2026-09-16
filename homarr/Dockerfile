@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/homarr-labs/homarr:v1.70.0
+ARG BUILD_FROM=ghcr.io/homarr-labs/homarr:v1.77.1
 
 # Thin Home Assistant wrapper on Homarr's official image. Homarr is a
 # self-contained monolith (its own entrypoint supervises redis + nginx +

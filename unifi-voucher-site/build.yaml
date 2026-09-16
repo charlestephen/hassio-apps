@@ -1,6 +1,0 @@
----
-build_from:
-  amd64: docker.io/glenndehaan/unifi-voucher-site:8.11.0
-  aarch64: docker.io/glenndehaan/unifi-voucher-site:8.11.0
-args:
-  VOUCHER_SITE_VERSION: "8.11.0"
