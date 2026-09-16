@@ -1,0 +1,8 @@
+---
+# Multi-stage build with two fixed FROMs (HA base for s6-overlay, plus
+# ghcr.io/sissbruecker/linkding:latest-alpine for the app itself) — neither
+# is parameterized. This file exists only so GitHub's generic discover
+# workflow (which requires both config.yaml and build.yaml) finds this app.
+build_from:
+  aarch64: ghcr.io/home-assistant/base:3.24
+  amd64: ghcr.io/home-assistant/base:3.24

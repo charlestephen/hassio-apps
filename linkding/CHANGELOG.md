@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2-2
+
+- CI: add build.yaml (no functional change) so GitHub's generic
+  discover-and-build workflow, which requires both config.yaml and
+  build.yaml, actually picks this app up and builds/publishes it.
+
 ## 1.0.2-1
 
 - CI/registry: image now builds via **GitHub Actions** and publishes to
