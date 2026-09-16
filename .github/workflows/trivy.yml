@@ -1,0 +1,49 @@
+name: Container image scan
+
+on:
+  workflow_run:
+    workflows: ["Build app images"]
+    types: [completed]
+  schedule:
+    - cron: "0 7 * * 1"  # weekly, catches new CVEs in images that haven't rebuilt
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  discover:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name != 'workflow_run' }}
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.set.outputs.apps }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set
+        run: |
+          list=$(for d in */; do [ -f "${d}config.yaml" ] && [ -f "${d}build.yaml" ] && echo "${d%/}"; done | jq -R . | jq -sc .)
+          echo "apps=${list}" >> "$GITHUB_OUTPUT"
+
+  scan:
+    needs: discover
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJson(needs.discover.outputs.apps) }}
+    steps:
+      - name: Scan ghcr.io/${{ github.repository_owner }}/hassio-addons-${{ matrix.app }}-amd64
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ghcr.io/${{ github.repository_owner }}/hassio-addons-${{ matrix.app }}-amd64:latest
+          format: sarif
+          output: trivy-${{ matrix.app }}.sarif
+          severity: CRITICAL,HIGH
+          exit-code: 0
+
+      - name: Upload results to code scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-${{ matrix.app }}.sarif
+          category: trivy-${{ matrix.app }}
