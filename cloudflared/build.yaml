@@ -1,0 +1,9 @@
+---
+# No Renovate-tracked base pin here: the Dockerfile's FROM is fixed at
+# ghcr.io/home-assistant/base:3.24, and CLOUDFLARED_VERSION has its own
+# default in the Dockerfile. This file exists only so GitHub's generic
+# discover workflow (which requires both config.yaml and build.yaml) finds
+# this app.
+build_from:
+  aarch64: ghcr.io/home-assistant/base:3.24
+  amd64: ghcr.io/home-assistant/base:3.24
