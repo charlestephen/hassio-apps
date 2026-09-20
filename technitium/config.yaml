@@ -1,7 +1,7 @@
 name: Technitium DNS
 description: Technitium DNS Server is an open source authoritative and recursive DNS server with a web-based management UI.
 url: https://git.lan.cst.wtf/charlestephen/hassio-addons/src/branch/main/technitium
-version: 15.4.0-1
+version: 15.5.0
 stage: stable
 homeassistant: "2026.6.0"
 slug: technitium
@@ -28,9 +28,13 @@ discovery:
 #   67/udp            - DHCP server (optional)
 host_network: true
 ports:
+53/tcp: 53
   53/udp: 53
-  853/tcp: null
-  5380/tcp: null
+67/udp: 67
+853/tcp: 853
+853/udp: 853
+5380/tcp: 5380
+53443/tcp: 53443
 # Supervisor renders [PORT:NNNN] as the actual published host port. Under
 # host_network: true the port equals the listening port (no NAT remap), but
 # the [PORT:NNNN] template is still required by Supervisor's webui validator.
