@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:21.0.0
+ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 ARG TECHNITIUM_VERSION=15.5.0
 
 # Stage 1: Pull the Technitium DNS Server app from the upstream image so the
@@ -36,8 +36,7 @@ RUN find /etc/s6-overlay/s6-rc.d -type f \( -name "up" -o -name "run" -o -name "
 # Ports follow upstream technitium/dns-server, plus the Technitium web console.
 EXPOSE 53/tcp 53/udp \
        853/tcp 853/udp \
-       443/tcp 443/udp \
-       80/tcp 8053/tcp \
+       8053/tcp \
        5380/tcp 53443/tcp \
        67/udp
 
