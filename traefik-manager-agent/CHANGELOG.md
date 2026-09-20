@@ -4,7 +4,7 @@ All notable changes to the Traefik Manager Agent app are documented here.
 The version tracks the upstream Traefik Manager Agent (TMA) release it is
 built from.
 
-## 1.7.2
+## 1.13.5
 
 Initial release.
 
