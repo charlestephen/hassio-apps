@@ -2,7 +2,7 @@
 name: Traefik Manager Agent
 description: Remote-host agent that lets Traefik Manager manage a Traefik instance running elsewhere on the network.
 url: https://traefik-manager.xyzlab.dev/agent.html
-version: "1.13.5"
+version: "1.14.0"
 stage: stable
 homeassistant: "2026.6.0"
 slug: traefik-manager-agent
@@ -18,14 +18,10 @@ arch:
   - aarch64
   - amd64
 map:
-  - type: config
-    read_only: false
-  - type: data
-    read_only: false
-  - type: share
-    read_only: true
-  - type: ssl
-    read_only: true
+  - config
+  - data
+  - share:ro
+  - ssl
 ports:
   8090/tcp: 8090
 ports_description:
@@ -49,17 +45,17 @@ options:
   tma_debug: false
 
   # --- Traefik connection ---
-  traefik_api_url: "http://traefik:8080"
+  traefik_api_url: "http://69356281-traefik:8080"
   traefik_api_user: ""
   traefik_api_password: ""
   traefik_insecure_skip_verify: false
 
   # --- Config files ---
-  config_path: "/data/config"
-  static_config_path: ""
+  config_path: "/config/traefik/dynamic"
+  static_config_path: "/config/traefik/traefik.yml"
 
   # --- Optional paths ---
-  acme_json_path: ""
+  acme_json_path: "/ssl/traefik/acme.json"
   access_log_path: ""
   plugins_dir: ""
 
