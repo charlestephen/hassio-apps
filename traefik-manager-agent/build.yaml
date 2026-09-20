@@ -2,7 +2,7 @@
 # Thin wrapper: build directly on the official multi-arch Traefik Manager
 # Agent image. Renovate tracks this tag via the shared regex manager.
 build_from:
-  aarch64: ghcr.io/chr0nzz/traefik-manager-agent:1.13.5
-  amd64: ghcr.io/chr0nzz/traefik-manager-agent:1.13.5
+  aarch64: ghcr.io/chr0nzz/traefik-manager-agent:1.14.0
+  amd64: ghcr.io/chr0nzz/traefik-manager-agent:1.14.0
 args:
-  TMA_VERSION: "1.13.5"
+  TMA_VERSION: "1.14.0"
