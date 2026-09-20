@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager-agent:1.7.2
+ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager-agent:1.13.5
 
 # Thin Home Assistant wrapper on the official Traefik Manager Agent image
 # (TMA). It's a single static Go binary with its own HEALTHCHECK, so we do
