@@ -19,7 +19,7 @@ jobs:
     outputs:
       apps: ${{ steps.set.outputs.apps }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: set
         run: |
           list=$(for d in */; do [ -f "${d}config.yaml" ] && [ -f "${d}build.yaml" ] && echo "${d%/}"; done | jq -R . | jq -sc .)
@@ -34,7 +34,7 @@ jobs:
         app: ${{ fromJson(needs.discover.outputs.apps) }}
     steps:
       - name: Scan ghcr.io/${{ github.repository_owner }}/hassio-addons-${{ matrix.app }}-amd64
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ghcr.io/${{ github.repository_owner }}/hassio-addons-${{ matrix.app }}-amd64:latest
           format: sarif
