@@ -2,7 +2,7 @@
 name: Traefik Manager Agent
 description: Remote-host agent that lets Traefik Manager manage a Traefik instance running elsewhere on the network.
 url: https://traefik-manager.xyzlab.dev/agent.html
-version: "1.7.2"
+version: "1.13.5"
 stage: stable
 homeassistant: "2026.6.0"
 slug: traefik-manager-agent
