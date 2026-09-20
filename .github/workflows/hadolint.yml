@@ -16,7 +16,7 @@ jobs:
     outputs:
       dockerfiles: ${{ steps.set.outputs.dockerfiles }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: set
         run: |
           list=$(find . -maxdepth 2 -name Dockerfile | sed 's#^\./##' | jq -R . | jq -sc .)
@@ -30,9 +30,9 @@ jobs:
       matrix:
         dockerfile: ${{ fromJson(needs.discover.outputs.dockerfiles) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Hadolint ${{ matrix.dockerfile }}
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.5.0
         with:
           dockerfile: ${{ matrix.dockerfile }}
           # DL3006/DL3018 (pin base image / apk versions) are noisy here:
