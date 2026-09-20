@@ -18,10 +18,14 @@ arch:
   - aarch64
   - amd64
 map:
+- type: config
+  read_only: false
   - type: data
     read_only: false
   - type: share
     read_only: true
+- type: ssl
+  read_only: true
 ports:
   8090/tcp: 8090
 ports_description:
