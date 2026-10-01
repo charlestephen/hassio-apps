@@ -16,15 +16,22 @@ ARG BUILD_ARCH
 # Alpine's musl. unzip is used to unpack the release archive.
 RUN apk add --no-cache libc6-compat unzip
 
-# Download and install the Alloy binary. Alloy publishes arm64 (not aarch64)
-# assets, so translate the HA arch name on the fly.
+# Download, checksum-verify and install the Alloy binary. Alloy publishes arm64
+# (not aarch64) assets, so translate the HA arch name on the fly.
 RUN \
-    curl -sSLf -o /tmp/alloy.zip \
-      "https://github.com/grafana/alloy/releases/download/${ALLOY_VERSION}/alloy-linux-${BUILD_ARCH//aarch64/arm64}.zip" \
-    && unzip -q /tmp/alloy.zip -d /tmp \
-    && mv /tmp/alloy-linux-* /usr/bin/alloy \
+    ARCH="${BUILD_ARCH}" \
+    && if [ "${ARCH}" = "aarch64" ]; then ARCH="arm64"; fi \
+    && ASSET="alloy-linux-${ARCH}.zip" \
+    && BASE_URL="https://github.com/grafana/alloy/releases/download/${ALLOY_VERSION}" \
+    && curl -sSLf -o "/tmp/${ASSET}" "${BASE_URL}/${ASSET}" \
+    && curl -sSLf -o /tmp/SHA256SUMS "${BASE_URL}/SHA256SUMS" \
+    && awk -v a="${ASSET}" '$2 == a { print $1 "  /tmp/" $2 }' /tmp/SHA256SUMS > /tmp/alloy.sha256 \
+    && [ -s /tmp/alloy.sha256 ] \
+    && sha256sum -c /tmp/alloy.sha256 \
+    && unzip -q "/tmp/${ASSET}" -d /tmp/alloy \
+    && mv /tmp/alloy/alloy-linux-* /usr/bin/alloy \
     && chmod +x /usr/bin/alloy \
-    && rm -f /tmp/alloy.zip
+    && rm -rf /tmp/alloy /tmp/SHA256SUMS /tmp/alloy.sha256 "/tmp/${ASSET}"
 
 # App filesystem: default config, config generator (cont-init) and the
 # s6 long-run service.

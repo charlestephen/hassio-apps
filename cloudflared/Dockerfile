@@ -5,18 +5,19 @@
 # bashio). Because cloudflared is statically linked there are NO RUN steps, and
 # the multi-arch COPY --from is resolved per --platform — clean on your native
 # per-arch builders (no emulation).
-FROM ghcr.io/home-assistant/base:3.24
-
 # Pinned for reproducible builds; Renovate bumps this on upstream releases.
 # Source image: docker.io/cloudflare/cloudflared.
+# Declared in global scope because COPY --from cannot expand build args.
 ARG CLOUDFLARED_VERSION="2026.9.3"
+FROM docker.io/cloudflare/cloudflared:${CLOUDFLARED_VERSION} AS cloudflared
+
+FROM ghcr.io/home-assistant/base:3.24
+
 # BUILD_ARCH is injected by the Supervisor / CI (amd64, aarch64).
 ARG BUILD_ARCH
 
 # Pull the cloudflared binary straight from the official image for this platform.
-# NOTE: verify the binary path in the upstream image is /usr/local/bin/cloudflared.
-COPY --from=docker.io/cloudflare/cloudflared:${CLOUDFLARED_VERSION} \
-     /usr/local/bin/cloudflared /usr/bin/cloudflared
+COPY --from=cloudflared /usr/local/bin/cloudflared /usr/bin/cloudflared
 
 # App filesystem: config validator (cont-init) + the two s6 replica services.
 COPY rootfs /
