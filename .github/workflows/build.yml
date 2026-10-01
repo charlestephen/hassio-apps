@@ -16,7 +16,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   discover:
@@ -26,9 +25,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - id: set
+        env:
+          ADDON_INPUT: ${{ github.event.inputs.addon }}
         run: |
-          if [ -n "${{ github.event.inputs.addon }}" ]; then
-            echo "addons=[\"${{ github.event.inputs.addon }}\"]" >> "$GITHUB_OUTPUT"
+          if [ -n "$ADDON_INPUT" ]; then
+            if [[ ! "$ADDON_INPUT" =~ ^[a-z0-9_-]+$ ]] || [ ! -f "$ADDON_INPUT/config.yaml" ] || [ ! -f "$ADDON_INPUT/build.yaml" ]; then
+              echo "Unknown app slug: $ADDON_INPUT" >&2
+              exit 1
+            fi
+            jq -rn --arg a "$ADDON_INPUT" '"addons=" + ([$a] | tojson)' >> "$GITHUB_OUTPUT"
           else
             list=$(for d in */; do [ -f "${d}config.yaml" ] && [ -f "${d}build.yaml" ] && echo "${d%/}"; done | jq -R . | jq -sc .)
             echo "addons=${list}" >> "$GITHUB_OUTPUT"
@@ -63,8 +68,10 @@ jobs:
 
       - name: Assemble build metadata
         id: meta
+        env:
+          A: ${{ matrix.addon }}
+          ARCH: ${{ matrix.arch }}
         run: |
-          A="${{ matrix.addon }}"; ARCH="${{ matrix.arch }}"
           case "$ARCH" in
             amd64)   echo "platform=linux/amd64" >> "$GITHUB_OUTPUT" ;;
             aarch64) echo "platform=linux/arm64" >> "$GITHUB_OUTPUT" ;;
@@ -91,22 +98,30 @@ jobs:
           PY
 
       - name: Build and push
+        env:
+          A: ${{ matrix.addon }}
+          ARCH: ${{ matrix.arch }}
+          OWNER: ${{ github.repository_owner }}
+          REPOSITORY: ${{ github.repository }}
+          PLATFORM: ${{ steps.meta.outputs.platform }}
+          BUILD_FROM: ${{ steps.meta.outputs.build_from }}
+          VERSION: ${{ steps.meta.outputs.version }}
+          DATE: ${{ steps.meta.outputs.date }}
         run: |
-          A="${{ matrix.addon }}"; ARCH="${{ matrix.arch }}"
-          IMG="ghcr.io/${{ github.repository_owner }}/hassio-addons-${A}-${ARCH}"
+          IMG="ghcr.io/${OWNER}/hassio-addons-${A}-${ARCH}"
           mapfile -t EXTRA < extra_build_args
           docker buildx build \
-            --platform "${{ steps.meta.outputs.platform }}" \
+            --platform "${PLATFORM}" \
             --build-arg BUILD_ARCH="${ARCH}" \
-            --build-arg BUILD_FROM="${{ steps.meta.outputs.build_from }}" \
-            --build-arg BUILD_VERSION="${{ steps.meta.outputs.version }}" \
+            --build-arg BUILD_FROM="${BUILD_FROM}" \
+            --build-arg BUILD_VERSION="${VERSION}" \
             --build-arg BUILD_NAME="${A}" \
             --build-arg BUILD_DESCRIPTION="${A} Home Assistant app" \
-            --build-arg BUILD_REPOSITORY="${{ github.repository }}" \
-            --build-arg BUILD_REF="${{ github.sha }}" \
-            --build-arg BUILD_DATE="${{ steps.meta.outputs.date }}" \
+            --build-arg BUILD_REPOSITORY="${REPOSITORY}" \
+            --build-arg BUILD_REF="${GITHUB_SHA}" \
+            --build-arg BUILD_DATE="${DATE}" \
             "${EXTRA[@]}" \
-            -t "${IMG}:${{ steps.meta.outputs.version }}" \
+            -t "${IMG}:${VERSION}" \
             -t "${IMG}:latest" \
             --push \
             "$A"
