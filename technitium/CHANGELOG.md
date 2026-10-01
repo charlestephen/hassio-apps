@@ -1,4 +1,6 @@
 # Changelog
+## 15.5.1
+- Update Technitium DNS Server from 15.5.0 to 15.5.1 (upstream release 2026-09-20).
 
 ## 15.5.0
 

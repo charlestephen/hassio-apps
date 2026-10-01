@@ -1,7 +1,7 @@
 name: Technitium DNS
 description: Technitium DNS Server is an open source authoritative and recursive DNS server with a web-based management UI.
 url: https://git.lan.cst.wtf/charlestephen/hassio-addons/src/branch/main/technitium
-version: 15.5.0
+version: 15.5.1
 stage: stable
 homeassistant: "2026.6.0"
 slug: technitium
