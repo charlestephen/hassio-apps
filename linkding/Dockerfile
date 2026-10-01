@@ -11,6 +11,7 @@ FROM ghcr.io/home-assistant/base:3.24 AS habase
 FROM ghcr.io/sissbruecker/linkding:${LINKDING_VERSION}-alpine
 # s6-overlay's /init must run as root (to run cont-init, chown the /data volume,
 # and supervise services); the service itself drops back to www-data at runtime.
+# hadolint ignore=DL3002
 USER root
 ARG BUILD_ARCH
 
