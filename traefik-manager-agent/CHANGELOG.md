@@ -1,9 +1,8 @@
 # Changelog
-
 All notable changes to the Traefik Manager Agent app are documented here.
 The version tracks the upstream Traefik Manager Agent (TMA) release it is
 built from.
-## 1.14.0-a
+## 1.14.0
 - Updated to `ghcr.io/chr0nzz/traefik-manager-agent:1.14.0` (multi-arch:
   `aarch64`, `amd64`).
 - Added correcct bind mounts for Traefik, ssl, and data dirs.
