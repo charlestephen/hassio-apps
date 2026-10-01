@@ -1,0 +1,122 @@
+name: Check Upstream and Auto-Update Apps
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Checks every day at 2:00 AM
+  workflow_dispatch: # Allows manual run
+
+jobs:
+  matrix-generator:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Generate App Matrix
+        id: set-matrix
+        run: |
+          # Finds all directories containing a build.yaml file and formats them as a JSON list
+          APPS=$(find . -maxdepth 2 -name "build.yaml" | awk -F/ '{print $2}' | jq -R . | jq -s -c .)
+          echo "matrix={\"app\":$APPS}" >> $GITHUB_OUTPUT
+
+  track-and-build:
+    needs: matrix-generator
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ foomat(needs.matrix-generator.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_FOR_PUSH }} # A Personal Access Token with repo push permissions
+
+          - name: Get Local and Upstream Versions
+          id: versions
+          run: |
+            APP_DIR="${{ matrix.app }}"
+
+            # 1. Parse upstream target from build.yaml
+            UPSTREAM=$(yq eval '.upstream_repo' "$APP_DIR/build.yaml")
+
+            if [ "$UPSTREAM" == "null" ] || [ -z "$UPSTREAM" ]; then
+              echo "skip=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            # 2. Conditional extraction depending on the hosting provider
+            if [[ "$UPSTREAM" == codeberg.org* ]]; then
+              # Extract 'owner/repo' by removing 'codeberg.org/' prefix
+              CLEAN_REPO=${UPSTREAM#codeberg.org/}
+
+              # Query Codeberg API v1 for the latest release tag
+              LATEST_UPSTREAM=$(curl -s "https://codeberg.org" | jq -r '.[0].tag_name')
+            else
+              # Default fallback for standard GitHub targets
+              CLEAN_REPO=${UPSTREAM#://github.com}
+              LATEST_UPSTREAM=$(curl -s "https://api.://github.comrepos/$CLEAN_REPO/releases/latest" | jq -r .tag_name)
+            fi
+
+            # Fail safe if API response didn't yield a valid tag
+            if [ "$LATEST_UPSTREAM" == "null" ] || [ -z "$LATEST_UPSTREAM" ]; then
+              echo "Error: Could not resolve upstream version tag for $APP_DIR" >&2
+              echo "skip=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            # 3. Read current local tracking version
+            if [ -f "$APP_DIR/upstream_version.txt" ]; then
+              CURRENT_LOCAL=$(cat "$APP_DIR/upstream_version.txt")
+            else
+              CURRENT_LOCAL="0.0.0"
+            fi
+
+            echo "upstream=$LATEST_UPSTREAM" >> $GITHUB_OUTPUT
+            echo "local=$CURRENT_LOCAL" >> $GITHUB_OUTPUT
+
+            if [ "$LATEST_UPSTREAM" != "$CURRENT_LOCAL" ]; then
+              echo "update_needed=true" >> $GITHUB_OUTPUT
+            fi
+
+      - name: Update Configuration and Trigger Container Build
+        if: steps.versions.outputs.skip != 'true' && steps.versions.outputs.update_needed == 'true'
+        run: |
+          APP_DIR="${{ matrix.app }}"
+          NEW_VER="${{ steps.versions.outputs.upstream }}"
+
+          # Write down new tracker version locally
+          echo "$NEW_VER" > "$APP_DIR/upstream_version.txt"
+
+          # (Optional) Update version variables inside your config.json if needed
+          # jq --arg ver "$NEW_VER" '.version = $ver' "$APP_DIR/config.json" > temp.json && mv temp.json "$APP_DIR/config.json"
+
+          # Git Commit the localized metadata change
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$APP_DIR/upstream_version.txt"
+          git commit -m "chore($APP_DIR): bump tracking to upstream version $NEW_VER"
+          git push
+
+      - name: Set up Docker Buildx
+        if: steps.versions.outputs.skip != 'true' && steps.versions.outputs.update_needed == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: steps.versions.outputs.skip != 'true' && steps.versions.outputs.update_needed == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Add-on Image
+        if: steps.versions.outputs.skip != 'true' && steps.versions.outputs.update_needed == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ matrix.app }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.app }}:${{ steps.versions.outputs.upstream }}
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.app }}:latest
