@@ -1,5 +1,5 @@
 ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
-ARG TECHNITIUM_VERSION=15.5.0
+ARG TECHNITIUM_VERSION=15.5.1
 
 # Stage 1: Pull the Technitium DNS Server app from the upstream image so the
 # final image stays in lockstep with the primary developer's build. Tracking
