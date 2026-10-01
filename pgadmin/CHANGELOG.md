@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.18.0
+
+- Upgrade pgAdmin 9.17.0 -> 9.18.0
+-
 ## 9.17
 
 - Upgrade pgAdmin 9.15.0 -> 9.17.

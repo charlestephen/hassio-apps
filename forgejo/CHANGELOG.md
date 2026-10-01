@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.0.5
+
+- Upgrade Forgejo 16.0.4 -> 16.0.5.
+
 ## 16.0.4
 
 - Upgrade Forgejo 15.0.4 -> 16.0.4.
