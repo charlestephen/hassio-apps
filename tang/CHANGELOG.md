@@ -85,7 +85,7 @@
   `tang` package does not ship (it caused the init script to fail). `tangd`
   serves the advertisement directly from the key directory.
 - Publish the image to the private Forgejo registry
-  (`git.lan.cst.wtf/charlestephen/hassio-addons-tang-{arch}`).
+  (`ghcr.io/charlestephen/hassio-addons-tang-{arch}`).
 
 ## 1.0.1
 

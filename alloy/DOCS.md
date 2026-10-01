@@ -9,7 +9,7 @@ configuration of your own.
 ## Installation
 
 1. Add this repository to **Settings → Add-ons → Add-on Store → ⋮ → Repositories**:
-   `https://git.lan.cst.wtf/charlestephen/hassio-addons`. The prebuilt image is
+   `https://github.com/charlestephen/hassio-apps`. The prebuilt image is
    public (GHCR), so no registry credentials are needed.
 2. Install the **Grafana Alloy** app.
 3. **Disable Protection mode** for the app (see below) — this is required for

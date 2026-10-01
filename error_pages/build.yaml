@@ -6,3 +6,4 @@ build_from:
 upstream_repo: "tarampampam/error-pages"
 args:
   ERROR_PAGES_VERSION: "4.2.5"
+upstream_version_arg: ERROR_PAGES_VERSION

@@ -5,9 +5,10 @@
 # s6-overlay binaries are static, so there are NO RUN steps -> amd64 + aarch64
 # both cross-build cleanly. Config is read with the python3 already bundled in
 # the linkding image (instead of bashio, which would need bash/jq via a RUN).
+ARG LINKDING_VERSION=1.47.0
 FROM ghcr.io/home-assistant/base:3.24 AS habase
 
-FROM ghcr.io/sissbruecker/linkding:latest-alpine
+FROM ghcr.io/sissbruecker/linkding:${LINKDING_VERSION}-alpine
 # s6-overlay's /init must run as root (to run cont-init, chown the /data volume,
 # and supervise services); the service itself drops back to www-data at runtime.
 USER root

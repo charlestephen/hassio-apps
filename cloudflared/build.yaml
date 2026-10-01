@@ -1,10 +1,11 @@
 ---
 # No Renovate-tracked base pin here: the Dockerfile's FROM is fixed at
-# ghcr.io/home-assistant/base:3.24, and CLOUDFLARED_VERSION has its own
-# default in the Dockerfile. This file exists only so GitHub's generic
-# discover workflow (which requires both config.yaml and build.yaml) finds
-# this app.
+# ghcr.io/home-assistant/base:3.24. The upstream version is passed through
+# CLOUDFLARED_VERSION below and updated by the upstream tracking workflow.
 build_from:
   aarch64: ghcr.io/home-assistant/base:3.24
   amd64: ghcr.io/home-assistant/base:3.24
 upstream_repo: "cloudflare/cloudflared"
+upstream_version_arg: CLOUDFLARED_VERSION
+args:
+  CLOUDFLARED_VERSION: "2026.9.3"
