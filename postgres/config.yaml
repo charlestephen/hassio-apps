@@ -1,6 +1,6 @@
 name: PostgreSQL
 description: PostgreSQL 18 object-relational database server.
-url: https://git.lan.cst.wtf/charlestephen/hassio-addons/src/branch/main/postgres
+url: https://github.com/charlestephen/hassio-apps/tree/main/postgres
 version: "18.4.f"
 stage: stable
 homeassistant: "2026.6.0"

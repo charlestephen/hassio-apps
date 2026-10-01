@@ -330,7 +330,7 @@ Full upstream changelog:
 - Switch the runtime to `aspnetcore10-runtime` — Technitium 15.x targets .NET 10
   (14.x targeted .NET 9), so the older runtime would no longer start the server.
 - Publish the image to the private Forgejo registry
-  (`git.lan.cst.wtf/charlestephen/hassio-addons-technitium-{arch}`).
+  (`ghcr.io/charlestephen/hassio-addons-technitium-{arch}`).
 
 ## 14.3.1
 

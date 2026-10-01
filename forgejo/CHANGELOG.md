@@ -90,7 +90,7 @@
   (previously `/share/gitea`), which caused Forgejo to crash on first start with
   `mkdir /share/forgejo: permission denied`.
 - Publish the image to the private Forgejo registry
-  (`git.lan.cst.wtf/charlestephen/hassio-addons-forgejo-{arch}`).
+  (`ghcr.io/charlestephen/hassio-addons-forgejo-{arch}`).
 
 ## 14.0.4
 
