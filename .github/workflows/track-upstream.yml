@@ -2,8 +2,12 @@ name: Check Upstream and Auto-Update Apps
 
 on:
   schedule:
-    - cron: '0 2 * * *' # Checks every day at 2:00 AM
-  workflow_dispatch: # Allows manual run
+    - cron: '0 2 * * *' # Checks every day at 2:00 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
 
 jobs:
   matrix-generator:
@@ -11,93 +15,126 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Generate App Matrix
+      - name: Generate app matrix
         id: set-matrix
+        shell: bash
         run: |
-          # Finds all directories containing a build.yaml file and formats them as a JSON list
-          APPS=$(find . -maxdepth 2 -name "build.yaml" | awk -F/ '{print $2}' | jq -R . | jq -s -c .)
-          echo "matrix={\"app\":$APPS}" >> $GITHUB_OUTPUT
+          APPS=$(for file in */build.yaml; do
+            [ -f "$file" ] || continue
+            grep -qE '^upstream_repo:[[:space:]]*[^[:space:]#]' "$file" || continue
+            basename "$(dirname "$file")"
+          done | jq -R . | jq -sc .)
+          echo "matrix={\"app\":$APPS}" >> "$GITHUB_OUTPUT"
 
   track-and-build:
     needs: matrix-generator
+    if: ${{ needs.matrix-generator.outputs.matrix != '{"app":[]}' }}
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ foomat(needs.matrix-generator.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.matrix-generator.outputs.matrix) }}
       fail-fast: false
+      max-parallel: 4
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.PAT_FOR_PUSH }} # A Personal Access Token with repo push permissions
 
-          - name: Get Local and Upstream Versions
-          id: versions
-          run: |
-            APP_DIR="${{ matrix.app }}"
-
-            # 1. Parse upstream target from build.yaml
-            UPSTREAM=$(yq eval '.upstream_repo' "$APP_DIR/build.yaml")
-
-            if [ "$UPSTREAM" == "null" ] || [ -z "$UPSTREAM" ]; then
-              echo "skip=true" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-
-            # 2. Conditional extraction depending on the hosting provider
-            if [[ "$UPSTREAM" == codeberg.org* ]]; then
-              # Extract 'owner/repo' by removing 'codeberg.org/' prefix
-              CLEAN_REPO=${UPSTREAM#codeberg.org/}
-
-              # Query Codeberg API v1 for the latest release tag
-              LATEST_UPSTREAM=$(curl -s "https://codeberg.org" | jq -r '.[0].tag_name')
-            else
-              # Default fallback for standard GitHub targets
-              CLEAN_REPO=${UPSTREAM#://github.com}
-              LATEST_UPSTREAM=$(curl -s "https://api.://github.comrepos/$CLEAN_REPO/releases/latest" | jq -r .tag_name)
-            fi
-
-            # Fail safe if API response didn't yield a valid tag
-            if [ "$LATEST_UPSTREAM" == "null" ] || [ -z "$LATEST_UPSTREAM" ]; then
-              echo "Error: Could not resolve upstream version tag for $APP_DIR" >&2
-              echo "skip=true" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-
-            # 3. Read current local tracking version
-            if [ -f "$APP_DIR/upstream_version.txt" ]; then
-              CURRENT_LOCAL=$(cat "$APP_DIR/upstream_version.txt")
-            else
-              CURRENT_LOCAL="0.0.0"
-            fi
-
-            echo "upstream=$LATEST_UPSTREAM" >> $GITHUB_OUTPUT
-            echo "local=$CURRENT_LOCAL" >> $GITHUB_OUTPUT
-
-            if [ "$LATEST_UPSTREAM" != "$CURRENT_LOCAL" ]; then
-              echo "update_needed=true" >> $GITHUB_OUTPUT
-            fi
-
-      - name: Update Configuration and Trigger Container Build
-        if: steps.versions.outputs.skip != 'true' && steps.versions.outputs.update_needed == 'true'
+      - name: Get local and upstream versions
+        id: versions
+        shell: bash
+        env:
+          APP_DIR: ${{ matrix.app }}
         run: |
-          APP_DIR="${{ matrix.app }}"
-          NEW_VER="${{ steps.versions.outputs.upstream }}"
+          set -euo pipefail
+          UPSTREAM=$(python3 - "$APP_DIR/build.yaml" <<'PY'
+          import sys, yaml
+          data = yaml.safe_load(open(sys.argv[1], encoding="utf-8")) or {}
+          print(data.get("upstream_repo") or "")
+          PY
+          )
+          if [ -z "$UPSTREAM" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
-          # Write down new tracker version locally
-          echo "$NEW_VER" > "$APP_DIR/upstream_version.txt"
+          if [[ "$UPSTREAM" == codeberg.org/* ]]; then
+            CLEAN_REPO=${UPSTREAM#codeberg.org/}
+            API_URL="https://codeberg.org/api/v1/repos/$CLEAN_REPO/releases?limit=1"
+            if ! RESPONSE=$(curl --fail --silent --show-error "$API_URL"); then
+              echo "Could not query Codeberg releases for $CLEAN_REPO" >&2
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            LATEST_UPSTREAM=$(printf '%s' "$RESPONSE" | jq -r '.[0].tag_name // empty' 2>/dev/null || true)
+          else
+            CLEAN_REPO=${UPSTREAM#https://github.com/}
+            CLEAN_REPO=${CLEAN_REPO#http://github.com/}
+            if [[ "$CLEAN_REPO" == */* ]]; then
+              API_URL="https://api.github.com/repos/$CLEAN_REPO/releases/latest"
+              if ! RESPONSE=$(curl --fail --silent --show-error \
+                -H 'Accept: application/vnd.github+json' \
+                -H 'X-GitHub-Api-Version: 2022-11-28' \
+                "$API_URL"); then
+                echo "Could not query GitHub releases for $CLEAN_REPO" >&2
+                echo "skip=true" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+              LATEST_UPSTREAM=$(printf '%s' "$RESPONSE" | jq -r '.tag_name // empty' 2>/dev/null || true)
+            else
+              echo "Unsupported upstream_repo value: $UPSTREAM" >&2
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
 
-          # (Optional) Update version variables inside your config.json if needed
-          # jq --arg ver "$NEW_VER" '.version = $ver' "$APP_DIR/config.json" > temp.json && mv temp.json "$APP_DIR/config.json"
+          if [ -z "$LATEST_UPSTREAM" ] || [ "$LATEST_UPSTREAM" = null ]; then
+            echo "Could not resolve a release tag for $APP_DIR ($UPSTREAM)" >&2
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ ! "$LATEST_UPSTREAM" =~ ^[A-Za-z0-9][A-Za-z0-9._+-]*$ ]]; then
+            echo "Release tag has unsupported characters: $LATEST_UPSTREAM" >&2
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
-          # Git Commit the localized metadata change
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add "$APP_DIR/upstream_version.txt"
+          CURRENT_LOCAL=$(cat "$APP_DIR/upstream_version.txt" 2>/dev/null || true)
+          echo "upstream=$LATEST_UPSTREAM" >> "$GITHUB_OUTPUT"
+          echo "local=$CURRENT_LOCAL" >> "$GITHUB_OUTPUT"
+          if [ "$LATEST_UPSTREAM" != "$CURRENT_LOCAL" ]; then
+            echo "update_needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Record upstream version
+        if: steps.versions.outputs.skip != 'true' && steps.versions.outputs.update_needed == 'true'
+        shell: bash
+        env:
+          APP_DIR: ${{ matrix.app }}
+          NEW_VER: ${{ steps.versions.outputs.upstream }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$NEW_VER" > "$APP_DIR/upstream_version.txt"
+          python3 scripts/update-upstream-version.py "$APP_DIR" "$NEW_VER"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$APP_DIR/upstream_version.txt" "$APP_DIR/config.yaml" "$APP_DIR/build.yaml"
           git commit -m "chore($APP_DIR): bump tracking to upstream version $NEW_VER"
-          git push
+          for attempt in 1 2 3; do
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo 'Could not push version update after three attempts' >&2
+              exit 1
+            fi
+          done
+
+      - name: Set up QEMU
+        if: steps.versions.outputs.skip != 'true' && steps.versions.outputs.update_needed == 'true'
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         if: steps.versions.outputs.skip != 'true' && steps.versions.outputs.update_needed == 'true'
@@ -111,12 +148,50 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Add-on Image
+      - name: Build and push updated app images
         if: steps.versions.outputs.skip != 'true' && steps.versions.outputs.update_needed == 'true'
-        uses: docker/build-push-action@v5
-        with:
-          context: ./${{ matrix.app }}
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.app }}:${{ steps.versions.outputs.upstream }}
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.app }}:latest
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_DIR='${{ matrix.app }}'
+          ARCHES=(amd64 aarch64)
+          VERSION=$(python3 - "$APP_DIR/config.yaml" <<'PY'
+          import sys, yaml
+          data = yaml.safe_load(open(sys.argv[1], encoding="utf-8")) or {}
+          print(data.get("version", ""))
+          PY
+          )
+          DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          for ARCH in "${ARCHES[@]}"; do
+            PLATFORM=linux/amd64
+            [ "$ARCH" = aarch64 ] && PLATFORM=linux/arm64
+            BUILD_FROM=$(python3 - "$APP_DIR/build.yaml" "$ARCH" <<'PY'
+          import sys, yaml
+          data = yaml.safe_load(open(sys.argv[1], encoding="utf-8")) or {}
+          print((data.get("build_from") or {}).get(sys.argv[2], ""))
+          PY
+            )
+            mapfile -t EXTRA_ARGS < <(python3 - "$APP_DIR/build.yaml" <<'PY'
+          import sys, yaml
+          data = yaml.safe_load(open(sys.argv[1], encoding="utf-8")) or {}
+          for key, value in (data.get("args") or {}).items():
+              print(f"--build-arg={key}={value}")
+          PY
+            )
+            IMAGE="ghcr.io/${{ github.repository_owner }}/hassio-addons-${APP_DIR}-${ARCH}"
+            docker buildx build \
+              --platform "$PLATFORM" \
+              --build-arg BUILD_ARCH="$ARCH" \
+              --build-arg BUILD_FROM="$BUILD_FROM" \
+              --build-arg BUILD_VERSION="$VERSION" \
+              --build-arg BUILD_NAME="$APP_DIR" \
+              --build-arg BUILD_DESCRIPTION="$APP_DIR Home Assistant app" \
+              --build-arg BUILD_REPOSITORY="${{ github.repository }}" \
+              --build-arg BUILD_REF="${{ github.sha }}" \
+              --build-arg BUILD_DATE="$DATE" \
+              "${EXTRA_ARGS[@]}" \
+              --tag "$IMAGE:$VERSION" \
+              --tag "$IMAGE:latest" \
+              --push \
+              "$APP_DIR"
+          done

@@ -134,5 +134,5 @@ When running behind Nginx Proxy Manager or Traefik:
 ## Adding the Repository
 
 1. Go to **Settings → Add-ons → Add-on Store → ⋮ → Repositories**.
-2. Add `https://git.lan.cst.wtf/charlestephen/hassio-addons`. The prebuilt
+2. Add `https://github.com/charlestephen/hassio-apps`. The prebuilt
    image is public (GHCR), so no registry credentials are needed.

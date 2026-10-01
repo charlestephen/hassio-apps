@@ -6,3 +6,4 @@ build_from:
 upstream_repo: "dpage/pgadmin4"
 args:
   PGADMIN_VERSION: "9.18.0"
+upstream_version_arg: PGADMIN_VERSION

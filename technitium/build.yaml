@@ -4,5 +4,6 @@ build_from:
   aarch64: ghcr.io/hassio-addons/base:stable
   amd64: ghcr.io/hassio-addons/base:stable
 upstream_repo: "technitium/dns-server"
+upstream_version_arg: TECHNITIUM_VERSION
 args:
   TECHNITIUM_VERSION: "15.5.1"
