@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.20.1
+- Upgrade Grafana Alloy v1.19.2 -> 1.20.1.
+
 ## 1.19.2
 
 - Upgrade Grafana Alloy v1.17.1 -> v1.19.2.
