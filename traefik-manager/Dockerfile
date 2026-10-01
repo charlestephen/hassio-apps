@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager:1.13.5
+ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager:1.14.0
 
 # Thin Home Assistant wrapper on the official Traefik Manager image. It's a
 # self-contained Flask app served by gunicorn, so we do NOT add s6-overlay;
