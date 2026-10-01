@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.47.0
+
+- Update from upstream 1.0.2 -> 1.47.0
+
 ## 1.0.2-2
 
 - CI: add build.yaml (no functional change) so GitHub's generic

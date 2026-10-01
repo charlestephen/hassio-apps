@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3
+
+- CI: add upstream.yaml (no functional change) to autobuild all applications.
+- Add architecture amd64
+
 ## 1.0.2-2
 
 - CI: add build.yaml (no functional change) so GitHub's generic

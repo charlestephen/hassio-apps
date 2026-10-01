@@ -1,11 +1,10 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Grafana Alloy"
-version: "1.19.2"
+version: "1.20.1"
 slug: "alloy"
 description: "Grafana Alloy — ship all container logs (and any other telemetry) to Loki"
-url: "https://git.lan.cst.wtf/charlestephen/hassio-addons/src/branch/main/alloy"
-# Prebuilt images are pulled from the private Forgejo registry. The Supervisor
-# replaces {arch} with the host arch (amd64/aarch64) and pulls the tag matching
+url: "https://github.com/charlestephen/hassio-apps/tree/main/alloy"
+# The Supervisor replaces {arch} with the host arch (amd64/aarch64) and pulls the tag matching
 # the `version:` field above (i.e. ...-amd64:1.0.0 / ...-aarch64:1.0.0).
 image: "ghcr.io/charlestephen/hassio-addons-alloy-{arch}"
 arch:
