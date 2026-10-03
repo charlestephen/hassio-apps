@@ -11,7 +11,7 @@
 ARG CLOUDFLARED_VERSION="$APP_NEW_VERSION"
 FROM docker.io/cloudflare/cloudflared:${CLOUDFLARED_VERSION} AS cloudflared
 
-FROM ghcr.io/home-assistant/base:3.24
+FROM ghcr.io/hassio-addons/base:stable
 
 # BUILD_ARCH is injected by the Supervisor / CI (amd64, aarch64).
 ARG BUILD_ARCH

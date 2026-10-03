@@ -2,12 +2,13 @@
 #
 # Tiny script app: probes the host resolver and restarts systemd-resolved over
 # the host system D-Bus when it hangs. Only extra dependency is dbus-send.
-FROM ghcr.io/home-assistant/base:3.24
+FROM ghcr.io/hassio-addons/base:stable
 
 ARG BUILD_ARCH
 
 # dbus-send is used to call systemd1.RestartUnit on the host system bus.
-RUN apk add --no-cache dbus
+RUN apk upgrade --no-cache \
+    && apk add --no-cache dbus
 
 COPY rootfs /
 
