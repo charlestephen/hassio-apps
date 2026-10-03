@@ -1,7 +1,7 @@
 # Home Assistant App: Linkding
 
 [Linkding](https://github.com/sissbruecker/linkding) is a self-hosted bookmark
-manager. This app runs the upstream `ghcr.io/sissbruecker/linkding:latest-alpine`
+manager. This app runs the upstream `ghcr.io/sissbruecker/linkding:$APP_NEW_VERSION-alpine`
 image wrapped with the Home Assistant app framework, using **SQLite** by default.
 
 ## Data

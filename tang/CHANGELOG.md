@@ -20,7 +20,7 @@
 ## 1.0.10
 
 - Fix the Forgejo CI workflow (`build_tang.yml`): remove the hardcoded
-  `--build-arg BUILD_FROM=ghcr.io/hassio-addons/base:20.0.1` that had been
+  `--build-arg BUILD_FROM=ghcr.io/hassio-addons/base:stable` that had been
   silently overriding the `FROM alpine:3.24` line in every build since 1.0.5.
   All images built between 1.0.5 and 1.0.9 were actually running on the old
   hassio-addons base despite the Dockerfile change — 1.0.10 is the first release
@@ -49,7 +49,7 @@
 - Attempt to patch the `base-addon-log-level` s6 boot script to tolerate
   Supervisor DNS failures. The patch applied correctly but had no effect because
   the CI workflow was still building images on the old
-  `ghcr.io/hassio-addons/base:20.0.1` base due to the hardcoded `BUILD_FROM`
+  `ghcr.io/hassio-addons/base:stable` base due to the hardcoded `BUILD_FROM`
   build-arg (see 1.0.10). Superseded by the full base replacement in 1.0.9.
 
 ## 1.0.7

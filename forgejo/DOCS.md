@@ -3,6 +3,7 @@
 [Forgejo] is a lightweight self-hosted Git service — an open-source fork of
 Gitea. This app runs Forgejo inside Home Assistant with persistent storage,
 optional SSH access, and a fully-configurable web UI via HA's Configuration tab.
+This app tracks upstream Forgejo `$APP_NEW_VERSION`.
 
 ---
 

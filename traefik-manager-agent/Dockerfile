@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager-agent:1.14.0
+ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager-agent:$APP_NEW_VERSION
 
 # Thin Home Assistant wrapper on the official Traefik Manager Agent image
 # (TMA). It's a single static Go binary with its own HEALTHCHECK, so we do
@@ -11,7 +11,7 @@ FROM ${BUILD_FROM}
 RUN apk add --no-cache jq
 
 # Surface the upstream version to the runtime entrypoint (for log output).
-ARG TMA_VERSION=unknown
+ARG TMA_VERSION=$APP_NEW_VERSION
 ENV TMA_VERSION=${TMA_VERSION}
 
 # Wrapper entrypoint (options -> env -> exec tma)

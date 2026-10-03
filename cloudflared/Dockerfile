@@ -5,10 +5,10 @@
 # bashio). Because cloudflared is statically linked there are NO RUN steps, and
 # the multi-arch COPY --from is resolved per --platform — clean on your native
 # per-arch builders (no emulation).
-# Pinned for reproducible builds; Renovate bumps this on upstream releases.
+# Filled by scripts/update-upstream-version.py on each upstream release.
 # Source image: docker.io/cloudflare/cloudflared.
 # Declared in global scope because COPY --from cannot expand build args.
-ARG CLOUDFLARED_VERSION="2026.9.3"
+ARG CLOUDFLARED_VERSION="$APP_NEW_VERSION"
 FROM docker.io/cloudflare/cloudflared:${CLOUDFLARED_VERSION} AS cloudflared
 
 FROM ghcr.io/home-assistant/base:3.24

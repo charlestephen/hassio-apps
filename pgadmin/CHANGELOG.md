@@ -1,9 +1,11 @@
 # Changelog
 
-## 9.18.0
+## $APP_NEW_VERSION
 
 - Upgrade pgAdmin 9.17.0 -> 9.18.0
--
+
+- Upgrading from upstream version 9.18.0 -> $APP_NEW_VERSION
+
 ## 9.17
 
 - Upgrade pgAdmin 9.15.0 -> 9.17.
@@ -20,8 +22,7 @@
 
 ## 9.15.0.f
 
-- Upgrade base image from `ghcr.io/hassio-addons/base:20.0.1` to
-  `ghcr.io/hassio-addons/base:21.0.0` (Alpine 3.24). The pgAdmin runtime ships
+- Base image is `ghcr.io/hassio-addons/base:stable` (Alpine 3.24). The pgAdmin runtime ships
   its own Python 3.14 virtualenv and is not directly affected by the Alpine
   upgrade; this refreshes the system-level musl, OpenSSL, and s6-overlay layers
   only.

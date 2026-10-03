@@ -3,8 +3,10 @@
 All notable changes to the Traefik Manager app are documented here.
 The version tracks the upstream Traefik Manager release it is built from.
 
-## 1.14.0
+## $APP_NEW_VERSION
 - Update to Traefik Manager 1.14.0 from upstream.
+
+- Upgrading from upstream version 1.14.0 -> $APP_NEW_VERSION
 
 ## 1.13.5
 

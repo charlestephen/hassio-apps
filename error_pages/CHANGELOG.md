@@ -1,8 +1,10 @@
 # Changelog
 
-## 4.2.5
+## $APP_NEW_VERSION
 
 - Upgrade Error Pages 4.2.3 -> 4.2.5.
+
+- Upgrading from upstream version 4.2.5 -> $APP_NEW_VERSION
 
 ## 4.2.3-1
 
@@ -16,8 +18,7 @@
 
 ## 4.2.2.a
 
-- Upgrade base image from `ghcr.io/hassio-addons/base:20.0.1` to
-  `ghcr.io/hassio-addons/base:21.0.0` (Alpine 3.24). The error-pages binary is
+- Base image is `ghcr.io/hassio-addons/base:stable` (Alpine 3.24). The error-pages binary is
   statically linked and unaffected; only the base OS layer changes.
 
 ## 4.2.2
