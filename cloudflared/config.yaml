@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Cloudflared"
-version: "2026.9.3"
+version: "$APP_NEW_VERSION"
 slug: "cloudflared"
 description: "Dual-replica Cloudflare Tunnel (HA) built on the stock cloudflared image"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/cloudflared"

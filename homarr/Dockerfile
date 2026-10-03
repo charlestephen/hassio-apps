@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/homarr-labs/homarr:v1.77.2
+ARG BUILD_FROM=ghcr.io/homarr-labs/homarr:v$APP_NEW_VERSION
 
 # Thin Home Assistant wrapper on Homarr's official image. Homarr is a
 # self-contained monolith (its own entrypoint supervises redis + nginx +
@@ -11,7 +11,7 @@ FROM ${BUILD_FROM}
 RUN apk add --no-cache jq
 
 # Surface the Homarr version to the runtime entrypoint (for log output).
-ARG HOMARR_VERSION=unknown
+ARG HOMARR_VERSION=$APP_NEW_VERSION
 ENV HOMARR_VERSION=${HOMARR_VERSION}
 
 # Wrapper entrypoint (options -> env -> exec Homarr's entrypoint)

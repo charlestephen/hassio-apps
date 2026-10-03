@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Linkding"
-version: "1.47.0"
+version: "$APP_NEW_VERSION"
 slug: "linkding"
 description: "Linkding bookmark manager (SQLite) with env-var injection via the config UI"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/linkding"

@@ -1,11 +1,11 @@
 ---
 # https://github.com/hassio-addons/addon-base
 build_from:
-  aarch64: ghcr.io/hassio-addons/base:21.0.0
-  amd64: ghcr.io/hassio-addons/base:21.0.0
+  aarch64: ghcr.io/hassio-addons/base:stable
+  amd64: ghcr.io/hassio-addons/base:stable
 upstream_repo: "semaphoreui/semaphore"
 upstream_version_arg: SEMAPHORE_VERSION
 args:
-  SEMAPHORE_VERSION: "2.19.14"
+  SEMAPHORE_VERSION: "$APP_NEW_VERSION"
   TERRAFORM_VERSION: "1.16.4"
   OPENTOFU_VERSION: "1.13.0"

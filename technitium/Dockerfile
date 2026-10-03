@@ -1,9 +1,9 @@
 ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
-ARG TECHNITIUM_VERSION=15.5.1
+ARG TECHNITIUM_VERSION=$APP_NEW_VERSION
 
 # Stage 1: Pull the Technitium DNS Server app from the upstream image so the
-# final image stays in lockstep with the primary developer's build. Tracking
-# :latest by default; pin via the TECHNITIUM_VERSION build arg if needed.
+# final image stays in lockstep with the primary developer's build.
+# TECHNITIUM_VERSION is filled by scripts/update-upstream-version.py.
 FROM technitium/dns-server:${TECHNITIUM_VERSION} AS technitium
 
 # Stage 2: Build final image on HA base (Alpine 3.23, bashio + s6-overlay v3)

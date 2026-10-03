@@ -1,7 +1,9 @@
 # Changelog
 
-## 2.19.14
+## $APP_NEW_VERSION
 - Upgrade Semaphore 2.19.12 -> 2.19.14, Terraform 1.16.2 -> 1.16.4, OpenTofu 1.12.6 -> 1.13.0
+
+- Upgrading from upstream version 2.19.14 -> $APP_NEW_VERSION
 - Edit CI workflows to autobuild on upstream release.
 
 ## 2.19.12
@@ -65,7 +67,7 @@
 - **Initial release** of the Semaphore UI app.
 - Ships **Semaphore UI v2.18.12** (released 2026-06-08) via a multi-stage
   build: binary copied from `semaphoreui/semaphore:v2.18.12`; final image
-  built on `ghcr.io/hassio-addons/base:21.0.0` (Alpine 3.24, s6-overlay v3,
+  built on `ghcr.io/hassio-addons/base:stable` (Alpine 3.24, s6-overlay v3,
   bashio).
 
 - **Bundled automation toolchain** installed from Alpine 3.24 packages:

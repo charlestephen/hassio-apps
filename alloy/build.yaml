@@ -9,4 +9,4 @@ upstream_repo: "grafana/alloy"
 upstream_version_arg: ALLOY_VERSION
 upstream_version_arg_prefix: v
 args:
-  ALLOY_VERSION: "v1.20.1"
+  ALLOY_VERSION: "$APP_NEW_VERSION"

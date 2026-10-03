@@ -2,7 +2,7 @@
 
 [Traefik Manager](https://github.com/chr0nzz/traefik-manager) is a
 self-hosted web UI for managing Traefik's routes, services, middlewares,
-certificates and logs, without hand-editing YAML.
+certificates and logs, without hand-editing YAML. This app tracks upstream Traefik Manager `$APP_NEW_VERSION`.
 
 ## Installation
 

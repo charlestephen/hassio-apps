@@ -12,8 +12,7 @@
 
 ## 18.4.e
 
-- Upgrade base image from `ghcr.io/hassio-addons/base:20.0.1` to
-  `ghcr.io/hassio-addons/base:21.0.0` (Alpine 3.24). The Alpine 3.24 tree
+- Base image is `ghcr.io/hassio-addons/base:stable` (Alpine 3.24). The Alpine 3.24 tree
   continues to package `postgresql18` from the same upstream 18.4 point release;
   only the base OS layer (musl, OpenSSL, s6-overlay) is refreshed. Existing data
   clusters in `/data/postgres` are fully compatible — no `pg_upgrade` required.
