@@ -6,7 +6,7 @@
 that renders good-looking error pages (404, 500, 502, …) in a range of themes.
 It's meant to sit behind a **reverse proxy** (Traefik, nginx, Caddy, HAProxy):
 when an upstream returns an error, the proxy fetches the matching page from this
-app and shows it to the visitor.
+app and shows it to the visitor. This app tracks upstream error-pages `$APP_NEW_VERSION`.
 
 The server listens on port **8080** inside the container; set the host port under
 the app's **Network** tab (default 8080).

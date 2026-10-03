@@ -1,6 +1,8 @@
 # Changelog
-## 15.5.1
+## $APP_NEW_VERSION
 - Update Technitium DNS Server from 15.5.0 to 15.5.1 (upstream release 2026-09-20).
+
+- Upgrading from upstream version 15.5.1 -> $APP_NEW_VERSION
 
 ## 15.5.0
 
@@ -111,8 +113,7 @@ Full upstream changelog:
 
 ## 15.2.0.r
 
-- Upgrade base image from `ghcr.io/hassio-addons/base:20.0.1` to
-  `ghcr.io/hassio-addons/base:21.0.0`, which bundles Alpine 3.24 (musl 1.2.5,
+- Base image is `ghcr.io/hassio-addons/base:stable`, which bundles Alpine 3.24 (musl 1.2.5,
   OpenSSL 3.4, s6-overlay 3.2.x). The Technitium application version and all
   app behaviour are unchanged; this is a base OS refresh only.
 

@@ -54,7 +54,7 @@ in `config.yaml`.
 
 ## Auto-update
 
-The cloudflared binary is pinned in the image (`CLOUDFLARED_VERSION`) and tracked
-by Renovate; a new upstream release triggers a rebuild + version bump like your
-other apps. cloudflared's own self-updater is disabled (`--no-autoupdate`)
+The cloudflared binary version is `$APP_NEW_VERSION`. `scripts/update-upstream-version.py`
+writes it into the image when upstream publishes a release, which rebuilds this
+app. cloudflared's own self-updater is disabled (`--no-autoupdate`)
 because the image is immutable.

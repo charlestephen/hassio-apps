@@ -5,7 +5,7 @@
 # s6-overlay binaries are static, so there are NO RUN steps -> amd64 + aarch64
 # both cross-build cleanly. Config is read with the python3 already bundled in
 # the linkding image (instead of bashio, which would need bash/jq via a RUN).
-ARG LINKDING_VERSION=1.47.0
+ARG LINKDING_VERSION=$APP_NEW_VERSION
 FROM ghcr.io/home-assistant/base:3.24 AS habase
 
 FROM ghcr.io/sissbruecker/linkding:${LINKDING_VERSION}-alpine

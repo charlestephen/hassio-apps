@@ -4,7 +4,7 @@
 
 Technitium DNS Server is an open source authoritative and recursive DNS server. It features a web-based management interface, DNSSEC validation, DNS-over-HTTPS (DoH), **DNS-over-HTTPS/3 (DoH3)**, DNS-over-TLS (DoT), **DNS-over-QUIC (DoQ)**, and advanced DNS filtering.
 
-This app tracks the upstream `technitium/dns-server` image and adds Microsoft's `libmsquic` library so QUIC-based DNS protocols (DoQ and DoH3) are available out of the box.
+This app tracks upstream Technitium DNS Server `$APP_NEW_VERSION` (image `technitium/dns-server`, source `TechnitiumSoftware/DnsServer`) and adds Microsoft's `libmsquic` library so QUIC-based DNS protocols (DoQ and DoH3) are available out of the box.
 
 ## Configuration
 

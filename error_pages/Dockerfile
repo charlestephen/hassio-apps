@@ -1,8 +1,8 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:21.0.0
+ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 # error-pages ships a single static Go binary in a distroless image; copy it
 # onto the HA base so s6/bashio can supervise it.
 # renovate: datasource=docker depName=ghcr.io/tarampampam/error-pages
-ARG ERROR_PAGES_VERSION=4.2.5
+ARG ERROR_PAGES_VERSION=$APP_NEW_VERSION
 
 # Stage 1: the upstream error-pages image
 FROM ghcr.io/tarampampam/error-pages:${ERROR_PAGES_VERSION} AS errorpages

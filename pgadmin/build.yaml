@@ -1,9 +1,9 @@
 ---
 # https://github.com/hassio-addons/addon-base
 build_from:
-  aarch64: ghcr.io/hassio-addons/base:20.0.1
-  amd64: ghcr.io/hassio-addons/base:20.0.1
-upstream_repo: "dpage/pgadmin4"
+  aarch64: ghcr.io/hassio-addons/base:stable
+  amd64: ghcr.io/hassio-addons/base:stable
+upstream_repo: "pgadmin-org/pgadmin4"
 args:
-  PGADMIN_VERSION: "9.18.0"
+  PGADMIN_VERSION: "$APP_NEW_VERSION"
 upstream_version_arg: PGADMIN_VERSION

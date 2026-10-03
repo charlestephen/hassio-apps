@@ -4,7 +4,7 @@ The [Traefik Manager Agent (TMA)](https://traefik-manager.xyzlab.dev/agent.html)
 lets the main [Traefik Manager](../traefik-manager/) app manage a Traefik
 instance running on a **different** host than the one Traefik Manager itself
 runs on. Install this app on that remote host instead (it does not need to
-run on the same Home Assistant instance as Traefik Manager, but can).
+run on the same Home Assistant instance as Traefik Manager, but can). This app tracks upstream Traefik Manager Agent `$APP_NEW_VERSION`.
 
 ## Installation
 
