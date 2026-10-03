@@ -12,7 +12,8 @@ ENV FORGEJO_WORK_DIR=/data \
     SSH_LISTEN_PORT=22 \
     SSH_PORT=222
 
-RUN apk --no-cache add \
+RUN apk upgrade --no-cache \
+    && apk add --no-cache \
     shadow \
     jq \
     gettext

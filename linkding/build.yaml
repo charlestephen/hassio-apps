@@ -2,8 +2,8 @@
 # Multi-stage build with a pinned versioned Linkding Alpine image and the HA
 # base for s6-overlay.
 build_from:
-  aarch64: ghcr.io/home-assistant/base:3.24
-  amd64: ghcr.io/home-assistant/base:3.24
+  aarch64: ghcr.io/hassio-addons/base:stable
+  amd64: ghcr.io/hassio-addons/base:stable
 upstream_repo: sissbruecker/linkding
 upstream_version_arg: LINKDING_VERSION
 args:

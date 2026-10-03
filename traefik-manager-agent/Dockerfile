@@ -8,7 +8,8 @@ FROM ${BUILD_FROM}
 
 # jq: parse /data/options.json in the wrapper entrypoint. The upstream image
 # is alpine-based (git, ca-certificates, curl, tzdata already present).
-RUN apk add --no-cache jq
+RUN apk upgrade --no-cache \
+    && apk add --no-cache jq
 
 # Surface the upstream version to the runtime entrypoint (for log output).
 ARG TMA_VERSION=$APP_NEW_VERSION

@@ -7,7 +7,8 @@ ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager:$APP_NEW_VERSION
 FROM ${BUILD_FROM}
 
 # jq: parse /data/options.json in the wrapper entrypoint.
-RUN apk add --no-cache jq
+RUN apk upgrade --no-cache \
+    && apk add --no-cache jq
 
 # Surface the upstream version to the runtime entrypoint (for log output).
 ARG TRAEFIK_MANAGER_VERSION=$APP_NEW_VERSION

@@ -13,7 +13,8 @@ FROM ${BUILD_FROM}
 # Runtime libraries for pgAdmin's bundled Python 3.14 and its compiled
 # extensions. (Alpine's own python3 is 3.12, which the cp314 venv can't use, so
 # we bring pgAdmin's interpreter along instead of installing one.)
-RUN apk add --no-cache \
+RUN apk upgrade --no-cache \
+    && apk add --no-cache \
       gdbm \
       icu-libs \
       krb5-libs \
