@@ -24,7 +24,8 @@ FROM ${BUILD_FROM}
 #   - rsync: used by some Ansible modules (e.g. synchronize)
 #   - python3: Ansible runtime requirement
 #   - py3-requests / py3-jinja2: common Ansible collection deps
-RUN apk add --no-cache \
+RUN apk upgrade --no-cache \
+    && apk add --no-cache \
       ansible \
       git \
       openssh-client \

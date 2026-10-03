@@ -8,7 +8,8 @@ FROM ${BUILD_FROM}
 
 # jq: parse /data/options.json in the wrapper entrypoint.
 # openssl is already present in the Homarr image (used for SECRET_ENCRYPTION_KEY).
-RUN apk add --no-cache jq
+RUN apk upgrade --no-cache \
+    && apk add --no-cache jq
 
 # Surface the Homarr version to the runtime entrypoint (for log output).
 ARG HOMARR_VERSION=$APP_NEW_VERSION
