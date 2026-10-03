@@ -15,7 +15,8 @@ FROM ${BUILD_FROM}
 #   - libmsquic: enables DNS-over-QUIC (DoQ) and DNS-over-HTTP/3 (DoH3);
 #     packaged for Alpine/musl by the Microsoft QUIC Team in
 #     v3.23/community, so no Microsoft apt repo is needed on this base.
-RUN apk add --no-cache \
+RUN apk upgrade --no-cache \
+    && apk add --no-cache \
       aspnetcore10-runtime \
       icu-libs \
       libmsquic

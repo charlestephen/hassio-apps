@@ -1,11 +1,10 @@
 # Home Assistant App: Grafana Alloy
 #
-# The base image is pinned directly in the FROM line. As of Supervisor 2026.04.0
-# the BUILD_FROM build-arg is no longer injected unless a build.yaml declares
-# build_from, so the modern, recommended approach is to set the base image here.
-# ghcr.io/home-assistant/base is a multi-arch (amd64/aarch64) Alpine image and
-# buildx selects the matching platform automatically.
-FROM ghcr.io/home-assistant/base:3.24
+# The base image is pinned directly in the FROM line and mirrored in
+# build.yaml so CI can pass BUILD_FROM when needed.
+# ghcr.io/hassio-addons/base:stable is a multi-arch (amd64/aarch64) Alpine
+# image with s6-overlay; buildx selects the matching platform automatically.
+FROM ghcr.io/hassio-addons/base:stable
 
 # Pin the Alloy release for reproducible builds.
 ARG ALLOY_VERSION="v$APP_NEW_VERSION"
@@ -14,7 +13,8 @@ ARG BUILD_ARCH
 
 # Grafana Alloy is a glibc binary; libc6-compat provides the shim so it runs on
 # Alpine's musl. unzip is used to unpack the release archive.
-RUN apk add --no-cache libc6-compat unzip
+RUN apk upgrade --no-cache \
+    && apk add --no-cache libc6-compat unzip
 
 # Download, checksum-verify and install the Alloy binary. Alloy publishes arm64
 # (not aarch64) assets, so translate the HA arch name on the fly.
