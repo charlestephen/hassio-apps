@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.6
+
+- Upgrading from upstream version 18.4.f -> 18.6
+
 ## 18.4.f
 
 - CI/registry: image now builds via **GitHub Actions** and publishes to

@@ -1,9 +1,8 @@
 # Changelog
 
-## $APP_NEW_VERSION
+## 2.19.14
 - Upgrade Semaphore 2.19.12 -> 2.19.14, Terraform 1.16.2 -> 1.16.4, OpenTofu 1.12.6 -> 1.13.0
 
-- Upgrading from upstream version 2.19.14 -> $APP_NEW_VERSION
 - Edit CI workflows to autobuild on upstream release.
 
 ## 2.19.12

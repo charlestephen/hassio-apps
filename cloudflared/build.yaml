@@ -6,4 +6,4 @@ build_from:
 upstream_repo: "cloudflare/cloudflared"
 upstream_version_arg: CLOUDFLARED_VERSION
 args:
-  CLOUDFLARED_VERSION: "$APP_NEW_VERSION"
+  CLOUDFLARED_VERSION: "2026.9.3"

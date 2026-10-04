@@ -2,7 +2,7 @@
 name: Traefik Manager
 description: Clean, self-hosted web UI for managing Traefik routes, middlewares, certificates and logs.
 url: https://traefik-manager.xyzlab.dev/
-version: "$APP_NEW_VERSION"
+version: "1.15.0"
 stage: stable
 homeassistant: "2026.6.0"
 slug: traefik-manager

@@ -7,4 +7,4 @@ build_from:
 upstream_repo: sissbruecker/linkding
 upstream_version_arg: LINKDING_VERSION
 args:
-  LINKDING_VERSION: "$APP_NEW_VERSION"
+  LINKDING_VERSION: "1.47.0"

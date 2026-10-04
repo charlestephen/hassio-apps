@@ -2,7 +2,7 @@ ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 # pgAdmin's official image is Alpine 3.23 / Python 3.14 — the same as our base —
 # so its virtualenv is relocatable onto the HA base image.
 # renovate: datasource=docker depName=dpage/pgadmin4 versioning=docker
-ARG PGADMIN_VERSION=$APP_NEW_VERSION
+ARG PGADMIN_VERSION=9.18
 
 # Stage 1: pgAdmin from the official image
 FROM dpage/pgadmin4:${PGADMIN_VERSION} AS pgadmin

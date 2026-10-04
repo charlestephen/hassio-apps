@@ -1,5 +1,9 @@
 # Changelog
 
+## 15
+
+- Upgrading from upstream version 1.0.11-1 -> 15
+
 ## 1.0.11-1
 
 - CI/registry: image now builds via **GitHub Actions** and publishes to

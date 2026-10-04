@@ -1,7 +1,7 @@
 name: Semaphore
 description: Modern web UI for Ansible, Terraform, OpenTofu, and other DevOps automation tools.
 url: https://semaphoreui.com
-version: "$APP_NEW_VERSION"
+version: "2.19.14"
 stage: stable
 homeassistant: "2026.6.0"
 slug: semaphore

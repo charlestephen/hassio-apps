@@ -5,5 +5,5 @@ build_from:
   amd64: ghcr.io/hassio-addons/base:stable
 upstream_repo: "tarampampam/error-pages"
 args:
-  ERROR_PAGES_VERSION: "$APP_NEW_VERSION"
+  ERROR_PAGES_VERSION: "4.2.5"
 upstream_version_arg: ERROR_PAGES_VERSION
