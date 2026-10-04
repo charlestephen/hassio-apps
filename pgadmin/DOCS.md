@@ -4,7 +4,7 @@
 
 pgAdmin 4 is the standard web UI for administering PostgreSQL — browse and edit
 data, run queries, manage roles and databases, and monitor activity. It pairs
-with the **PostgreSQL** app in this repository. This app tracks upstream pgAdmin `$APP_NEW_VERSION`.
+with the **PostgreSQL** app in this repository. This app tracks upstream pgAdmin `9.18`.
 
 It runs in multi-user (server) mode behind gunicorn and stores its
 configuration database and per-user storage in `/data/pgadmin` (persisted by the

@@ -77,6 +77,10 @@ jobs:
             aarch64) echo "platform=linux/arm64" >> "$GITHUB_OUTPUT" ;;
           esac
           VERSION=$(grep '^version:' "$A/config.yaml" | sed 's/^version: *//; s/"//g')
+          if [[ "$VERSION" == *'$'* ]]; then
+            echo "Refusing to build ${A}: config.yaml version is unsubstituted (${VERSION})" >&2
+            exit 1
+          fi
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
           # Parsed with PyYAML instead of grep/sed: the previous grep/sed

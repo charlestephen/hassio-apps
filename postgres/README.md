@@ -9,5 +9,5 @@ PostgreSQL 18 — a powerful, open source object-relational database server.
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[release-shield]: https://img.shields.io/badge/version-v18.4-blue.svg
+[release-shield]: https://img.shields.io/badge/version-v18.6-blue.svg
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/postgres

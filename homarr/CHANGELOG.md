@@ -4,11 +4,13 @@ All notable changes to the Homarr app are documented here.
 The version tracks the upstream Homarr release it is built from
 (with a `-N` suffix for app-only revisions between upstream releases).
 
-## $APP_NEW_VERSION
+## 2.1.1
+
+- Upgrading from upstream version 1.77.2 -> 2.1.1
+
+## 1.77.2
 
 - Upgrade Homarr v1.77.1 -> v1.77.2
-
-- Upgrading from upstream version 1.77.2 -> $APP_NEW_VERSION
 
 ## 1.77.1
 

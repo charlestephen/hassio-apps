@@ -1,10 +1,8 @@
 # Changelog
 
-## $APP_NEW_VERSION
+## 16.0.5
 
 - Upgrade Forgejo 16.0.4 -> 16.0.5.
-
-- Upgrading from upstream version 16.0.5 -> $APP_NEW_VERSION
 
 ## 16.0.4
 

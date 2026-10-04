@@ -6,4 +6,4 @@ build_from:
 upstream_repo: "TechnitiumSoftware/DnsServer"
 upstream_version_arg: TECHNITIUM_VERSION
 args:
-  TECHNITIUM_VERSION: "$APP_NEW_VERSION"
+  TECHNITIUM_VERSION: "15.6.0"

@@ -3,7 +3,7 @@ FROM ${BUILD_FROM}
 
 # PostgreSQL 18 — Alpine ships the 18.x series under the postgresql18 packages.
 # renovate: datasource=docker depName=postgres versioning=docker
-ARG POSTGRES_VERSION=18.4
+ARG POSTGRES_VERSION=18.6
 RUN apk upgrade --no-cache \
     && apk add --no-cache \
       postgresql18 \

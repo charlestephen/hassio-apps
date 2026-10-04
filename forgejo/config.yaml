@@ -1,5 +1,5 @@
 name: Forgejo
-version: "$APP_NEW_VERSION"
+version: "16.0.5"
 slug: forgejo
 image: ghcr.io/charlestephen/hassio-addons-forgejo-{arch}
 description: Forgejo is a Git hosting, code review, team collaboration, package registry, and CI/CD

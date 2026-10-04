@@ -2,11 +2,11 @@
 All notable changes to the Traefik Manager Agent app are documented here.
 The version tracks the upstream Traefik Manager Agent (TMA) release it is
 built from.
-## $APP_NEW_VERSION
-- Updated to `ghcr.io/chr0nzz/traefik-manager-agent:$APP_NEW_VERSION` (multi-arch:
+## 1.15.0
+- Updated to `ghcr.io/chr0nzz/traefik-manager-agent:1.15.0` (multi-arch:
   `aarch64`, `amd64`).
 
-- Upgrading from upstream version 1.14.0 -> $APP_NEW_VERSION
+- Upgrading from upstream version 1.14.0 -> 1.15.0
 - Added correcct bind mounts for Traefik, ssl, and data dirs.
 
 ## 1.13.5

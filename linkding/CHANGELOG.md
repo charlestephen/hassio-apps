@@ -1,10 +1,8 @@
 # Changelog
 
-## $APP_NEW_VERSION
+## 1.47.0
 
 - Update from upstream 1.0.2 -> 1.47.0
-
-- Upgrading from upstream version 1.47.0 -> $APP_NEW_VERSION
 
 ## 1.0.2-2
 

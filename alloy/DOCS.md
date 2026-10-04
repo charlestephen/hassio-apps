@@ -117,6 +117,6 @@ positions survive restarts and Alloy won't re-send already-shipped logs.
 
 ## Updating Alloy
 
-The Alloy version is `$APP_NEW_VERSION`. `scripts/update-upstream-version.py`
+The Alloy version is `1.20.1`. `scripts/update-upstream-version.py`
 writes it into `build.yaml` and the `Dockerfile` when upstream publishes a
 release, and that commit rebuilds the app.

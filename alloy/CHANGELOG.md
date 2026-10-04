@@ -1,9 +1,7 @@
 # Changelog
 
-## $APP_NEW_VERSION
+## 1.20.1
 - Upgrade Grafana Alloy v1.19.2 -> 1.20.1.
-
-- Upgrading from upstream version 1.20.1 -> $APP_NEW_VERSION
 
 ## 1.19.2
 
