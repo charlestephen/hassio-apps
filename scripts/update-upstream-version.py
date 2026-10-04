@@ -142,6 +142,261 @@ def rewrite_prose(path: Path, version: str, old_values: list[str]) -> None:
         path.write_text(updated, encoding="utf-8")
 
 
+NOTE_LINE_LIMIT = 100
+SHORT_NOTE = 400
+CHANGELOG_NAMES = ("CHANGELOG.md", "CHANGES.md", "HISTORY.md", "NEWS.md")
+
+
+def quote_note(text: str) -> list[str]:
+    cleaned = text.replace("\r\n", "\n").replace("\r", "\n").strip()
+    if not cleaned:
+        return []
+    quoted: list[str] = []
+    for line in cleaned.split("\n"):
+        quoted.append(f"> {line}" if line else ">")
+    return quoted
+
+
+def render_note_block(entries: list[dict[str, str]]) -> str:
+    lines: list[str] = []
+    omitted = 0
+    for entry in entries:
+        chunk = [f"> Upstream {entry['tag']}: {entry['url']}", ">"]
+        chunk.extend(quote_note(entry["body"]))
+        if len(lines) + len(chunk) > NOTE_LINE_LIMIT and lines:
+            omitted += 1
+            continue
+        if len(lines) + len(chunk) > NOTE_LINE_LIMIT:
+            room = NOTE_LINE_LIMIT - len(lines) - 1
+            chunk = chunk[:room] + ["> …"]
+        lines.extend(chunk)
+        lines.append(">")
+    if omitted:
+        lines.append(f"> {omitted} older upstream releases omitted.")
+    while lines and lines[-1] == ">":
+        lines.pop()
+    return "\n".join(lines)
+
+
+def numeric_parts(version: str) -> list[int]:
+    parts: list[int] = []
+    for kind, value in version_key(version):
+        if kind != 0:
+            break
+        parts.append(int(value))
+    while parts and parts[-1] == 0:
+        parts.pop()
+    return parts
+
+
+def changelog_section(text: str, version: str) -> str:
+    """Return the changelog section whose heading is this version."""
+    wanted = numeric_parts(version)
+    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    start = None
+    level = 0
+    for index, line in enumerate(lines):
+        match = re.match(
+            r"^(#{1,3})\s+\[?(?:version\s+|v)?(\d+(?:\.\d+)*)",
+            line.strip(),
+            re.IGNORECASE,
+        )
+        if not match:
+            continue
+        if numeric_parts(match.group(2)) == wanted:
+            start = index + 1
+            level = len(match.group(1))
+            break
+    if start is None:
+        return ""
+    end = len(lines)
+    for index in range(start, len(lines)):
+        match = re.match(r"^(#{1,3})\s+", lines[index])
+        if match and len(match.group(1)) <= level:
+            end = index
+            break
+    return "\n".join(lines[start:end]).strip()
+
+
+def insert_note_block(text: str, version: str, block: str) -> str:
+    match = re.search(rf"(?m)^## {re.escape(version)}\s*$", text)
+    if not match or not block.strip():
+        return text
+    start = match.end()
+    nxt = re.search(r"(?m)^## ", text[start:])
+    end = start + nxt.start() if nxt else len(text)
+    section = text[start:end]
+    if "> Upstream " in section:
+        return text
+    section = section.rstrip() + "\n\n" + block.rstrip() + "\n\n"
+    return text[:start] + section + text[end:]
+
+
+def fetch_text(url: str, token: str | None, accept: str | None = None) -> str:
+    headers = {"User-Agent": "hassio-apps-track"}
+    if accept:
+        headers["Accept"] = accept
+    if token and "api.github.com" in url:
+        headers["Authorization"] = f"Bearer {token}"
+        headers["X-GitHub-Api-Version"] = "2022-11-28"
+    request = urllib.request.Request(url, headers=headers)
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return response.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode("utf-8", "replace")[:200]
+        if error.code == 404:
+            raise LookupError(detail) from error
+        raise RuntimeError(f"{url} returned {error.code}: {detail}") from error
+
+
+def release_records(upstream: str, token: str | None) -> list[dict[str, str]]:
+    if upstream.startswith("codeberg.org/"):
+        slug = upstream.removeprefix("codeberg.org/")
+        payload = fetch_json(
+            f"https://codeberg.org/api/v1/repos/{slug}/releases?limit=50",
+            None,
+        )
+        host = "codeberg"
+    else:
+        payload = fetch_json(
+            f"https://api.github.com/repos/{upstream}/releases?per_page=100",
+            token,
+        )
+        host = "github"
+        slug = upstream
+    if not isinstance(payload, list):
+        return []
+    records: list[dict[str, str]] = []
+    for release in payload:
+        if release.get("draft") or release.get("prerelease"):
+            continue
+        tag = str(release.get("tag_name") or "")
+        if not tag or is_prerelease(tag):
+            continue
+        url = str(release.get("html_url") or "")
+        if not url:
+            if host == "github":
+                url = f"https://github.com/{slug}/releases/tag/{tag}"
+            else:
+                url = f"https://codeberg.org/{slug}/releases/tag/{tag}"
+        records.append({"tag": tag, "url": url, "body": str(release.get("body") or "")})
+    return records
+
+
+def release_by_tag(upstream: str, tag: str, token: str | None) -> dict[str, str] | None:
+    if upstream.startswith("codeberg.org/"):
+        slug = upstream.removeprefix("codeberg.org/")
+        url = f"https://codeberg.org/api/v1/repos/{slug}/releases/tags/{tag}"
+        html = f"https://codeberg.org/{slug}/releases/tag/{tag}"
+    else:
+        url = f"https://api.github.com/repos/{upstream}/releases/tags/{tag}"
+        html = f"https://github.com/{upstream}/releases/tag/{tag}"
+    try:
+        payload = fetch_json(url, token)
+    except LookupError:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    return {
+        "tag": tag,
+        "url": str(payload.get("html_url") or html),
+        "body": str(payload.get("body") or ""),
+    }
+
+
+def changelog_at_tag(upstream: str, tag: str, token: str | None) -> str:
+    if upstream.startswith("codeberg.org/"):
+        slug = upstream.removeprefix("codeberg.org/")
+        for name in CHANGELOG_NAMES:
+            try:
+                return fetch_text(
+                    f"https://codeberg.org/api/v1/repos/{slug}/raw/{name}?ref={tag}",
+                    None,
+                )
+            except LookupError:
+                continue
+        return ""
+    for name in CHANGELOG_NAMES:
+        try:
+            return fetch_text(
+                f"https://api.github.com/repos/{upstream}/contents/{name}?ref={tag}",
+                token,
+                "application/vnd.github.raw",
+            )
+        except LookupError:
+            continue
+    return ""
+
+
+def notes_between(upstream: str, old: str, version: str, tag: str, token: str | None) -> str:
+    try:
+        records = release_records(upstream, token)
+    except (LookupError, RuntimeError, urllib.error.URLError, TimeoutError):
+        records = []
+    new_key = version_key(version)
+    old_is_upstream = bool(old) and old != version and any(
+        numeric_parts(normalize_version(record["tag"])) == numeric_parts(old)
+        for record in records
+    )
+    chosen: list[dict[str, str]] = []
+    for record in records:
+        key = version_key(normalize_version(record["tag"]))
+        if old_is_upstream and version_key(old) < new_key:
+            if version_key(old) < key <= new_key:
+                chosen.append(record)
+        elif key == new_key:
+            chosen.append(record)
+    if not any(version_key(normalize_version(record["tag"])) == new_key for record in chosen):
+        try:
+            single = release_by_tag(upstream, tag, token)
+        except (RuntimeError, urllib.error.URLError, TimeoutError):
+            single = None
+        if single:
+            chosen.insert(0, single)
+    chosen.sort(key=lambda record: version_key(normalize_version(record["tag"])), reverse=True)
+    changelog = ""
+    if any(len(record["body"].strip()) < SHORT_NOTE for record in chosen):
+        try:
+            changelog = changelog_at_tag(upstream, tag, token)
+        except (LookupError, RuntimeError, urllib.error.URLError, TimeoutError):
+            changelog = ""
+    entries: list[dict[str, str]] = []
+    for record in chosen:
+        body = record["body"].strip()
+        if changelog and len(body) < SHORT_NOTE:
+            section = changelog_section(changelog, normalize_version(record["tag"]))
+            if len(section) > len(body):
+                body = section
+        if not body:
+            continue
+        entries.append({"tag": record["tag"], "url": record["url"], "body": body})
+    return render_note_block(entries)
+
+
+def attach_upstream_notes(app_dir: Path, build: dict, old: str, version: str, tag: str) -> None:
+    upstream = str(build.get("upstream_repo") or "").strip()
+    path = app_dir / "CHANGELOG.md"
+    if not upstream or not path.is_file():
+        return
+    text = path.read_text(encoding="utf-8")
+    heading = re.search(rf"(?m)^## {re.escape(version)}\s*$", text)
+    if heading:
+        start = heading.end()
+        nxt = re.search(r"(?m)^## ", text[start:])
+        section = text[start : start + nxt.start()] if nxt else text[start:]
+        if "> Upstream " in section:
+            print(f"{app_dir.name}: upstream notes already recorded for {version}")
+            return
+    block = notes_between(upstream, old, version, tag, github_token())
+    updated = insert_note_block(text, version, block)
+    if updated == text:
+        print(f"{app_dir.name}: no upstream notes for {version}")
+        return
+    path.write_text(updated, encoding="utf-8")
+    print(f"{app_dir.name}: added upstream notes for {version}")
+
+
 def update_changelog(path: Path, old: str, version: str) -> None:
     if not path.is_file():
         return
@@ -208,6 +463,10 @@ def update_app(app_dir: Path, release_tag: str, *, force: bool) -> None:
         rewrite_prose(app_dir / name, version, old_values)
     update_changelog(app_dir / "CHANGELOG.md", old, version)
     update_readme_badge(app_dir / "README.md", version)
+    try:
+        attach_upstream_notes(app_dir, build, old, version, release_tag)
+    except (RuntimeError, urllib.error.URLError, TimeoutError, OSError) as error:
+        print(f"{app_dir.name}: upstream notes skipped: {error}", file=sys.stderr)
     print(f"{app_dir.name}: {old} -> {version} ({release_tag})")
 
 
@@ -344,12 +603,49 @@ def track_all(root: Path) -> int:
     return 0
 
 
+def noted_version(path: Path, version: str) -> str:
+    text = path.read_text(encoding="utf-8") if path.is_file() else ""
+    match = re.search(rf"(?m)^## {re.escape(version)}\s*$", text)
+    if not match:
+        return version
+    start = match.end()
+    nxt = re.search(r"(?m)^## ", text[start:])
+    section = text[start : start + nxt.start()] if nxt else text[start:]
+    previous = re.search(r"(?m)^- Upgrading from upstream version (.+?) -> ", section)
+    if previous:
+        return previous.group(1).strip()
+    return version
+
+
+def backfill_notes(root: Path) -> int:
+    failures: list[str] = []
+    for app_dir, build in tracked_apps(root):
+        marker = app_dir / "upstream_version.txt"
+        if not marker.is_file():
+            print(f"{app_dir.name}: no recorded upstream tag")
+            continue
+        tag = marker.read_text(encoding="utf-8").strip()
+        version = read_config_version(app_dir / "config.yaml")
+        old = noted_version(app_dir / "CHANGELOG.md", version)
+        try:
+            attach_upstream_notes(app_dir, build, old, version, tag)
+        except (RuntimeError, urllib.error.URLError, TimeoutError, OSError, LookupError) as error:
+            failures.append(f"{app_dir.name}: {error}")
+            print(f"{app_dir.name}: FAILED {error}", file=sys.stderr)
+    if failures:
+        return 1
+    return 0
+
+
 def main() -> None:
     if len(sys.argv) == 2 and sys.argv[1] == "--all":
         raise SystemExit(track_all(REPO_ROOT))
+    if len(sys.argv) == 2 and sys.argv[1] == "--notes":
+        raise SystemExit(backfill_notes(REPO_ROOT))
     if len(sys.argv) != 3:
         raise SystemExit(
             "usage: update-upstream-version.py --all\n"
+            "       update-upstream-version.py --notes\n"
             "       update-upstream-version.py APP_DIR RELEASE_TAG"
         )
     update_app(Path(sys.argv[1]), sys.argv[2], force=True)

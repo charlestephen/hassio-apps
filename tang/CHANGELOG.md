@@ -4,6 +4,22 @@
 
 - Upgrading from upstream version 1.0.11-1 -> 15
 
+> Upstream v15: https://github.com/latchset/tang/releases/tag/v15
+>
+> Release version 15 to include latest changes:
+> * Upgrade checkout Github action (v3->v4) (#142) (fbf1218)
+> * Fix issue introduced in http-parser -> llhttp conversion (819970c)
+> * Include parameter to indicate endpoint (#117) (4b7656b)
+> * Build tweaks (#138) (05ac375)
+> * Fix minor orthographic issue (#139) (7678db5)
+> * Readme updates (#137) (df3cc46)
+> * Add support for building with llhttp instead of http-parser (761423d)
+> * Avoid execution of build actions for doc files (#129) (caaf432)
+> * Avoid usage of unused variable (#128) (c39b6dd)
+> * misc: update coverage action to codecov-action/v3 (9e4f9a6)
+> * misc: remove ubuntu:kinetic from test build matrix (62ac383)
+> * Increase test timeouts (#131) (a5ed6b0)
+
 ## 1.0.11-1
 
 - CI/registry: image now builds via **GitHub Actions** and publishes to
