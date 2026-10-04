@@ -7,7 +7,7 @@
 FROM ghcr.io/hassio-addons/base:stable
 
 # Pin the Alloy release for reproducible builds.
-ARG ALLOY_VERSION="v$APP_NEW_VERSION"
+ARG ALLOY_VERSION="v1.20.1"
 # BUILD_ARCH is always injected by the Supervisor (amd64, aarch64, ...).
 ARG BUILD_ARCH
 

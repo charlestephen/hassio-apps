@@ -54,7 +54,7 @@ in `config.yaml`.
 
 ## Auto-update
 
-The cloudflared binary version is `$APP_NEW_VERSION`. `scripts/update-upstream-version.py`
+The cloudflared binary version is `2026.9.3`. `scripts/update-upstream-version.py`
 writes it into the image when upstream publishes a release, which rebuilds this
 app. cloudflared's own self-updater is disabled (`--no-autoupdate`)
 because the image is immutable.

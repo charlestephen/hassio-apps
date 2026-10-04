@@ -1,7 +1,7 @@
 name: pgAdmin
 description: pgAdmin 4 — web-based management UI for PostgreSQL.
 url: https://github.com/charlestephen/hassio-apps/tree/main/pgadmin
-version: "$APP_NEW_VERSION"
+version: "9.18"
 stage: stable
 homeassistant: "2026.6.0"
 slug: pgadmin

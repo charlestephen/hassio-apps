@@ -1,8 +1,11 @@
 # Changelog
-## $APP_NEW_VERSION
-- Update Technitium DNS Server from 15.5.0 to 15.5.1 (upstream release 2026-09-20).
+## 15.6.0
 
-- Upgrading from upstream version 15.5.1 -> $APP_NEW_VERSION
+- Upgrading from upstream version 15.5.1 -> 15.6.0
+
+## 15.5.1
+
+- Update Technitium DNS Server from 15.5.0 to 15.5.1 (upstream release 2026-09-20).
 
 ## 15.5.0
 

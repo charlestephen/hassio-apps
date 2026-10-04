@@ -1,10 +1,8 @@
 # Changelog
 
-## $APP_NEW_VERSION
+## 4.2.5
 
 - Upgrade Error Pages 4.2.3 -> 4.2.5.
-
-- Upgrading from upstream version 4.2.5 -> $APP_NEW_VERSION
 
 ## 4.2.3-1
 

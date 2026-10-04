@@ -6,7 +6,7 @@ a supervised Home Assistant app with persistent state.
 
 The image bundles the toolchains Semaphore's task templates call, so Ansible
 (with Python 3), Terraform, and OpenTofu templates all work out of the box —
-no extra installs. The Semaphore version is `$APP_NEW_VERSION`, filled in by
+no extra installs. The Semaphore version is `2.19.14`, filled in by
 `scripts/update-upstream-version.py`.
 
 ---

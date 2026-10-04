@@ -1,10 +1,8 @@
 # Changelog
 
-## $APP_NEW_VERSION
+## 2026.9.3
 
 - Upgrade cloudflared 2026.9.1 -> 2026.9.3
-
-- Upgrading from upstream version 2026.9.3 -> $APP_NEW_VERSION
 
 ## 2026.9.1
 

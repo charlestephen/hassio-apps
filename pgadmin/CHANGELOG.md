@@ -1,10 +1,8 @@
 # Changelog
 
-## $APP_NEW_VERSION
+## 9.18
 
 - Upgrade pgAdmin 9.17.0 -> 9.18.0
-
-- Upgrading from upstream version 9.18.0 -> $APP_NEW_VERSION
 
 ## 9.17
 

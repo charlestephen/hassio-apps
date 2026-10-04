@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager:$APP_NEW_VERSION
+ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager:1.15.0
 
 # Thin Home Assistant wrapper on the official Traefik Manager image. It's a
 # self-contained Flask app served by gunicorn, so we do NOT add s6-overlay;
@@ -11,7 +11,7 @@ RUN apk upgrade --no-cache \
     && apk add --no-cache jq
 
 # Surface the upstream version to the runtime entrypoint (for log output).
-ARG TRAEFIK_MANAGER_VERSION=$APP_NEW_VERSION
+ARG TRAEFIK_MANAGER_VERSION=1.15.0
 ENV TRAEFIK_MANAGER_VERSION=${TRAEFIK_MANAGER_VERSION}
 
 # Wrapper entrypoint (options -> env -> exec gunicorn)
