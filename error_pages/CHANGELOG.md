@@ -4,6 +4,55 @@
 
 - Upgrade Error Pages 4.2.3 -> 4.2.5.
 
+> Upstream v4.2.5: https://github.com/tarampampam/error-pages/releases/tag/v4.2.5
+>
+> <!-- Release notes generated using configuration in .github/release.yml at master -->
+>
+> ## What's Changed
+> ### 📦 Dependency updates
+> * build(deps): bump golang from 1.26.5 to 1.27.0 in https://github.com/tarampampam/error-pages/pull/423
+>
+> **Full Changelog**: https://github.com/tarampampam/error-pages/compare/v4.2.4...v4.2.5
+>
+> ## 🐋 Docker images
+>
+> ```cpp
+> // server
+> ghcr.io/tarampampam/error-pages:4.2.5
+> ghcr.io/tarampampam/error-pages:4.2
+> ghcr.io/tarampampam/error-pages:4
+> ghcr.io/tarampampam/error-pages:latest
+> quay.io/tarampampam/error-pages:4.2.5
+> quay.io/tarampampam/error-pages:4.2
+> quay.io/tarampampam/error-pages:4
+> quay.io/tarampampam/error-pages:latest
+> tarampampam/error-pages:4.2.5
+> tarampampam/error-pages:4.2
+> tarampampam/error-pages:4
+> tarampampam/error-pages:latest
+>
+> // builder
+> ghcr.io/tarampampam/error-pages:4.2.5-builder
+> ghcr.io/tarampampam/error-pages:4.2-builder
+> ghcr.io/tarampampam/error-pages:4-builder
+> ghcr.io/tarampampam/error-pages:latest-builder
+> quay.io/tarampampam/error-pages:4.2.5-builder
+> quay.io/tarampampam/error-pages:4.2-builder
+> quay.io/tarampampam/error-pages:4-builder
+> quay.io/tarampampam/error-pages:latest-builder
+> tarampampam/error-pages:4.2.5-builder
+> tarampampam/error-pages:4.2-builder
+> tarampampam/error-pages:4-builder
+> tarampampam/error-pages:latest-builder
+> ```
+>
+> ## 📦 Helm chart
+>
+> ```bash
+> helm install error-pages oci://ghcr.io/tarampampam/error-pages/charts/error-pages \
+>   --version 4.2.5
+> ```
+
 ## 4.2.3-1
 
 - CI/registry: image now builds via **GitHub Actions** and publishes to

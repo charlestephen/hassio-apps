@@ -3,6 +3,32 @@
 ## 1.20.1
 - Upgrade Grafana Alloy v1.19.2 -> 1.20.1.
 
+> Upstream v1.20.1: https://github.com/grafana/alloy/releases/tag/v1.20.1
+>
+> ## [1.20.1](https://github.com/grafana/alloy/compare/v1.20.0...v1.20.1) (2026-09-28)
+>
+>
+> ### Bug Fixes 🐛
+>
+> * **loki:** Add the timestamp to batch size calculation [backport] ([#7248](https://github.com/grafana/alloy/issues/7248)) ([3457a1c](https://github.com/grafana/alloy/commit/3457a1ccc8da558ffbd162c040a0d8ca62a0c54f)) (@grobinson-grafana)
+> * **loki:** Include estimate for stream labels in batch size [backport] ([#7247](https://github.com/grafana/alloy/issues/7247)) ([b346475](https://github.com/grafana/alloy/commit/b346475ab6242f6d9762d37e3c26bee9f65126c0)) (@grobinson-grafana)
+> * **loki:** Make loki_write_sent_bytes_total and loki_write_dropped_bytes_total count uncompressed bytes [backport] ([#7249](https://github.com/grafana/alloy/issues/7249)) ([575025a](https://github.com/grafana/alloy/commit/575025a43c8b204cb2e28edd7cb3a71e56455465)) (@grobinson-grafana)
+> * **otelcol.connector.host_info:** Mirror upstream logic and fix potential sources of over-count [backport] ([#7253](https://github.com/grafana/alloy/issues/7253)) ([479eb6f](https://github.com/grafana/alloy/commit/479eb6f11b2149b8326d0d229601d977e2630aaf)) (@jcreixell)
+> * **otelcol.receiver.cloudflare:** Default max_request_body_size to 20MiB [backport] ([#7254](https://github.com/grafana/alloy/issues/7254)) ([237fac7](https://github.com/grafana/alloy/commit/237fac76db82fd1466f920b577e4274d77bb244d)) (@sindef)
+> * **prometheus.remote_write:** Tolerate unknown WAL record types on replay [backport] ([#7237](https://github.com/grafana/alloy/issues/7237)) ([a613be5](https://github.com/grafana/alloy/commit/a613be532ebd9cfa247039c5bee9c2c2ef185625)) (@kgeckhart)
+>
+> ## Upgrading
+>
+> Read the [release notes] for specific instructions on upgrading from older versions:
+>
+> [release notes]: https://grafana.com/docs/alloy/v1.20/release-notes/
+>
+> ## Installation
+>
+> Refer to our [installation guide] for how to install Grafana Alloy.
+>
+> [installation guide]: https://grafana.com/docs/alloy/v1.20/get-started/install/
+
 ## 1.19.2
 
 - Upgrade Grafana Alloy v1.17.1 -> v1.19.2.
