@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.2
+
+- Upgrading from upstream version 2.1.1 -> 2.1.2
+
 All notable changes to the Homarr app are documented here.
 The version tracks the upstream Homarr release it is built from
 (with a `-N` suffix for app-only revisions between upstream releases).
