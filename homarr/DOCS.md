@@ -2,7 +2,7 @@
 
 Modern, self-hosted dashboard for your homelab — widgets, service integrations,
 and single sign-on. This app is a thin wrapper around the official
-[Homarr](https://homarr.dev) image at `2.1.2`.
+[Homarr](https://homarr.dev) image at `2.2.0`.
 
 ## Installation
 
