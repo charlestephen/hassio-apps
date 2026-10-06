@@ -1,5 +1,31 @@
 # Changelog
 
+## 2.2.0
+
+- Upgrading from upstream version 2.1.2 -> 2.2.0
+
+> Upstream v2.2.0: https://github.com/homarr-labs/homarr/releases/tag/v2.2.0
+>
+> ## [2.2.0](https://github.com/homarr-labs/homarr/compare/v2.1.2...v2.2.0) (2026-10-05)
+>
+> ## What's Changed
+> * docs(helm): update chart installation page by @homarr-charts-docs-sync[bot] in https://github.com/homarr-labs/homarr/pull/7039
+> * feat: add create-only root certificate API by @ajnart in https://github.com/homarr-labs/homarr/pull/7033
+> * fix(demo): stop seeded widget background polling by @ajnart in https://github.com/homarr-labs/homarr/pull/6980
+> * feat(sabnzbd): add archived history options to the Downloads widget by @Sobe1ac in https://github.com/homarr-labs/homarr/pull/6515
+> * chore(lang): updated translations from crowdin by @homarr-crowdin[bot] in https://github.com/homarr-labs/homarr/pull/6986
+> * feat: support Unraid storage pools by @ajnart in https://github.com/homarr-labs/homarr/pull/7038
+> * feat(widgets): add GPU metrics to Beszel system stats by @SmilingJoe in https://github.com/homarr-labs/homarr/pull/6645
+> * chore: update bug report template by @homarr-releases[bot] in https://github.com/homarr-labs/homarr/pull/7028
+> * fix: report GitHub icon indexing failures clearly by @ajnart in https://github.com/homarr-labs/homarr/pull/7008
+> * chore(release): automatic release v2.2.0 by @github-actions[bot] in https://github.com/homarr-labs/homarr/pull/7043
+>
+> ## New Contributors
+> * @Sobe1ac made their first contribution in https://github.com/homarr-labs/homarr/pull/6515
+> * @SmilingJoe made their first contribution in https://github.com/homarr-labs/homarr/pull/6645
+>
+> **Full Changelog**: https://github.com/homarr-labs/homarr/compare/v2.1.2...v2.2.0
+
 ## 2.1.2
 
 - Upgrading from upstream version 2.1.1 -> 2.1.2
