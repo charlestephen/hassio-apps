@@ -1,5 +1,36 @@
 # Changelog
 
+## 2.19.16
+
+- Upgrading from upstream version 2.19.14 -> 2.19.16
+
+> Upstream v2.19.16: https://github.com/semaphoreui/semaphore/releases/tag/v2.19.16
+>
+> ## Configurable runner check interval
+>
+> Runners can now be told how often to ask the server for new jobs. Until now the interval was hard-coded to 1 second, which on installations with many runners produced a noticeable amount of request traffic.
+>
+> New option in the runner section of the runner config:
+>
+> ```
+> {
+>   "runner": {
+>     "check_interval_seconds": 5
+>   }
+> }
+> ```
+> Or via environment variable:
+>
+> ```
+> SEMAPHORE_RUNNER_CHECK_INTERVAL_SECONDS=5
+> ```
+>
+> Default: 1 second, so existing installations behave exactly as before. Values of 0, negative values, or values too large to represent as a duration fall back to the default.
+>
+> What changes and what does not. Only the check for new jobs honours the configured interval. The runner's progress report, which also serves as its heartbeat, keeps running once per second. Raising the check interval therefore does not affect when the server marks a runner offline. Jobs will start up to check_interval_seconds later than before, so pick a value that matches how quickly you need new tasks to be picked up.
+>
+> Affected components: runner (semaphore runner start), config schema. No database migration, no changes to the server or the web interface.
+
 ## 2.19.14
 - Upgrade Semaphore 2.19.12 -> 2.19.14, Terraform 1.16.2 -> 1.16.4, OpenTofu 1.12.6 -> 1.13.0
 

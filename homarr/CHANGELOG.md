@@ -1,5 +1,44 @@
 # Changelog
 
+## 2.3.0
+
+- Upgrading from upstream version 2.2.0 -> 2.3.0
+
+> Upstream v2.3.0: https://github.com/homarr-labs/homarr/releases/tag/v2.3.0
+>
+> ## [2.3.0](https://github.com/homarr-labs/homarr/compare/v2.2.0...v2.3.0) (2026-10-07)
+>
+> ## What's Changed
+> * fix(lang): restore English UK labels corrupted by Crowdin by @ajnart in https://github.com/homarr-labs/homarr/pull/7050
+> * fix: avoid Pi-hole discovery authentication failures by @ajnart in https://github.com/homarr-labs/homarr/pull/7032
+> * chore(lang): updated translations from crowdin by @homarr-crowdin[bot] in https://github.com/homarr-labs/homarr/pull/7049
+> * docs(helm): update chart installation page by @homarr-charts-docs-sync[bot] in https://github.com/homarr-labs/homarr/pull/7046
+> * fix: allow unlimited sidebar content while editing by @ajnart in https://github.com/homarr-labs/homarr/pull/7061
+> * chore: update bug report template by @homarr-releases[bot] in https://github.com/homarr-labs/homarr/pull/7044
+> * fix: return dashboard settings header to current board by @ajnart in https://github.com/homarr-labs/homarr/pull/7059
+> * fix(dns-hole-summary): restore colors and fit compact cards by @ajnart in https://github.com/homarr-labs/homarr/pull/7045
+> * fix(db): explain unsupported MySQL upgrade options by @ajnart in https://github.com/homarr-labs/homarr/pull/7063
+> * fix: keep dashboard CSS out of board settings by @ajnart in https://github.com/homarr-labs/homarr/pull/7066
+> * fix: collapse Beszel controls on touch screens by @ajnart in https://github.com/homarr-labs/homarr/pull/7065
+> * fix(widgets): allow narrow Docker and downloads tables to scroll by @ajnart in https://github.com/homarr-labs/homarr/pull/7067
+> * fix(boards): reduce phone outer gutters by @ajnart in https://github.com/homarr-labs/homarr/pull/7070
+> * chore(deps): update dependency shell-quote@<1.8.5 to v1.11.0 [security] by @homarr-renovate[bot] in https://github.com/homarr-labs/homarr/pull/7071
+> * feat(api): expose existing dashboard controls by @rfdrew in https://github.com/homarr-labs/homarr/pull/6546
+> * fix: avoid stretching Beszel charts while rows overflow by @ajnart in https://github.com/homarr-labs/homarr/pull/7074
+> * chore: use Bun package management and Turbo remote caching by @ajnart in https://github.com/homarr-labs/homarr/pull/6978
+> * fix(board): separate nested container headers by @ajnart in https://github.com/homarr-labs/homarr/pull/7060
+> * fix(widgets): restore readable summary text and icons by @ajnart in https://github.com/homarr-labs/homarr/pull/7068
+> * fix(docs): simplify integration secrets styling by @ajnart in https://github.com/homarr-labs/homarr/pull/7076
+> * feat(rss-feed): add configurable description max length by @ZikriBen in https://github.com/homarr-labs/homarr/pull/7051
+> * chore(release): automatic release v2.3.0 by @github-actions[bot] in https://github.com/homarr-labs/homarr/pull/7077
+> * chore(release): automatic release v2.3.0 by @github-actions[bot] in https://github.com/homarr-labs/homarr/pull/7082
+>
+> ## New Contributors
+> * @rfdrew made their first contribution in https://github.com/homarr-labs/homarr/pull/6546
+> * @ZikriBen made their first contribution in https://github.com/homarr-labs/homarr/pull/7051
+>
+> **Full Changelog**: https://github.com/homarr-labs/homarr/compare/v2.2.0...v2.3.0
+
 ## 2.2.0
 
 - Upgrading from upstream version 2.1.2 -> 2.2.0
