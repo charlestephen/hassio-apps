@@ -1,7 +1,25 @@
+## 1.15.1
+
+- Upgrading from upstream version 1.15.0 -> 1.15.1
+
 # Changelog
 All notable changes to the Traefik Manager Agent app are documented here.
 The version tracks the upstream Traefik Manager Agent (TMA) release it is
 built from.
+
+> Upstream v1.15.1: https://github.com/chr0nzz/traefik-manager/releases/tag/v1.15.1
+>
+> ## v1.15.1
+>
+> **Improvements:**
+> - **[routes]** The route form warns when TLS is on and a plain http entry point such as `web` is selected, since that route returns 404 on http
+> - **[docs]** FAQ entry for `404 page not found`, a LAN only / CGNAT setup for umbrelOS, and the front proxy route for an Umbrel behind another reverse proxy
+>
+> **Bug fixes:**
+> - **[oidc, security]** Update PyJWT to 2.15.0 ([CVE-2026-101918](https://github.com/advisories/GHSA-42vr-xj54-vc7v))
+> - **[routes]** Editing or cloning a route without TLS no longer adds `tls: {}` back on save
+> - **[config]** A dynamic config with an empty `http:`, `tcp:`, `udp:` or `tls:` key no longer breaks setup and the routes page ([#209](https://github.com/chr0nzz/traefik-manager/discussions/209))
+
 ## 1.15.0
 - Updated to `ghcr.io/chr0nzz/traefik-manager-agent:1.15.0` (multi-arch:
   `aarch64`, `amd64`).
