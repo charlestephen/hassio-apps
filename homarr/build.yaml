@@ -2,11 +2,11 @@
 # Thin wrapper: build directly on Homarr's official multi-arch image.
 # Renovate tracks these per-arch lines via the shared regex manager.
 build_from:
-  aarch64: ghcr.io/homarr-labs/homarr:v2.3.0
-  amd64: ghcr.io/homarr-labs/homarr:v2.3.0
+  aarch64: ghcr.io/homarr-labs/homarr:v2.4.0
+  amd64: ghcr.io/homarr-labs/homarr:v2.4.0
 upstream_repo: "homarr-labs/homarr"
 upstream_build_from: true
 upstream_build_from_prefix: v
 upstream_version_arg: HOMARR_VERSION
 args:
-  HOMARR_VERSION: "2.3.0"
+  HOMARR_VERSION: "2.4.0"
