@@ -1,5 +1,37 @@
 # Changelog
 
+## 2.4.0
+
+- Upgrading from upstream version 2.3.0 -> 2.4.0
+
+> Upstream v2.4.0: https://github.com/homarr-labs/homarr/releases/tag/v2.4.0
+>
+> ## [2.4.0](https://github.com/homarr-labs/homarr/compare/v2.3.0...v2.4.0) (2026-10-09)
+>
+> ## What's Changed
+> * chore(lang): updated translations from crowdin by @homarr-crowdin[bot] in https://github.com/homarr-labs/homarr/pull/7091
+> * chore: update bug report template by @homarr-releases[bot] in https://github.com/homarr-labs/homarr/pull/7084
+> * fix(release): restore glibc SQLite bindings in Debian archives by @ajnart in https://github.com/homarr-labs/homarr/pull/7098
+> * fix(aria2): remove active and queued download jobs correctly by @Riccardo-Vecchi in https://github.com/homarr-labs/homarr/pull/7088
+> * fix(stocks): prevent compact quote overlap by @ajnart in https://github.com/homarr-labs/homarr/pull/7079
+> * fix: collapse mobile management navigation after link selection by @ajnart in https://github.com/homarr-labs/homarr/pull/7102
+> * perf(downloads): bound Transmission and Deluge item mapping by @Riccardo-Vecchi in https://github.com/homarr-labs/homarr/pull/7095
+> * Revert "fix(onboarding): return to welcome before administrator creation" by @ajnart in https://github.com/homarr-labs/homarr/pull/7111
+> * chore(deps): update alpine docker tag to v3.24.2 by @homarr-renovate[bot] in https://github.com/homarr-labs/homarr/pull/7114
+> * feat: add Docker name filter matching controls by @ajnart in https://github.com/homarr-labs/homarr/pull/7105
+> * fix(health-monitoring): remember cluster accordion choices by @ajnart in https://github.com/homarr-labs/homarr/pull/7104
+> * feat: group bookmarks and streamline app creation by @ajnart in https://github.com/homarr-labs/homarr/pull/7080
+> * feat: add board snapshot playground by @ajnart in https://github.com/homarr-labs/homarr/pull/7112
+> * perf(request-handler): reduce cache expiry work by @darbyjack in https://github.com/homarr-labs/homarr/pull/7108
+> * perf(media): revalidate uploaded images with ETags by @darbyjack in https://github.com/homarr-labs/homarr/pull/7116
+> * perf(ical): index recurrence exceptions by UID by @Riccardo-Vecchi in https://github.com/homarr-labs/homarr/pull/7090
+> * chore(release): automatic release v2.4.0 by @github-actions[bot] in https://github.com/homarr-labs/homarr/pull/7118
+>
+> ## New Contributors
+> * @Riccardo-Vecchi made their first contribution in https://github.com/homarr-labs/homarr/pull/7088
+>
+> **Full Changelog**: https://github.com/homarr-labs/homarr/compare/v2.3.0...v2.4.0
+
 ## 2.3.0
 
 - Upgrading from upstream version 2.2.0 -> 2.3.0
