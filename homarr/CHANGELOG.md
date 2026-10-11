@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.4.1
+
+- Upgrading from upstream version 2.4.0 -> 2.4.1
+
+> Upstream v2.4.1: https://github.com/homarr-labs/homarr/releases/tag/v2.4.1
+>
+> ## Fixes
+>
+> - Restore widget and app alignment after the v2.4.0 regression. An invisible widget control occupied 22px of layout space, causing widgets to shift down and overlap adjacent apps. [#7130](https://github.com/homarr-labs/homarr/pull/7130)
+> - Recognize revert-only hotfixes as patch releases. [#7131](https://github.com/homarr-labs/homarr/pull/7131)
+>
+> The board snapshot debugging feature introduced in #7112 is temporarily removed while it is reworked. Saved dashboard layouts do not need to be changed.
+>
+> [Full changelog](https://github.com/homarr-labs/homarr/compare/v2.4.0...v2.4.1)
+
 ## 2.4.0
 
 - Upgrading from upstream version 2.3.0 -> 2.4.0
