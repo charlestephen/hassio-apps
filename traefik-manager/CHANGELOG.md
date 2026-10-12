@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.15.2
+
+- Upgrading from upstream version 1.15.1 -> 1.15.2
+
+> Upstream v1.15.2: https://github.com/chr0nzz/traefik-manager/releases/tag/v1.15.2
+>
+> ## v1.15.2
+>
+> **Bug fixes:**
+> - **[agent, security]** Build the agent with Go 1.26.9 for nine standard library CVEs
+> - **[docs, security]** Update source-map-js to 1.2.2 in the docs toolchain ([CVE-2026-93749](https://github.com/advisories/GHSA-68fv-2mgg-jv7q))
+
 ## 1.15.1
 
 - Upgrading from upstream version 1.15.0 -> 1.15.1
