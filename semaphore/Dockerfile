@@ -1,6 +1,6 @@
 ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 ARG SEMAPHORE_VERSION=2.19.16
-ARG TERRAFORM_VERSION=1.15.7
+ARG TERRAFORM_VERSION=1.16.5
 ARG OPENTOFU_VERSION=1.12.3
 
 # Stage 1: pull the Semaphore binary from the upstream image (statically-linked
