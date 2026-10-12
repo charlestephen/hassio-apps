@@ -7,5 +7,5 @@ upstream_repo: "semaphoreui/semaphore"
 upstream_version_arg: SEMAPHORE_VERSION
 args:
   SEMAPHORE_VERSION: "2.19.16"
-  TERRAFORM_VERSION: "1.16.4"
+  TERRAFORM_VERSION: "1.16.5"
   OPENTOFU_VERSION: "1.13.0"
