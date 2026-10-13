@@ -21,8 +21,20 @@ RUN apk upgrade --no-cache \
       icu-libs \
       libmsquic
 
-# Copy Technitium app from official upstream image
+# Copy Technitium app from official upstream image. Drop compiler
+# symbol files; they are not used at runtime.
 COPY --from=technitium /opt/technitium/dns /opt/technitium/dns
+RUN find /opt/technitium/dns -type f -name '*.pdb' -delete
+
+# Home Assistant OS shares fs.inotify.max_user_instances (often 128) across
+# every add-on. .NET's default file watchers take an instance each and the
+# log then reports that inotify places are exhausted. Poll instead, and do
+# not reload appsettings on change. Workstation GC keeps the heap smaller
+# than server GC on a multi-core host.
+ENV DOTNET_USE_POLLING_FILE_WATCHER=1 \
+    DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false \
+    DOTNET_gcServer=0 \
+    DOTNET_GCConserveMemory=5
 
 # Create state directory
 RUN mkdir -p /etc/dns

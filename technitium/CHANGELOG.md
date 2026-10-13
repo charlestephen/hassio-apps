@@ -1,3 +1,12 @@
+## 15.6.1-1
+
+- Stop .NET from taking inotify instances. Home Assistant OS shares a small
+  `fs.inotify.max_user_instances` pool, and the previous startup exhausted it.
+  The server now polls for file changes and does not reload `appsettings` on
+  change.
+- Use workstation GC with `DOTNET_GCConserveMemory=5` so the heap stays
+  smaller on multi-core hosts. Drop `*.pdb` files from the image.
+
 ## 15.6.1
 
 - Upgrading from upstream version 15.6.0 -> 15.6.1
