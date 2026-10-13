@@ -1,4 +1,4 @@
-ARG BUILD_FROM=codeberg.org/forgejo/forgejo:16.0.5
+ARG BUILD_FROM=codeberg.org/forgejo/forgejo:16.0.6
 
 FROM ${BUILD_FROM}
 
