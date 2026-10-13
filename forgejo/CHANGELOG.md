@@ -1,5 +1,13 @@
 # Changelog
 
+## 16.0.6
+
+- Upgrading from upstream version 16.0.5 -> 16.0.6
+
+> Upstream v16.0.6: https://codeberg.org/forgejo/forgejo/releases/tag/v16.0.6
+>
+> See https://codeberg.org/forgejo/forgejo/src/branch/forgejo/release-notes-published/16.0.6.md
+
 ## 16.0.5
 
 - Upgrade Forgejo 16.0.4 -> 16.0.5.
