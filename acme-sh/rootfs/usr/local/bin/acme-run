@@ -1,0 +1,324 @@
+#!/bin/sh
+# Translate Home Assistant options into acme.sh commands, upgrade the client,
+# and leave supercronic running the renewal schedule.
+set -u
+
+OPTIONS=/data/options.json
+ACME="${LE_WORKING_DIR:-/acmebin}/acme.sh"
+HOOK_DIR="${LE_WORKING_DIR:-/acmebin}/deploy"
+export LE_WORKING_DIR="${LE_WORKING_DIR:-/acmebin}"
+export LE_CONFIG_HOME="${LE_CONFIG_HOME:-/data/acme.sh}"
+export HOME="$LE_CONFIG_HOME"
+
+# The image default would make `acme.sh --cron` upgrade itself in the middle
+# of a run, after which custom deploy hooks linked below would be gone.
+# Upgrade explicitly, then re-link, then renew.
+unset AUTO_UPGRADE
+
+log() {
+  printf '%s\n' "[acme.sh] $*"
+}
+
+die() {
+  log "$*"
+  exit 1
+}
+
+load_env() {
+  if [ ! -f "$OPTIONS" ]; then
+    die "missing $OPTIONS"
+  fi
+  mkdir -p "$LE_CONFIG_HOME" /ssl /config/deploy /tmp
+  envfile=/tmp/acme-env
+  : > "$envfile"
+  chmod 600 "$envfile"
+  jq -r '
+    (.env_vars // [])[]
+    | (.name // "") as $n
+    | select($n | test("^[A-Za-z_][A-Za-z0-9_]*$") | not)
+    | "invalid env var name: \($n)"
+  ' "$OPTIONS" | while IFS= read -r msg; do
+    [ -n "$msg" ] && log "$msg"
+  done
+  jq -r '
+    (.env_vars // [])[]
+    | (.name // "") as $n
+    | select($n | test("^[A-Za-z_][A-Za-z0-9_]*$"))
+    | "export \($n)=\(.value // "" | @sh)"
+  ' "$OPTIONS" > "$envfile"
+  # shellcheck disable=SC1090
+  . "$envfile"
+}
+
+strip_saved_autoupgrade() {
+  conf="$LE_CONFIG_HOME/account.conf"
+  if [ ! -f "$conf" ]; then
+    return 0
+  fi
+  grep -v '^AUTO_UPGRADE=' "$conf" > "$conf.new" || true
+  mv "$conf.new" "$conf"
+  chmod 600 "$conf"
+}
+
+upgrade_client() {
+  log "checking for an acme.sh upgrade"
+  if ! "$ACME" --upgrade --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME"; then
+    log "upgrade failed; continuing with the installed copy"
+  fi
+  strip_saved_autoupgrade
+}
+
+link_custom_hooks() {
+  mkdir -p "$HOOK_DIR" /config/deploy
+  for src in /config/deploy/*.sh; do
+    [ -f "$src" ] || continue
+    base=$(basename "$src")
+    case "$base" in
+      *[!A-Za-z0-9_.-]*)
+        log "ignoring custom hook $base"
+        continue
+        ;;
+    esac
+    ln -sf "$src" "$HOOK_DIR/$base"
+    log "custom deploy hook ${base%.sh}"
+  done
+}
+
+valid_name() {
+  case "$1" in
+    "" | *[!A-Za-z0-9._*-]*) return 1 ;;
+  esac
+  return 0
+}
+
+copy_cert() {
+  domain=$1
+  ha=$2
+  src=""
+  for dir in "$LE_CONFIG_HOME/$domain" "$LE_CONFIG_HOME/${domain}_ecc"; do
+    if [ -f "$dir/fullchain.cer" ]; then
+      if [ -z "$src" ] || [ "$dir/fullchain.cer" -nt "$src/fullchain.cer" ]; then
+        src=$dir
+      fi
+    fi
+  done
+  if [ -z "$src" ]; then
+    log "no certificate files for $domain"
+    return 1
+  fi
+  key=""
+  for candidate in "$src/$domain.key" "$src/"*.key; do
+    if [ -f "$candidate" ]; then
+      key=$candidate
+      break
+    fi
+  done
+  if [ -z "$key" ]; then
+    log "no private key for $domain"
+    return 1
+  fi
+  dest="/ssl/$domain"
+  mkdir -p "$dest"
+  cp "$src/fullchain.cer" "$dest/fullchain.pem"
+  cp "$key" "$dest/privkey.pem"
+  chmod 600 "$dest/privkey.pem"
+  log "copied $domain to $dest"
+  if [ "$ha" = "true" ]; then
+    note=/tmp/acme-ha-domain
+    if [ -f "$note" ]; then
+      log "Home Assistant /ssl certificate replaced: $(cat "$note") -> $domain"
+    fi
+    cp "$dest/fullchain.pem" /ssl/fullchain.pem
+    cp "$dest/privkey.pem" /ssl/privkey.pem
+    chmod 600 /ssl/privkey.pem
+    printf '%s\n' "$domain" > "$note"
+    log "Home Assistant certificate is $domain"
+  fi
+}
+
+sync_one() {
+  cert=$1
+  domain=$(printf '%s' "$cert" | jq -r '.domain // ""')
+  alt_raw=$(printf '%s' "$cert" | jq -r '.alt_domains // ""')
+  challenge=$(printf '%s' "$cert" | jq -r '.challenge // ""')
+  dns_hook=$(printf '%s' "$cert" | jq -r '.dns_hook // ""')
+  webroot=$(printf '%s' "$cert" | jq -r '.webroot // ""')
+  hooks_raw=$(printf '%s' "$cert" | jq -r '.deploy_hooks // ""')
+  reload_cmd=$(printf '%s' "$cert" | jq -r '.reload_cmd // ""')
+  ha=$(printf '%s' "$cert" | jq -r '.home_assistant // false')
+
+  if ! valid_name "$domain"; then
+    log "skipping invalid domain"
+    return 0
+  fi
+
+  set -- --issue --server "$CA" -d "$domain"
+  set -f
+  # shellcheck disable=SC2086
+  for alt in $(printf '%s' "$alt_raw" | tr ',' ' '); do
+    if valid_name "$alt"; then
+      set -- "$@" -d "$alt"
+    else
+      log "skipping invalid alternate name on $domain"
+    fi
+  done
+  set +f
+  case "$challenge" in
+    dns)
+      case "$dns_hook" in
+        dns_[A-Za-z0-9_]*) ;;
+        *)
+          log "skipping $domain: dns challenge needs a dns_* hook name"
+          return 0
+          ;;
+      esac
+      set -- "$@" --dns "$dns_hook"
+      ;;
+    standalone)
+      set -- "$@" --standalone
+      ;;
+    webroot)
+      case "$webroot" in
+        /share/* | /share | /data/* | /data | /config/* | /config | /ssl/* | /ssl) ;;
+        *)
+          log "skipping $domain: webroot must be under /share, /data, /config, or /ssl"
+          return 0
+          ;;
+      esac
+      mkdir -p "$webroot"
+      set -- "$@" --webroot "$webroot"
+      ;;
+    *)
+      log "skipping $domain: unknown challenge"
+      return 0
+      ;;
+  esac
+  if [ -n "$reload_cmd" ]; then
+    set -- "$@" --reloadcmd "$reload_cmd"
+  fi
+
+  log "issuing $domain ($challenge)"
+  if ! "$ACME" "$@" --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME"; then
+    log "issue failed for $domain"
+  fi
+
+  hooks=""
+  invalid_hook=0
+  set -f
+  # shellcheck disable=SC2086
+  for hook in $(printf '%s' "$hooks_raw" | tr ',' ' '); do
+    case "$hook" in
+      "" | *[!A-Za-z0-9_-]*)
+        log "skipping deploy for $domain: invalid hook name"
+        invalid_hook=1
+        break
+        ;;
+    esac
+    if [ -z "$hooks" ]; then
+      hooks=$hook
+    else
+      hooks="$hooks,$hook"
+    fi
+  done
+  set +f
+  if [ "$invalid_hook" -eq 0 ] && [ -n "$hooks" ]; then
+    log "deploying $domain with $hooks"
+    if ! "$ACME" --deploy -d "$domain" --deploy-hook "$hooks" --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME"; then
+      log "deploy failed for $domain"
+    fi
+  fi
+
+  if [ -d "$LE_CONFIG_HOME/$domain" ] || [ -d "$LE_CONFIG_HOME/${domain}_ecc" ]; then
+    if [ "$ha" = "true" ]; then
+      full=/ssl/fullchain.pem
+      keyfile=/ssl/privkey.pem
+    else
+      full="/ssl/$domain/fullchain.pem"
+      keyfile="/ssl/$domain/privkey.pem"
+    fi
+    mkdir -p "$(dirname "$full")" "$(dirname "$keyfile")"
+    set -- --install-cert -d "$domain" --fullchain-file "$full" --key-file "$keyfile"
+    if [ -n "$reload_cmd" ]; then
+      log "saving reload command for $domain"
+      set -- "$@" --reloadcmd "$reload_cmd"
+    fi
+    if ! "$ACME" "$@" --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME"; then
+      log "install-cert failed for $domain"
+    fi
+  fi
+
+  copy_cert "$domain" "$ha" || true
+}
+
+sync_certs() {
+  rm -f /tmp/acme-ha-domain
+  jq -c '(.certificates // [])[]' "$OPTIONS" | while IFS= read -r cert; do
+    sync_one "$cert"
+  done
+}
+
+copy_all() {
+  rm -f /tmp/acme-ha-domain
+  jq -c '(.certificates // [])[]' "$OPTIONS" | while IFS= read -r cert; do
+    domain=$(printf '%s' "$cert" | jq -r '.domain // ""')
+    ha=$(printf '%s' "$cert" | jq -r '.home_assistant // false')
+    if valid_name "$domain"; then
+      copy_cert "$domain" "$ha" || true
+    fi
+  done
+}
+
+write_crontab() {
+  if [ -f "$LE_CONFIG_HOME/crontab" ]; then
+    return 0
+  fi
+  now=$(date -u +%s)
+  minute=$((now % 60))
+  hour=$((now / 60 % 6))
+  printf '%s %s,%s,%s,%s * * * /usr/local/bin/acme-run cron\n' \
+    "$minute" "$hour" "$((hour + 6))" "$((hour + 12))" "$((hour + 18))" \
+    > "$LE_CONFIG_HOME/crontab"
+  log "renewal schedule written to $LE_CONFIG_HOME/crontab"
+}
+
+CA=$(jq -r '.ca // "letsencrypt"' "$OPTIONS" 2>/dev/null || true)
+case "${CA:-}" in
+  letsencrypt | letsencrypt_test | zerossl) ;;
+  *) CA=letsencrypt ;;
+esac
+
+load_env
+upgrade_client
+link_custom_hooks
+
+mode=${1:-start}
+if [ "$mode" = "cron" ]; then
+  log "renewal run"
+  "$ACME" --cron --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME" || log "renewal returned non-zero"
+  strip_saved_autoupgrade
+  copy_all
+  exit 0
+fi
+
+email=$(jq -r '.email // ""' "$OPTIONS")
+case "$email" in
+  ?*@?*.?*)
+    log "registering account $email at $CA"
+    "$ACME" --register-account -m "$email" --server "$CA" --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME" \
+      || log "account registration returned non-zero"
+    "$ACME" --set-default-ca --server "$CA" --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME" \
+      || log "could not set the default CA"
+    sync_certs
+    ;;
+  "")
+    log "email is empty; certificates will not be issued until it is set"
+    ;;
+  *)
+    log "email is not usable; certificates will not be issued"
+    ;;
+esac
+
+strip_saved_autoupgrade
+write_crontab
+log "starting renewal daemon"
+exec /usr/bin/supercronic "$LE_CONFIG_HOME/crontab"

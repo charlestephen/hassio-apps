@@ -31,6 +31,11 @@ Or add it manually:
 
 [//]: # "ADDONLIST_START"
 
+### &#10003; [Acme.sh](acme-sh/)
+
+- Issue and renew certificates with acme.sh, run deploy hooks (including
+  UniFi OS), and copy the files into `/ssl`. The client upgrades itself.
+
 ### &#10003; [Grafana Alloy](alloy/)
 
 - Ships the logs of every host container to Loki (the supported Promtail

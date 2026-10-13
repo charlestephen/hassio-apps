@@ -1,0 +1,41 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "Acme.sh"
+version: "1.0.0"
+slug: "acme-sh"
+description: "Issue and renew certificates with acme.sh, then run deploy hooks"
+url: "https://github.com/charlestephen/hassio-apps/tree/main/acme-sh"
+image: "ghcr.io/charlestephen/hassio-addons-acme-sh-{arch}"
+arch:
+  - amd64
+  - aarch64
+init: false
+startup: services
+boot: auto
+panel_icon: "mdi:certificate"
+# Standalone HTTP-01 binds port 80 on the host. DNS-01 and webroot work on
+# this network mode as well.
+host_network: true
+map:
+  - ssl:rw
+  - addon_config:rw
+  - share:rw
+options:
+  email: ""
+  ca: letsencrypt
+  certificates: []
+  env_vars: []
+schema:
+  email: str
+  ca: list(letsencrypt|letsencrypt_test|zerossl)
+  certificates:
+    - domain: str
+      alt_domains: str?
+      challenge: list(dns|standalone|webroot)
+      dns_hook: str?
+      webroot: str?
+      deploy_hooks: str?
+      reload_cmd: str?
+      home_assistant: bool?
+  env_vars:
+    - name: str
+      value: str
