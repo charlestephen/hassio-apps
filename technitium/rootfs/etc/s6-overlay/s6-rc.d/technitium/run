@@ -85,5 +85,14 @@ if bashio::config.has_value 'extra_env'; then
     done
 fi
 
+# These are also set in the image. Repeat them here so a restarted s6
+# service cannot drop them, and so the log shows why inotify is not used.
+export DOTNET_USE_POLLING_FILE_WATCHER=1
+export DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
+export DOTNET_gcServer=0
+export DOTNET_GCConserveMemory=5
+bashio::log.info "File watching uses polling (inotify instances are shared with the host)."
+bashio::log.info "GC: workstation, conserve memory level ${DOTNET_GCConserveMemory}."
+
 bashio::log.info "Starting Technitium DNS Server ..."
 exec dotnet /opt/technitium/dns/DnsServerApp.dll "${data_dir}"
