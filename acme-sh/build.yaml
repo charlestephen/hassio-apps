@@ -1,0 +1,7 @@
+---
+# Unpinned on purpose. The Dockerfile follows ghcr.io/acmesh-official/acme.sh:latest,
+# and the add-on runs `acme.sh --upgrade` on start and before each renewal.
+# There is no upstream_repo, so the version updater does not pin a release.
+build_from:
+  aarch64: ghcr.io/acmesh-official/acme.sh:latest
+  amd64: ghcr.io/acmesh-official/acme.sh:latest

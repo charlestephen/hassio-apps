@@ -6,6 +6,8 @@ Technitium DNS Server is an open source authoritative and recursive DNS server. 
 
 This app tracks upstream Technitium DNS Server `15.6.1` (image `technitium/dns-server`, source `TechnitiumSoftware/DnsServer`) and adds Microsoft's `libmsquic` library so QUIC-based DNS protocols (DoQ and DoH3) are available out of the box.
 
+On Home Assistant OS the kernel inotify instance limit is shared by every add-on and is often 128. This image sets `DOTNET_USE_POLLING_FILE_WATCHER=1` and disables appsettings reload so Technitium does not consume that pool. It also runs workstation GC (`DOTNET_gcServer=0`) with `DOTNET_GCConserveMemory=5`.
+
 ## Configuration
 
 Example app configuration:
