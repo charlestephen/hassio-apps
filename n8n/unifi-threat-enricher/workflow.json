@@ -1,0 +1,889 @@
+{
+  "name": "UniFi threat enricher",
+  "nodes": [
+    {
+      "id": "b6e607fe-16d7-45ba-9b5d-e93d4ee28e1c",
+      "name": "UniFi alarm",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        200
+      ],
+      "webhookId": "93173fb4-55cf-4672-8eda-f9e69a046ffe",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "unifi-threat/CHANGE-ME",
+        "responseMode": "onReceived",
+        "options": {}
+      }
+    },
+    {
+      "id": "869b04ab-be74-4d3a-a9e2-33d9ce83b3ae",
+      "name": "Slack actions",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        500
+      ],
+      "webhookId": "dfcf6425-03fc-4de8-a485-48bf0618affa",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "unifi-threat-slack",
+        "responseMode": "onReceived",
+        "options": {
+          "rawBody": true
+        }
+      }
+    },
+    {
+      "id": "02415283-5944-409e-918d-263a6546393d",
+      "name": "Config",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        350
+      ],
+      "parameters": {
+        "jsCode": "const config = {\n  gatewayUrl: 'https://192.168.1.1',\n  site: 'default',\n  slackChannel: '#security',\n  lookbackMinutes: 15,\n  // Lets the rest of a burst land in the threat log before it is read.\n  settleSeconds: 45,\n  muteHours: 24,\n  // _id of a UniFi IPv4 address group that a block policy already drops. Needed for \"Block IP\".\n  firewallGroupId: '',\n  // ID of a Protect Alarm Manager incoming webhook. Leave empty to hide the siren button.\n  protectWebhookId: '',\n  // Slack user IDs allowed to press buttons. Empty allows anyone in the channel.\n  allowedSlackUserIds: [],\n};\n\nconst item = $input.first();\nconst source = $('Slack actions').isExecuted ? 'slack' : 'unifi';\nreturn [{ json: { ...config, source, request: item.json }, binary: item.binary }];\n"
+      }
+    },
+    {
+      "id": "b2e88b48-0119-485e-b241-6b3ec88652e9",
+      "name": "From Slack?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        460,
+        350
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "48dde289-e72f-47d3-a110-3201700db278",
+              "leftValue": "={{ $json.source }}",
+              "rightValue": "slack",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "bafb46fb-21cd-48e6-84ab-4a7c16e2db49",
+      "name": "Settle",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        680,
+        200
+      ],
+      "webhookId": "683df0c0-8225-4fbd-8110-07ec36a07173",
+      "parameters": {
+        "amount": "={{ $('Config').first().json.settleSeconds }}"
+      }
+    },
+    {
+      "id": "16144268-2023-4493-8e7d-f718b5f04cd1",
+      "name": "Verify Slack",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        500
+      ],
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst cfg = $('Config').first().json;\nconst secret = $env.SLACK_SIGNING_SECRET;\nif (!secret) throw new Error('Set SLACK_SIGNING_SECRET in the n8n environment');\n\nconst headers = cfg.request.headers;\nconst timestamp = Number(headers['x-slack-request-timestamp']);\nif (!timestamp || Math.abs(Date.now() / 1000 - timestamp) > 300) throw new Error('Stale or missing Slack timestamp');\n\nconst raw = (await this.helpers.getBinaryDataBuffer(0, 'data')).toString('utf8');\nconst expected = Buffer.from('v0=' + crypto.createHmac('sha256', secret).update('v0:' + timestamp + ':' + raw).digest('hex'));\nconst provided = Buffer.from(headers['x-slack-signature'] ?? '');\nif (expected.length !== provided.length || !crypto.timingSafeEqual(expected, provided)) throw new Error('Invalid Slack signature');\n\nconst field = raw.split('&').find((part) => part.startsWith('payload=')) ?? '';\nconst payload = JSON.parse(decodeURIComponent(field.slice('payload='.length).replace(/\\+/g, ' ')));\nif (cfg.allowedSlackUserIds.length && !cfg.allowedSlackUserIds.includes(payload.user.id)) {\n  throw new Error('Slack user ' + payload.user.id + ' is not allowed to run actions');\n}\n\nconst [clicked] = payload.actions ?? [];\nif (!clicked || clicked.url) return [];\nconst id = clicked.action_id;\nreturn [{ json: { action: id.slice(0, id.indexOf(':')), target: clicked.value, userId: payload.user.id, responseUrl: payload.response_url } }];\n"
+      }
+    },
+    {
+      "id": "a53a3f98-cb0e-4ba5-9b08-4959f5b7a5f1",
+      "name": "UniFi login",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        350
+      ],
+      "parameters": {
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        },
+        "method": "POST",
+        "url": "={{ $('Config').first().json.gatewayUrl }}/api/auth/login",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{ \"rememberMe\": false }"
+      }
+    },
+    {
+      "id": "4dab5a02-8d01-4778-ab1a-7079d6f41961",
+      "name": "Session",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        350
+      ],
+      "parameters": {
+        "jsCode": "const res = $input.first().json;\nconst cookie = [].concat(res.headers?.['set-cookie'] ?? []).map((c) => c.split(';')[0]).join('; ');\nif (!cookie) throw new Error('UniFi login did not return a session cookie');\n\nconst route = $('Config').first().json.source === 'unifi' ? 'threats' : $('Verify Slack').first().json.action;\nreturn [{ json: { route, cookie, csrf: res.headers?.['x-csrf-token'] ?? '' } }];\n"
+      }
+    },
+    {
+      "id": "fee243f6-d400-4fc7-9ab9-0f92c053b0f9",
+      "name": "Route",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1340,
+        350
+      ],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e1650f77-aff7-47b0-9534-c5e1681d5e61",
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "threats",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "threats"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "53fc16ce-7eda-496d-b150-a31d5b1c841d",
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "block_client",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "block_client"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5793cc75-c1d3-4777-8812-ddb38cb42375",
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "block_ip",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "block_ip"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c0f49b7f-cb70-4051-857f-0cf9a4a0686c",
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "siren",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "siren"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0a844367-4d6e-44ed-9037-bdc851a1c7d8",
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "mute",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mute"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "bb6b9224-892c-4d61-a749-8a4b540bd9fd",
+      "name": "Recent threats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        100
+      ],
+      "parameters": {
+        "options": {
+          "allowUnauthorizedCerts": true
+        },
+        "method": "POST",
+        "url": "={{ $('Config').first().json.gatewayUrl }}/proxy/network/v2/api/site/{{ $('Config').first().json.site }}/system-log/threat-alert",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Session').first().json.cookie }}"
+            },
+            {
+              "name": "X-CSRF-Token",
+              "value": "={{ $('Session').first().json.csrf }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ timestampFrom: Date.now() - $('Config').first().json.lookbackMinutes * 60000, timestampTo: Date.now(), pageSize: 100, pageNumber: 0, threatTypes: ['THREAT', 'HONEYPOT'] }) }}"
+      }
+    },
+    {
+      "id": "92007ae0-6636-40ce-8a2e-0bd53307378b",
+      "name": "New threats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        100
+      ],
+      "parameters": {
+        "jsCode": "const state = $getWorkflowStaticData('global');\nconst now = Date.now();\nstate.seen = Object.fromEntries(Object.entries(state.seen ?? {}).filter(([, at]) => now - at < 86400000));\n\nconst entries = $input.all().flatMap(({ json }) => json.data ?? json.items ?? (json.id ? [json] : []));\nconst ids = [...new Set(entries.map((e) => e.parameters?.THREAT_LOG_ID?.id ?? e.id).filter(Boolean))]\n  .filter((id) => !state.seen[id]);\nfor (const id of ids) state.seen[id] = now;\nreturn ids.map((id) => ({ json: { id } }));\n"
+      }
+    },
+    {
+      "id": "27b22c2b-4fef-475e-aadb-372d5ef7b27a",
+      "name": "Threat details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2000,
+        100
+      ],
+      "parameters": {
+        "options": {
+          "allowUnauthorizedCerts": true
+        },
+        "url": "={{ $('Config').first().json.gatewayUrl }}/proxy/network/v2/api/site/{{ $('Config').first().json.site }}/inspection-logs/threats/{{ $json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Session').first().json.cookie }}"
+            },
+            {
+              "name": "X-CSRF-Token",
+              "value": "={{ $('Session').first().json.csrf }}"
+            }
+          ]
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "0ced14cb-4145-46ea-b22d-01f6a9d2cb42",
+      "name": "Build Slack message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2220,
+        100
+      ],
+      "parameters": {
+        "jsCode": "const cfg = $('Config').first().json;\nconst state = $getWorkflowStaticData('global');\nconst now = Date.now();\nstate.muted = Object.fromEntries(Object.entries(state.muted ?? {}).filter(([, until]) => until > now));\n\nconst threats = $input.all()\n  .map(({ json }) => (Array.isArray(json.data) ? json.data[0] : json.data) ?? json)\n  .filter((t) => t?.signature && !state.muted[t.signature]);\nif (!threats.length) return [];\n\nconst tally = (key) => {\n  const groups = new Map();\n  for (const t of threats) {\n    const k = key(t);\n    if (!k) continue;\n    const g = groups.get(k) ?? { key: k, count: 0, t };\n    g.count += 1;\n    groups.set(k, g);\n  }\n  return [...groups.values()].sort((a, b) => b.count - a.count);\n};\nconst tick = '\\x60';\nconst esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst top = (groups, line) => groups.slice(0, 5).map(line).join('\\n') + (groups.length > 5 ? '\\n_+' + (groups.length - 5) + ' more_' : '');\n\nconst signatures = tally((t) => t.signature);\nconst sources = tally((t) => t.server_ip);\nconst clients = tally((t) => t.client_mac);\nconst risks = ['high', 'medium', 'low'];\nconst highest = risks.find((r) => threats.some((t) => t.risk === r)) ?? 'unknown';\nconst dot = { high: ':red_circle:', medium: ':large_orange_circle:', low: ':large_yellow_circle:' }[highest] ?? ':white_circle:';\nconst blocked = threats.filter((t) => t.action === 'blocked').length;\n\nconst button = (text, action, value, style) => ({\n  type: 'button',\n  text: { type: 'plain_text', text: text.slice(0, 75) },\n  action_id: (action + ':' + value).slice(0, 255),\n  value,\n  ...(style && { style }),\n});\n\nconst actions = [\n  ...sources.slice(0, 3).map((g) => button('Block IP ' + g.key, 'block_ip', g.key, 'danger')),\n  ...clients.slice(0, 2).map((g) => button('Block client ' + (g.t.client_name || g.key), 'block_client', g.key, 'danger')),\n  button('Mute ' + signatures[0].key, 'mute', signatures[0].key),\n  ...(cfg.protectWebhookId ? [button('Sound siren', 'siren', 'siren')] : []),\n  { type: 'button', text: { type: 'plain_text', text: 'Open UniFi' }, action_id: 'open:unifi', url: cfg.gatewayUrl },\n];\n\nconst plural = threats.length === 1 ? '' : 's';\nconst text = threats.length + ' threat' + plural + ' in the last ' + cfg.lookbackMinutes + ' min (highest risk: ' + highest + ')';\nconst blocks = [\n  { type: 'header', text: { type: 'plain_text', text: threats.length + ' threat' + plural + ' in the last ' + cfg.lookbackMinutes + ' min' } },\n  {\n    type: 'context',\n    elements: [{ type: 'mrkdwn', text: dot + ' Highest risk *' + highest + '*  |  Blocked ' + blocked + '/' + threats.length + '  |  ' + esc(cfg.request.body?.name ?? 'Threat Detected') }],\n  },\n  {\n    type: 'section',\n    text: { type: 'mrkdwn', text: '*Signatures*\\n' + top(signatures, (g) => '• *' + g.count + '×* ' + esc(g.t.signature) + ' _(' + esc(g.t.risk) + ', ' + esc(g.t.signature_type) + ')_') },\n  },\n  {\n    type: 'section',\n    text: {\n      type: 'mrkdwn',\n      text: '*Sources*\\n' + top(sources, (g) => '• *' + g.count + '×* ' + tick + esc(g.key) + tick + ' ' + esc(g.t.counterpart_location || g.t.counterpart_country_code || '') + ' · ' + esc(g.t.threat_direction) + ' · ' + esc(g.t.action)),\n    },\n  },\n  ...(clients.length\n    ? [{ type: 'section', text: { type: 'mrkdwn', text: '*Clients*\\n' + top(clients, (g) => '• *' + g.count + '×* ' + esc(g.t.client_name || 'unknown') + ' ' + tick + esc(g.key) + tick) } }]\n    : []),\n  { type: 'actions', elements: actions },\n];\n\nreturn [{ json: { channel: cfg.slackChannel, text, blocks } }];\n"
+      }
+    },
+    {
+      "id": "11530299-6db3-40fa-9f0d-f3c9b04417bb",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2440,
+        100
+      ],
+      "parameters": {
+        "options": {},
+        "method": "POST",
+        "url": "https://slack.com/api/chat.postMessage",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "slackApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: $json.channel, text: $json.text, blocks: $json.blocks, unfurl_links: false }) }}"
+      }
+    },
+    {
+      "id": "3a95644a-966f-4f29-b258-507238ca2a36",
+      "name": "Block client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        300
+      ],
+      "parameters": {
+        "options": {
+          "allowUnauthorizedCerts": true
+        },
+        "method": "POST",
+        "url": "={{ $('Config').first().json.gatewayUrl }}/proxy/network/api/s/{{ $('Config').first().json.site }}/cmd/stamgr",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Session').first().json.cookie }}"
+            },
+            {
+              "name": "X-CSRF-Token",
+              "value": "={{ $('Session').first().json.csrf }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ cmd: 'block-sta', mac: $('Verify Slack').first().json.target }) }}"
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "901eb05d-313a-4d02-98b8-33409cc2a027",
+      "name": "Get block list",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        480
+      ],
+      "parameters": {
+        "options": {
+          "allowUnauthorizedCerts": true
+        },
+        "url": "={{ $('Config').first().json.gatewayUrl }}/proxy/network/api/s/{{ $('Config').first().json.site }}/rest/firewallgroup/{{ $('Config').first().json.firewallGroupId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Session').first().json.cookie }}"
+            },
+            {
+              "name": "X-CSRF-Token",
+              "value": "={{ $('Session').first().json.csrf }}"
+            }
+          ]
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "0cf79427-0086-4b48-a01c-559b4c4031d5",
+      "name": "Add IP",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        480
+      ],
+      "parameters": {
+        "jsCode": "const group = $json.data?.[0];\nif (!group) return [{ json: { error: $json.error ?? { message: 'Address group not found. Check firewallGroupId in Config.' } } }];\nconst ip = $('Verify Slack').first().json.target;\nreturn [{ json: { ...group, group_members: [...new Set([...(group.group_members ?? []), ip])] } }];\n"
+      }
+    },
+    {
+      "id": "0593d459-29fd-4e59-8283-545b0692bab9",
+      "name": "Has group?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2000,
+        480
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ed278d55-2451-429f-aa58-c093313317b4",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      }
+    },
+    {
+      "id": "add123b1-f48c-422e-a52a-e39396e782cc",
+      "name": "Save block list",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2220,
+        460
+      ],
+      "parameters": {
+        "options": {
+          "allowUnauthorizedCerts": true
+        },
+        "method": "PUT",
+        "url": "={{ $('Config').first().json.gatewayUrl }}/proxy/network/api/s/{{ $('Config').first().json.site }}/rest/firewallgroup/{{ $json._id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Session').first().json.cookie }}"
+            },
+            {
+              "name": "X-CSRF-Token",
+              "value": "={{ $('Session').first().json.csrf }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}"
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "370612a7-5341-446b-bafc-f8d4dad36296",
+      "name": "Sound siren",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        660
+      ],
+      "parameters": {
+        "options": {
+          "allowUnauthorizedCerts": true
+        },
+        "method": "POST",
+        "url": "={{ $('Config').first().json.gatewayUrl }}/proxy/protect/integration/v1/alarm-manager/webhook/{{ $('Config').first().json.protectWebhookId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "ac39023b-c964-4246-b516-849f38cb52e6",
+      "name": "Mute signature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        840
+      ],
+      "parameters": {
+        "jsCode": "const { target } = $('Verify Slack').first().json;\nconst state = $getWorkflowStaticData('global');\nstate.muted = { ...state.muted, [target]: Date.now() + $('Config').first().json.muteHours * 3600000 };\nreturn [{ json: {} }];\n"
+      }
+    },
+    {
+      "id": "afc25adb-48e0-4c73-be23-ab0165992c85",
+      "name": "Describe result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2440,
+        660
+      ],
+      "parameters": {
+        "jsCode": "const tick = '\\x60';\nconst { action, target, userId } = $('Verify Slack').first().json;\nconst done = {\n  block_client: 'blocked client ' + tick + target + tick,\n  block_ip: 'added ' + tick + target + tick + ' to the block list',\n  siren: 'sounded the Protect siren',\n  mute: 'muted *' + target + '* for ' + $('Config').first().json.muteHours + 'h',\n}[action];\nconst error = $json.error?.message ?? $json.error;\nconst text = error ? ':x: <@' + userId + '> ' + action + ' failed for ' + tick + target + tick + ': ' + error : ':white_check_mark: <@' + userId + '> ' + done;\nreturn [{ json: { text } }];\n"
+      }
+    },
+    {
+      "id": "612e65cb-ffdb-4ff3-a230-98469c185d54",
+      "name": "Reply in Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2660,
+        660
+      ],
+      "parameters": {
+        "options": {},
+        "method": "POST",
+        "url": "={{ $('Verify Slack').first().json.responseUrl }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ response_type: \"in_channel\", replace_original: false, text: $json.text }) }}"
+      }
+    }
+  ],
+  "connections": {
+    "UniFi alarm": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack actions": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "From Slack?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "From Slack?": {
+      "main": [
+        [
+          {
+            "node": "Verify Slack",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Settle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Settle": {
+      "main": [
+        [
+          {
+            "node": "UniFi login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Slack": {
+      "main": [
+        [
+          {
+            "node": "UniFi login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UniFi login": {
+      "main": [
+        [
+          {
+            "node": "Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session": {
+      "main": [
+        [
+          {
+            "node": "Route",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route": {
+      "main": [
+        [
+          {
+            "node": "Recent threats",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Block client",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get block list",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sound siren",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mute signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recent threats": {
+      "main": [
+        [
+          {
+            "node": "New threats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New threats": {
+      "main": [
+        [
+          {
+            "node": "Threat details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threat details": {
+      "main": [
+        [
+          {
+            "node": "Build Slack message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Slack message": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get block list": {
+      "main": [
+        [
+          {
+            "node": "Add IP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add IP": {
+      "main": [
+        [
+          {
+            "node": "Has group?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has group?": {
+      "main": [
+        [
+          {
+            "node": "Save block list",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Describe result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save block list": {
+      "main": [
+        [
+          {
+            "node": "Describe result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Block client": {
+      "main": [
+        [
+          {
+            "node": "Describe result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sound siren": {
+      "main": [
+        [
+          {
+            "node": "Describe result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mute signature": {
+      "main": [
+        [
+          {
+            "node": "Describe result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Describe result": {
+      "main": [
+        [
+          {
+            "node": "Reply in Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}
