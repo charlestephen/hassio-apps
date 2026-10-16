@@ -1,5 +1,13 @@
 # Changelog
 
+## 17.0.0
+
+- Upgrading from upstream version 16.0.6 -> 17.0.0
+
+> Upstream v17.0.0: https://codeberg.org/forgejo/forgejo/releases/tag/v17.0.0
+>
+> See https://codeberg.org/forgejo/forgejo/src/branch/forgejo/release-notes-published/17.0.0.md
+
 ## 16.0.6
 
 - Upgrading from upstream version 16.0.5 -> 16.0.6
