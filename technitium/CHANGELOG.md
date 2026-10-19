@@ -1,3 +1,17 @@
+## 15.6.2
+
+- Upgrading from upstream version 15.6.1-1 -> 15.6.2
+
+> Upstream v15.6.2: https://github.com/TechnitiumSoftware/DnsServer/releases/tag/v15.6.2
+>
+> Release Date: 17 October 2026
+>
+> - Fixed multiple issues with config sync in a Cluster deployment.
+> - Fixed issue with missing boundary check for zones reported by Adam Korczynski from ADA Logics, and Anthropic. This allowed a user with write access to a zone to be able to manipulate records on a subdomain zone for the same domain name on the same DNS server.
+> - Fixed issue with UDP socket receive packet implementation reported by TaoFei Guo from Peking University, Yang Luo and JianJun Chen from Tsinghua University. This allowed an attacker to keep the receive call looping by sending a stream of empty UDP packets, causing resource exhaustion.
+> - Dashboard stats items are now clickable and shows Query Logs with a relevant filter when clicked.
+> - Multiple other minor bug fixes and improvements.
+
 ## 15.6.1-1
 
 - Stop .NET from taking inotify instances. Home Assistant OS shares a small
