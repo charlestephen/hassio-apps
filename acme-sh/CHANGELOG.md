@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.3
+
+- Add a per-certificate `dns_sleep` option, passed to acme.sh as
+  `--dnssleep`.
+- Add `dns_persist` as a challenge type (dns-persist-01). The record to
+  create is printed in the log on start.
+- Allow IP addresses as certificate names (standalone or webroot only),
+  with `certificate_profile` and `renewal_days` options for short-lived
+  IP certificates.
+
 ## 1.0.2
 
 - Mask `env_vars` values on the config screen and add a per-entry

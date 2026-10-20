@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Acme.sh"
-version: "1.0.2"
+version: "1.0.3"
 slug: "acme-sh"
 description: "Issue and renew certificates with acme.sh, then run deploy hooks"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/acme-sh"
@@ -30,8 +30,11 @@ schema:
   certificates:
     - domain: str
       alt_domains: str?
-      challenge: list(dns|standalone|webroot)
+      challenge: list(dns|standalone|webroot|dns_persist)
       dns_hook: str?
+      dns_sleep: int(0,)?
+      certificate_profile: str?
+      renewal_days: int(0,)?
       webroot: str?
       deploy_hooks: str?
       reload_cmd: str?
