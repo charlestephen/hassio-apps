@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Acme.sh"
-version: "1.0.1"
+version: "1.0.2"
 slug: "acme-sh"
 description: "Issue and renew certificates with acme.sh, then run deploy hooks"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/acme-sh"
@@ -38,4 +38,6 @@ schema:
       home_assistant: bool?
   env_vars:
     - name: str
-      value: str
+      # password masks the value in the config screen (eye toggles reveal).
+      value: password?
+      secret: bool?
