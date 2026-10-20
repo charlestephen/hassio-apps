@@ -17,5 +17,5 @@ See [DOCS.md](DOCS.md) for setup.
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[release-shield]: https://img.shields.io/badge/version-v1.0.1-blue.svg
+[release-shield]: https://img.shields.io/badge/version-v1.0.2-blue.svg
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/acme-sh
