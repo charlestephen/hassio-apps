@@ -7,6 +7,9 @@ on:
 
 permissions:
   contents: write
+  # Needed to dispatch the image build below. A push made with GITHUB_TOKEN
+  # does not trigger build.yml on its own, but workflow_dispatch may.
+  actions: write
 
 jobs:
   update:
@@ -29,6 +32,22 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_REF_NAME: ${{ github.ref_name }}
         run: python3 scripts/push-github-signed-commit.py
+
+      # The signed commit above is pushed with GITHUB_TOKEN, so it does not
+      # trigger build.yml. Without a build, the bumped config version has no
+      # matching image tag and Home Assistant cannot install the app.
+      # Dispatch a build for each app the updater changed.
+      - name: Build updated apps
+        if: steps.update.outcome == 'success' || steps.update.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git status --porcelain=v1 -uno | cut -c4- | cut -d/ -f1 | sort -u | while read -r app; do
+            if [ -f "$app/config.yaml" ] && [ -f "$app/build.yaml" ]; then
+              echo "Dispatching build for $app"
+              gh workflow run build.yml --ref "$GITHUB_REF_NAME" -f addon="$app"
+            fi
+          done
 
       - name: Report unresolved apps
         if: steps.update.outcome == 'failure'

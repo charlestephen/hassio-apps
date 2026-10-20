@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- Mask `env_vars` values on the config screen and add a per-entry
+  `secret` toggle. Secret values are never written to the log.
+
 ## 1.0.1
 
 - Store each certificate in acme.sh's default directory, with

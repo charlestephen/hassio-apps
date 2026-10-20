@@ -18,7 +18,7 @@ hours.
 | `email` | Account email. Certificates are not issued until this is set. |
 | `ca` | `letsencrypt`, `letsencrypt_test`, or `zerossl`. |
 | `certificates` | One entry per certificate. |
-| `env_vars` | Environment variables exported before every acme.sh command. Names must be shell identifiers. Values are visible on the config screen. |
+| `env_vars` | Environment variables exported before every acme.sh command. Names must be shell identifiers. Values are masked on the config screen; set `secret: true` on tokens and passwords so they are flagged as secret and never written to the log. |
 
 Each certificate:
 

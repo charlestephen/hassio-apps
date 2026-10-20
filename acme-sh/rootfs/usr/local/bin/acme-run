@@ -46,6 +46,15 @@ load_env() {
     | select($n | test("^[A-Za-z_][A-Za-z0-9_]*$"))
     | "export \($n)=\(.value // "" | @sh)"
   ' "$OPTIONS" > "$envfile"
+  # Names only: values are never logged, secret or not.
+  jq -r '
+    (.env_vars // [])[]
+    | (.name // "") as $n
+    | select($n | test("^[A-Za-z_][A-Za-z0-9_]*$"))
+    | if .secret == true then "env var \($n) (secret)" else "env var \($n)" end
+  ' "$OPTIONS" | while IFS= read -r msg; do
+    [ -n "$msg" ] && log "$msg"
+  done
   # shellcheck disable=SC1090
   . "$envfile"
 }
