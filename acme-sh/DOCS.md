@@ -1,9 +1,11 @@
 # Home Assistant App: Acme.sh
 
 Issues and renews certificates with the official acme.sh image, then runs
-the deploy hooks named in the config. Account state and certificates are
-stored in the add-on data directory. Each certificate is also copied to
-`/ssl/<domain>/fullchain.pem` and `/ssl/<domain>/privkey.pem`.
+the deploy hooks named in the config. Account state stays in the add-on
+data directory. Each certificate is stored in acme.sh's default directory:
+`/data/acme.sh/<domain>` is a symlink to `/ssl/acme.sh/<domain>`, which holds
+`<domain>.cer`, `<domain>.key`, `fullchain.cer`, and `ca.cer`. The add-on
+does not create `/ssl/<domain>/`.
 
 The client runs `acme.sh --upgrade` on every start and before each renewal,
 so it follows upstream without a pinned release. Renewal is about every six
@@ -29,7 +31,7 @@ Each certificate:
 | `webroot` | Directory when the challenge is `webroot`. Must be under `/share`, `/data`, `/config`, or `/ssl`. |
 | `deploy_hooks` | Deploy hook names, separated by spaces or commas. Example: `unifios`. |
 | `reload_cmd` | Shell command saved on the certificate and run after it is installed. |
-| `home_assistant` | Also copy this certificate to `/ssl/fullchain.pem` and `/ssl/privkey.pem`. If more than one entry sets this, the last one wins and the log says so. |
+| `home_assistant` | Copy this certificate to `/ssl/fullchain.pem` and `/ssl/privkey.pem`. If more than one entry sets this, the last one wins and the log says so. |
 
 `standalone` binds port 80 on the host. That port has to be free.
 
@@ -56,6 +58,9 @@ must define `<name>_deploy`, and `<name>` is what you put in `deploy_hooks`.
 
 ## DNS API example
 
-For Technitium, set `challenge` to `dns` and `dns_hook` to `dns_technitium`.
-Put `Technitium_Server`, `Technitium_Token`, and optionally `Technitium_Expiry_Ttl`
-in `env_vars`.
+For Cloudflare, set `challenge` to `dns` and `dns_hook` to `dns_cf`.
+Put `CF_Token` and `CF_Account_ID` in `env_vars`, using a user API token
+from Cloudflare Profile → API Tokens → User API Tokens with the
+Zone → DNS → Edit permission, limited to the zones being issued for.
+`CF_Account_ID` is shown under API on a zone's Overview page. For a single
+zone, `CF_Zone_ID` can be set instead of `CF_Account_ID`.
