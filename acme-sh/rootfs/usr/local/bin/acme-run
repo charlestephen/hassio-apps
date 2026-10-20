@@ -91,156 +91,9 @@ valid_name() {
   return 0
 }
 
-# acme.sh's default key is EC, which it would otherwise store in ${domain}_ecc.
-# Pin the store to $domain so the shared path matches the configured name.
-# Set only for this command: a leaked DOMAIN_PATH would make --cron reuse it.
-run_acme() {
-  domain=$1
-  shift
-  if [ -f "$LE_CONFIG_HOME/$domain/$domain.conf" ] || [ ! -f "$LE_CONFIG_HOME/${domain}_ecc/$domain.conf" ]; then
-    DOMAIN_PATH="$LE_CONFIG_HOME/$domain" "$ACME" "$@" --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME"
-  else
-    "$ACME" "$@" --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME"
-  fi
-}
-
-# /data and /ssl are different mounts. mv across them is a copy, and the
-# source has to stay intact if that copy fails.
-link_store() {
-  name=$1
-  target=$2
-  link="$LE_CONFIG_HOME/$name"
-
-  if [ -L "$link" ]; then
-    current=$(readlink "$link")
-    if [ "$current" = "$target" ]; then
-      mkdir -p "$target"
-      return 0
-    fi
-    if [ -d "$current" ] && [ ! -L "$current" ]; then
-      if [ -d "$target" ] && [ -z "$(ls -A "$target")" ]; then
-        rmdir "$target"
-      fi
-      if [ -e "$target" ]; then
-        log "certificate store $target already exists; leaving $link in place"
-        return 0
-      fi
-      mkdir -p "$(dirname "$target")"
-      if ! mv "$current" "$target"; then
-        log "could not move $current to $target"
-        return 1
-      fi
-    fi
-    mkdir -p "$target"
-    ln -sfn "$target" "$link"
-    log "certificate store $link -> $target"
-    return 0
-  fi
-  if [ -e "$link" ] && [ ! -d "$link" ]; then
-    log "not replacing $link with a certificate store link"
-    return 0
-  fi
-
-  mkdir -p /ssl/acme.sh
-  if [ -d "$link" ]; then
-    if [ -d "$target" ] && [ -z "$(ls -A "$target")" ]; then
-      rmdir "$target"
-    fi
-    if [ -e "$target" ]; then
-      log "certificate store $target already exists; leaving $link in place"
-      return 0
-    fi
-    if ! mv "$link" "$target"; then
-      log "could not move $link to $target"
-      return 1
-    fi
-  else
-    mkdir -p "$target"
-  fi
-  ln -sfn "$target" "$link"
-  log "certificate store $link -> $target"
-}
-
-# The default store is /data/acme.sh/$domain -> /ssl/acme.sh/$domain.
-# An existing EC directory is folded into that name when the plain path is free.
-ensure_domain_store() {
-  domain=$1
-  link="$LE_CONFIG_HOME/$domain"
-  ecc="$LE_CONFIG_HOME/${domain}_ecc"
-
-  if [ ! -e "$link" ] && [ ! -L "$link" ]; then
-    if [ -d "$ecc" ] && [ ! -L "$ecc" ]; then
-      mv "$ecc" "$link"
-    elif [ -L "$ecc" ]; then
-      ln -sfn "$(readlink "$ecc")" "$link"
-      rm -f "$ecc"
-    fi
-  fi
-
-  if [ -e "$link" ] || [ -L "$link" ] || { [ ! -e "$ecc" ] && [ ! -L "$ecc" ]; }; then
-    link_store "$domain" "/ssl/acme.sh/$domain"
-  fi
-  if [ -L "$ecc" ] || [ -d "$ecc" ]; then
-    link_store "${domain}_ecc" "/ssl/acme.sh/${domain}_ecc"
-  fi
-}
-
-# Renewal recopies whatever Le_Real* paths were saved. Drop the ones that
-# point at /ssl/$domain so that directory is not created again.
-drop_copied_install_paths() {
-  domain=$1
-  prefix="/ssl/${domain}/"
-  for name in "$domain" "${domain}_ecc"; do
-    conf="$LE_CONFIG_HOME/$name/$domain.conf"
-    [ -f "$conf" ] || continue
-    tmp="$conf.new"
-    : > "$tmp"
-    changed=0
-    while IFS= read -r line || [ -n "$line" ]; do
-      case "$line" in
-        Le_RealCertPath=* | Le_RealKeyPath=* | Le_RealCACertPath=* | Le_RealFullChainPath=*)
-          value=${line#*=}
-          value=${value#\'}
-          value=${value%\'}
-          value=${value#\"}
-          value=${value%\"}
-          case "$value" in
-            "$prefix"*)
-              changed=1
-              continue
-              ;;
-          esac
-          ;;
-      esac
-      printf '%s\n' "$line" >> "$tmp"
-    done < "$conf"
-    if [ "$changed" -eq 1 ]; then
-      mv "$tmp" "$conf"
-      chmod 600 "$conf"
-      log "removed install paths under /ssl/$domain"
-    else
-      rm -f "$tmp"
-    fi
-  done
-}
-
-prepare_stores() {
-  mkdir -p /ssl/acme.sh "$LE_CONFIG_HOME"
-  jq -c '(.certificates // [])[]' "$OPTIONS" | while IFS= read -r cert; do
-    domain=$(printf '%s' "$cert" | jq -r '.domain // ""')
-    if valid_name "$domain"; then
-      ensure_domain_store "$domain"
-      drop_copied_install_paths "$domain"
-    fi
-  done
-}
-
 copy_cert() {
   domain=$1
   ha=$2
-  if [ "$ha" != "true" ]; then
-    return 0
-  fi
   src=""
   for dir in "$LE_CONFIG_HOME/$domain" "$LE_CONFIG_HOME/${domain}_ecc"; do
     if [ -f "$dir/fullchain.cer" ]; then
@@ -264,15 +117,23 @@ copy_cert() {
     log "no private key for $domain"
     return 1
   fi
-  note=/tmp/acme-ha-domain
-  if [ -f "$note" ]; then
-    log "Home Assistant /ssl certificate replaced: $(cat "$note") -> $domain"
+  dest="/ssl/$domain"
+  mkdir -p "$dest"
+  cp "$src/fullchain.cer" "$dest/fullchain.pem"
+  cp "$key" "$dest/privkey.pem"
+  chmod 600 "$dest/privkey.pem"
+  log "copied $domain to $dest"
+  if [ "$ha" = "true" ]; then
+    note=/tmp/acme-ha-domain
+    if [ -f "$note" ]; then
+      log "Home Assistant /ssl certificate replaced: $(cat "$note") -> $domain"
+    fi
+    cp "$dest/fullchain.pem" /ssl/fullchain.pem
+    cp "$dest/privkey.pem" /ssl/privkey.pem
+    chmod 600 /ssl/privkey.pem
+    printf '%s\n' "$domain" > "$note"
+    log "Home Assistant certificate is $domain"
   fi
-  cp "$src/fullchain.cer" /ssl/fullchain.pem
-  cp "$key" /ssl/privkey.pem
-  chmod 600 /ssl/privkey.pem
-  printf '%s\n' "$domain" > "$note"
-  log "Home Assistant certificate is $domain"
 }
 
 sync_one() {
@@ -337,7 +198,7 @@ sync_one() {
   fi
 
   log "issuing $domain ($challenge)"
-  if ! run_acme "$domain" "$@"; then
+  if ! "$ACME" "$@" --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME"; then
     log "issue failed for $domain"
   fi
 
@@ -362,15 +223,27 @@ sync_one() {
   set +f
   if [ "$invalid_hook" -eq 0 ] && [ -n "$hooks" ]; then
     log "deploying $domain with $hooks"
-    if ! run_acme "$domain" --deploy -d "$domain" --deploy-hook "$hooks"; then
+    if ! "$ACME" --deploy -d "$domain" --deploy-hook "$hooks" --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME"; then
       log "deploy failed for $domain"
     fi
   fi
 
-  if [ -n "$reload_cmd" ] && { [ -f "$LE_CONFIG_HOME/$domain/$domain.conf" ] || [ -f "$LE_CONFIG_HOME/${domain}_ecc/$domain.conf" ]; }; then
-    log "saving reload command for $domain"
-    if ! run_acme "$domain" --install-cert -d "$domain" --reloadcmd "$reload_cmd"; then
-      log "could not save reload command for $domain"
+  if [ -d "$LE_CONFIG_HOME/$domain" ] || [ -d "$LE_CONFIG_HOME/${domain}_ecc" ]; then
+    if [ "$ha" = "true" ]; then
+      full=/ssl/fullchain.pem
+      keyfile=/ssl/privkey.pem
+    else
+      full="/ssl/$domain/fullchain.pem"
+      keyfile="/ssl/$domain/privkey.pem"
+    fi
+    mkdir -p "$(dirname "$full")" "$(dirname "$keyfile")"
+    set -- --install-cert -d "$domain" --fullchain-file "$full" --key-file "$keyfile"
+    if [ -n "$reload_cmd" ]; then
+      log "saving reload command for $domain"
+      set -- "$@" --reloadcmd "$reload_cmd"
+    fi
+    if ! "$ACME" "$@" --home "$LE_WORKING_DIR" --config-home "$LE_CONFIG_HOME"; then
+      log "install-cert failed for $domain"
     fi
   fi
 
@@ -417,7 +290,6 @@ esac
 load_env
 upgrade_client
 link_custom_hooks
-prepare_stores
 
 mode=${1:-start}
 if [ "$mode" = "cron" ]; then

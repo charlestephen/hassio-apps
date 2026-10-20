@@ -33,9 +33,8 @@ Or add it manually:
 
 ### &#10003; [Acme.sh](acme-sh/)
 
-- Issue and renew certificates with acme.sh and run deploy hooks (including
-  UniFi OS). Each certificate lives in `/ssl/acme.sh/<domain>`. The client
-  upgrades itself.
+- Issue and renew certificates with acme.sh, run deploy hooks (including
+  UniFi OS), and copy the files into `/ssl`. The client upgrades itself.
 
 ### &#10003; [Grafana Alloy](alloy/)
 
