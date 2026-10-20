@@ -95,9 +95,19 @@ link_custom_hooks() {
 
 valid_name() {
   case "$1" in
-    "" | *[!A-Za-z0-9._*-]*) return 1 ;;
+    "" | *[!A-Za-z0-9._*:-]*) return 1 ;;
   esac
   return 0
+}
+
+# IP identifiers (v4, or v6 which always contains a colon) can only be
+# validated over HTTP, never by a DNS challenge.
+is_ip() {
+  case "$1" in
+    *:*) return 0 ;;
+    *[!0-9.]* | *..* | .* | *.) return 1 ;;
+  esac
+  [ "$(printf '%s' "$1" | tr -cd '.' | wc -c)" -eq 3 ]
 }
 
 # acme.sh's default key is EC, which it would otherwise store in ${domain}_ecc.
@@ -293,6 +303,9 @@ sync_one() {
   webroot=$(printf '%s' "$cert" | jq -r '.webroot // ""')
   hooks_raw=$(printf '%s' "$cert" | jq -r '.deploy_hooks // ""')
   reload_cmd=$(printf '%s' "$cert" | jq -r '.reload_cmd // ""')
+  dns_sleep=$(printf '%s' "$cert" | jq -r '.dns_sleep // ""')
+  profile=$(printf '%s' "$cert" | jq -r '.certificate_profile // ""')
+  renew_days=$(printf '%s' "$cert" | jq -r '.renewal_days // ""')
   ha=$(printf '%s' "$cert" | jq -r '.home_assistant // false')
 
   if ! valid_name "$domain"; then
@@ -300,17 +313,28 @@ sync_one() {
     return 0
   fi
 
+  has_ip=0
+  is_ip "$domain" && has_ip=1
   set -- --issue --server "$CA" -d "$domain"
   set -f
   # shellcheck disable=SC2086
   for alt in $(printf '%s' "$alt_raw" | tr ',' ' '); do
     if valid_name "$alt"; then
+      is_ip "$alt" && has_ip=1
       set -- "$@" -d "$alt"
     else
       log "skipping invalid alternate name on $domain"
     fi
   done
   set +f
+  case "$challenge" in
+    dns | dns_persist)
+      if [ "$has_ip" -eq 1 ]; then
+        log "skipping $domain: IP identifiers cannot use a DNS challenge; use standalone or webroot"
+        return 0
+      fi
+      ;;
+  esac
   case "$challenge" in
     dns)
       case "$dns_hook" in
@@ -321,6 +345,9 @@ sync_one() {
           ;;
       esac
       set -- "$@" --dns "$dns_hook"
+      ;;
+    dns_persist)
+      set -- "$@" --dns-persist
       ;;
     standalone)
       set -- "$@" --standalone
@@ -343,6 +370,40 @@ sync_one() {
   esac
   if [ -n "$reload_cmd" ]; then
     set -- "$@" --reloadcmd "$reload_cmd"
+  fi
+  case "$dns_sleep" in
+    "" | *[!0-9]*)
+      [ -n "$dns_sleep" ] && log "ignoring invalid dns_sleep for $domain"
+      ;;
+    *)
+      if [ "$dns_sleep" -gt 0 ]; then
+        set -- "$@" --dnssleep "$dns_sleep"
+      fi
+      ;;
+  esac
+  case "$renew_days" in
+    "" | *[!0-9]*)
+      [ -n "$renew_days" ] && log "ignoring invalid renewal_days for $domain"
+      ;;
+    *)
+      if [ "$renew_days" -gt 0 ]; then
+        set -- "$@" --days "$renew_days"
+      fi
+      ;;
+  esac
+  case "$profile" in
+    "" ) ;;
+    *[!A-Za-z0-9_-]*)
+      log "ignoring invalid certificate_profile for $domain"
+      ;;
+    *)
+      set -- "$@" --cert-profile "$profile"
+      ;;
+  esac
+
+  if [ "$challenge" = "dns_persist" ]; then
+    log "persistent DNS record for $domain (create it before issuing will succeed):"
+    run_acme "$domain" --make-dns-persist-value -d "$domain" || log "could not print the DNS-PERSIST record for $domain"
   fi
 
   log "issuing $domain ($challenge)"
