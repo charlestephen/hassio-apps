@@ -8,7 +8,7 @@
 # Filled by scripts/update-upstream-version.py on each upstream release.
 # Source image: docker.io/cloudflare/cloudflared.
 # Declared in global scope because COPY --from cannot expand build args.
-ARG CLOUDFLARED_VERSION="2026.10.1"
+ARG CLOUDFLARED_VERSION="2026.10.2"
 FROM docker.io/cloudflare/cloudflared:${CLOUDFLARED_VERSION} AS cloudflared
 
 FROM ghcr.io/hassio-addons/base:stable
