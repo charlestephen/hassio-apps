@@ -1,5 +1,41 @@
 # Changelog
 
+## 2026.10.2
+
+- Upgrading from upstream version 2026.10.1 -> 2026.10.2
+
+> Upstream 2026.10.2: https://github.com/cloudflare/cloudflared/releases/tag/2026.10.2
+>
+> ### SHA256 Checksums:
+> ```
+> cloudflared-amd64.pkg: a0d9804c040821ad7adee1e158fce6e59e3c91b1dd4579f922d17665cea93743
+> cloudflared-arm64.pkg: a5d619bfb872ac5627b2e46f6a0d1b45b1045e35f25edacd99ebb958e55c852a
+> cloudflared-darwin-amd64.tgz: 4be2a4c0b76f6be4a84bea590743e85041949c294efcee4de86a140a9f11869a
+> cloudflared-darwin-arm64.tgz: 823f993ef362fba5e0e288db6f3452d8de34291632971c7a40b79548420e9a18
+> cloudflared-fips-linux-amd64: 84ccab73e8ce536015a9cd22b4d581ef40a0f6ffee3561fc75421add33885754
+> cloudflared-fips-linux-amd64.deb: c7a2874110f522ec6b022d9c14d9f2e2ed38e54f95ab1765549f61fa79d58264
+> cloudflared-fips-linux-x86_64.rpm: 3bc74448b9b401475fd704be6f99e5383e1a83e3c8a7f65f8dfcc568c33882c6
+> cloudflared-linux-386: e11f1a244567ff4d144f13533c6a0a29833f0d93e9a3586099e708f1028affb4
+> cloudflared-linux-386.deb: 82f4f0952bf02fef20fe28702f5abed90d36c2b3724f09f3346e5721dc04d90d
+> cloudflared-linux-386.rpm: 5655a8ffd8c18e68d83a93021747ecd1d5ad7ea875bc0fb28c02d5a368be10f7
+> cloudflared-linux-aarch64.rpm: dfc5dab54ac5993adc721ed8d911ec1ba0da2725a110f08c0e875310b3146ecb
+> cloudflared-linux-amd64: 35fbdd2beb378436c7da377d7358cea8e33f9c94a6705d1d8036bf9b0d6d8005
+> cloudflared-linux-amd64.deb: 30a9a127c24ea8365fa8e11b13684128f34dd8a1137599aa00b4bebda1a0a083
+> cloudflared-linux-arm: d77aa7372c90bf651bb42ae69b085cfa6c5c6f7370aef1bf9058c88818bd0397
+> cloudflared-linux-arm.deb: 67746d8eec29255bf96ce49431d4db9b95fdd38cd2ee10d79cc03a1b1a1709d3
+> cloudflared-linux-arm.rpm: 275e62fe2570c19c012bfa3c0544d75b06f9d5ba9371a9d9cb16f825ba46e9fc
+> cloudflared-linux-arm64: b7e55b4d9702c2ab5f8348f780bb1db044527fc555367714c78e0595750a4665
+> cloudflared-linux-arm64.deb: 2e5335ea0ef2fa98e5354357e77aaf453f3756d1f9023cf5b063409e1fb3baca
+> cloudflared-linux-armhf: 592de7e5cf1a0532c938486db88c159547f988559423d6bf3864820aabe21750
+> cloudflared-linux-armhf.deb: a59086c31d54f6d830cba5df304810e5a654d52c020cec20a46a831fa6f1b442
+> cloudflared-linux-armhf.rpm: f4e39a8d5c2c768a41b3e9030b4defc4b2219f1d5e9b0ebf4978bf5bb9e1c1f3
+> cloudflared-linux-x86_64.rpm: 98964f871fbb25be692b06304030054525c764192696e61696fc22fa2e2dc990
+> cloudflared-windows-386.exe: 988758588a6fc8706aa26f5b34ee41c5902175f874998a93c1c954d8aabfecba
+> cloudflared-windows-386.msi: 9aa9d4a91aa3b4ae6848ed929010f5644d4ca55a281eedd55a5b65a7b6763c8a
+> cloudflared-windows-amd64.exe: 12c7c887f8aaab779aef1dfa9b60673530a5adb88ecc55dd6df8f56e0b70f199
+> cloudflared-windows-amd64.msi: b50555247893779aae9f2f3a39d9c223a937e8e05743dd5b60e80cabc93bc7a8
+> ```
+
 ## 2026.10.1
 
 - Upgrading from upstream version 2026.10.0 -> 2026.10.1

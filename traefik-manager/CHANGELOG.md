@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.15.3
+
+- Upgrading from upstream version 1.15.2 -> 1.15.3
+
+> Upstream v1.15.3: https://github.com/chr0nzz/traefik-manager/releases/tag/v1.15.3
+>
+> ## v1.15.3
+>
+> **Improvements:**
+> - **[settings, security]** Warn about the Traefik 3.7.14 / 2.11.58 advisories ([GHSA-qm9f-w54v-q2qh](https://github.com/traefik/traefik/security/advisories/GHSA-qm9f-w54v-q2qh), [GHSA-cw35-4q88-3rmp](https://github.com/traefik/traefik/security/advisories/GHSA-cw35-4q88-3rmp), [GHSA-53qr-784g-cj35](https://github.com/traefik/traefik/security/advisories/GHSA-53qr-784g-cj35), [GHSA-mhjw-hmjv-p99x](https://github.com/traefik/traefik/security/advisories/GHSA-mhjw-hmjv-p99x), [GHSA-2272-4vv8-65ww](https://github.com/traefik/traefik/security/advisories/GHSA-2272-4vv8-65ww))
+> - **[docs]** List the new advisories on the Traefik Hardening page
+>
+> **Bug fixes:**
+> - **[dashboard]** Show the status of routers Traefik splits per entry point, instead of leaving them grey ([#214](https://github.com/chr0nzz/traefik-manager/issues/214), thanks @nofuturekid)
+> - **[docker]** Serve the QR code, dagre and Monaco theme files when PUID/PGID is set, instead of failing with a permission error ([#216](https://github.com/chr0nzz/traefik-manager/issues/216))
+
 ## 1.15.2
 
 - Upgrading from upstream version 1.15.1 -> 1.15.2
