@@ -4,10 +4,11 @@
 # Home Assistant wrapper entrypoint for the Traefik Manager Agent (TMA).
 #
 # Reads the app options from /data/options.json, exports the matching TMA
-# environment variables, then execs the tma binary. TMA has no settings file
-# of its own — it is driven entirely by environment variables, and anything
-# it is not configured for simply does not appear in the Traefik Manager UI
-# for that server.
+# environment variables, then hands off to the image's own docker-entrypoint
+# (PUID/PGID and future startup logic) which runs the tma binary. TMA has no
+# settings file of its own — it is driven entirely by environment variables,
+# and anything it is not configured for simply does not appear in the Traefik
+# Manager UI for that server.
 #   Ref: https://traefik-manager.xyzlab.dev/agent.html
 # ==============================================================================
 set -e
@@ -108,4 +109,4 @@ export_bool_if_set 'git_backup_auto_push'      'GIT_BACKUP_AUTO_PUSH'
 export_if_set 'git_backup_commit_message'      'GIT_BACKUP_COMMIT_MESSAGE'
 
 log "Starting Traefik Manager Agent v${TMA_VERSION} ..."
-exec tma
+exec /usr/local/bin/docker-entrypoint.sh tma

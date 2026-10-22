@@ -3,7 +3,7 @@ ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager-agent:1.15.4
 # Thin Home Assistant wrapper on the official Traefik Manager Agent image
 # (TMA). It's a single static Go binary with its own HEALTHCHECK, so we do
 # NOT add s6-overlay; we only translate the app options into its
-# environment variables and then exec the binary.
+# environment variables and then hand off to its docker-entrypoint.
 FROM ${BUILD_FROM}
 
 # jq: parse /data/options.json in the wrapper entrypoint. The upstream image
@@ -15,7 +15,7 @@ RUN apk upgrade --no-cache \
 ARG TMA_VERSION=1.15.4
 ENV TMA_VERSION=${TMA_VERSION}
 
-# Wrapper entrypoint (options -> env -> exec tma)
+# Wrapper entrypoint (options -> env -> upstream docker-entrypoint + tma)
 COPY rootfs/ /
 RUN chmod +x /ha-entrypoint.sh
 

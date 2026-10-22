@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.15.4-1
+
+- Hand off to upstream `/app/scripts/docker-entrypoint.sh` and
+  `/app/gunicorn.conf.py` instead of a bare gunicorn invocation (gthread
+  workers, timeouts, PUID/PGID).
+- Default **Certificate resolver** to `cloudflare` so the UI matches the
+  upstream image ENV default.
+- Map Home Assistant `/ssl` read-only for `acme.json` under `/ssl/...`.
+- Align docs/comments with upstream defaults (`COOKIE_SECURE` is false).
+- Recommend setting **Admin password** in options (avoids first-boot
+  auto-password ambiguity that existed on older upstream builds).
+
 ## 1.15.4
 
 - Upgrading from upstream version 1.15.3 -> 1.15.4
@@ -32,6 +44,7 @@
 > **Bug fixes:**
 > - **[dashboard]** Show the status of routers Traefik splits per entry point, instead of leaving them grey ([#214](https://github.com/chr0nzz/traefik-manager/issues/214), thanks @nofuturekid)
 > - **[docker]** Serve the QR code, dagre and Monaco theme files when PUID/PGID is set, instead of failing with a permission error ([#216](https://github.com/chr0nzz/traefik-manager/issues/216))
+
 
 ## 1.15.2
 

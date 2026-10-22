@@ -3,7 +3,7 @@ ARG BUILD_FROM=ghcr.io/chr0nzz/traefik-manager:1.15.4
 # Thin Home Assistant wrapper on the official Traefik Manager image. It's a
 # self-contained Flask app served by gunicorn, so we do NOT add s6-overlay;
 # we only translate the app options into its environment variables and
-# then hand off to its own CMD.
+# then hand off to its docker-entrypoint + gunicorn.conf.py.
 FROM ${BUILD_FROM}
 
 # jq: parse /data/options.json in the wrapper entrypoint.
@@ -14,7 +14,7 @@ RUN apk upgrade --no-cache \
 ARG TRAEFIK_MANAGER_VERSION=1.15.4
 ENV TRAEFIK_MANAGER_VERSION=${TRAEFIK_MANAGER_VERSION}
 
-# Wrapper entrypoint (options -> env -> exec gunicorn)
+# Wrapper entrypoint (options -> env -> upstream docker-entrypoint + gunicorn)
 COPY rootfs/ /
 RUN chmod +x /ha-entrypoint.sh
 

@@ -2,7 +2,7 @@
 name: Traefik Manager
 description: Clean, self-hosted web UI for managing Traefik routes, middlewares, certificates and logs.
 url: https://traefik-manager.xyzlab.dev/
-version: "1.15.4"
+version: "1.15.4-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: traefik-manager
@@ -24,6 +24,8 @@ map:
     read_only: false
   - type: config
     read_only: false
+  - type: ssl
+    read_only: true
 ports:
   5000/tcp: 5000
 ports_description:
@@ -33,9 +35,9 @@ backup: cold
 # ---------------------------------------------------------------------------
 # Traefik Manager environment variables surfaced as app options.
 # Full reference: https://traefik-manager.xyzlab.dev/env-vars.html
-# Empty strings / false are treated as "not set" and are not exported, so the
-# app falls back to Traefik Manager's own defaults (the setup wizard runs on
-# first start with nothing configured).
+# Empty strings are not exported. The app then keeps the upstream image's
+# ENV defaults where those exist (e.g. CERT_RESOLVER=cloudflare); otherwise
+# the setup wizard / feature tabs behave as if the option were unset.
 # ---------------------------------------------------------------------------
 options:
   # --- Connection ---
@@ -44,7 +46,7 @@ options:
   traefik_api_password: ""
   traefik_insecure_skip_verify: false
   domains: "example.com"
-  cert_resolver: ""
+  cert_resolver: "cloudflare"
 
   # --- Config files (persisted under this app's /data volume by default) ---
   config_path: "/data/config/dynamic.yml"

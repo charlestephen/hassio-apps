@@ -2,18 +2,17 @@
 name: Traefik Manager Agent
 description: Remote-host agent that lets Traefik Manager manage a Traefik instance running elsewhere on the network.
 url: https://traefik-manager.xyzlab.dev/agent.html
-version: "1.15.4"
+version: "1.15.4-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: traefik-manager-agent
 image: ghcr.io/charlestephen/hassio-addons-traefik-manager-agent-{arch}
 # TMA is a single static Go binary with its own HEALTHCHECK, so we do NOT
-# layer HA's s6 init on top of it.
+# layer HA's s6 init on top of it. Port 8090 is the agent API only — no
+# browser UI — so webui / panel_icon are intentionally omitted.
 init: false
 startup: services
 boot: auto
-panel_icon: mdi:router-network
-webui: http://[HOST]:[PORT:8090]
 arch:
   - aarch64
   - amd64
@@ -31,9 +30,9 @@ backup: cold
 # ---------------------------------------------------------------------------
 # TMA environment variables surfaced as app options.
 # Full reference: https://traefik-manager.xyzlab.dev/agent.html
-# Only TMA_API_KEY is required. Empty strings / false are treated as "not
-# set" and are not exported, so the corresponding tab simply doesn't appear
-# in the Traefik Manager UI for this server.
+# Only TMA_API_KEY is required. Empty strings are not exported, so the
+# corresponding tab simply doesn't appear in the Traefik Manager UI for
+# this server.
 # ---------------------------------------------------------------------------
 options:
   # --- Required ---
@@ -45,12 +44,12 @@ options:
   tma_debug: false
 
   # --- Traefik connection ---
-  traefik_api_url: "http://69356281-traefik:8080"
+  traefik_api_url: "http://traefik:8080"
   traefik_api_user: ""
   traefik_api_password: ""
   traefik_insecure_skip_verify: false
 
-  # --- Config files ---
+  # --- Config files (HA Traefik add-on layout under /config and /ssl) ---
   config_path: "/config/traefik/dynamic"
   static_config_path: "/config/traefik/traefik.yml"
 

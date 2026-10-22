@@ -1,3 +1,13 @@
+## 1.15.4-1
+
+- Hand off to upstream `/usr/local/bin/docker-entrypoint.sh tma` instead of
+  a bare `tma` exec (PUID/PGID and future startup logic).
+- Default **Traefik API URL** to `http://traefik:8080` (was a private HA
+  Traefik slug).
+- Align DOCS with config defaults (`/config/traefik/dynamic`,
+  `/config/traefik/traefik.yml`, `/ssl/traefik/acme.json`).
+- Drop `webui` / `panel_icon` — port 8090 is the agent API, not a browser UI.
+
 ## 1.15.4
 
 - Upgrading from upstream version 1.15.3 -> 1.15.4
@@ -30,6 +40,7 @@
 > **Bug fixes:**
 > - **[dashboard]** Show the status of routers Traefik splits per entry point, instead of leaving them grey ([#214](https://github.com/chr0nzz/traefik-manager/issues/214), thanks @nofuturekid)
 > - **[docker]** Serve the QR code, dagre and Monaco theme files when PUID/PGID is set, instead of failing with a permission error ([#216](https://github.com/chr0nzz/traefik-manager/issues/216))
+
 
 ## 1.15.2
 

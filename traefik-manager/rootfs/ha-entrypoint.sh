@@ -4,9 +4,10 @@
 # Home Assistant wrapper entrypoint for Traefik Manager.
 #
 # Reads the app options from /data/options.json, exports the matching Traefik
-# Manager environment variables, then execs gunicorn (upstream's own CMD).
-# Empty / false options are treated as "unset" so Traefik Manager falls back
-# to its own defaults (the setup wizard runs on first start with nothing set).
+# Manager environment variables, then hands off to the image's own
+# docker-entrypoint + gunicorn config (gthread workers, timeouts, PUID/PGID).
+# Empty options are not exported so Traefik Manager keeps its image defaults
+# (note: some image ENV defaults still apply when unset, e.g. CERT_RESOLVER).
 #   Ref: https://traefik-manager.xyzlab.dev/env-vars.html
 # ==============================================================================
 set -e
@@ -39,8 +40,9 @@ export_int_if_pos() {
     fi
 }
 
-# Export ${2}=true only when option ${1} is true (omit otherwise, so the
-# upstream default of true for AUTH_ENABLED / COOKIE_SECURE etc still wins).
+# Export bool option ${1} as ${2} when present in options.json. Omitted keys
+# leave the image ENV default alone (AUTH_ENABLED defaults true upstream;
+# COOKIE_SECURE defaults false).
 export_bool_if_set() {
     _v="$(jq -r --arg k "$1" 'if has($k) then (.[$k] | tostring) else empty end' "${OPTIONS}" 2>/dev/null)"
     if [ -n "${_v}" ]; then
@@ -124,4 +126,4 @@ export_if_set 'requests_ca_bundle'          'REQUESTS_CA_BUNDLE'
 
 log "Starting Traefik Manager v${TRAEFIK_MANAGER_VERSION} ..."
 cd /app
-exec gunicorn --bind 0.0.0.0:5000 --workers 2 --log-level info app:app
+exec /app/scripts/docker-entrypoint.sh gunicorn --config /app/gunicorn.conf.py app:app
