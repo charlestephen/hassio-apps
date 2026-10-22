@@ -1,7 +1,7 @@
 name: Error Pages
 description: Beautiful, customizable HTTP error pages (404, 500, ...) to serve from your reverse proxy.
 url: "https://github.com/charlestephen/hassio-apps/tree/main/error-pages"
-version: "4.2.6"
+version: "4.2.7"
 stage: stable
 slug: error_pages
 image: ghcr.io/charlestephen/hassio-addons-error_pages-{arch}
