@@ -17,7 +17,7 @@ configuration:
     description: Comma-separated base domains offered in the Add Route form.
   cert_resolver:
     name: Certificate resolver
-    description: Comma-separated ACME cert resolver names. The first is the default for new routes.
+    description: Comma-separated ACME cert resolver names (default cloudflare, matching the upstream image). The first is the default for new routes.
   config_path:
     name: Dynamic config path
     description: Single dynamic config file Traefik Manager edits.
@@ -32,7 +32,7 @@ configuration:
     description: Where manager.yml and its companion files live.
   acme_json_path:
     name: ACME JSON path
-    description: Traefik's acme.json (or comma-separated files, or a directory). Enables the Certificates tab.
+    description: Traefik's acme.json (or comma-separated files, or a directory). Paths under /ssl, /share, /config, or /data work. Enables the Certificates tab.
   access_log_path:
     name: Access log path
     description: Traefik's access log. Enables the Logs tab.

@@ -11,9 +11,10 @@ certificates and logs, without hand-editing YAML. This app tracks upstream Traef
 3. Point **Traefik API URL** at your Traefik instance's internal API
    (`http://traefik:8080` by default — use the internal address, not a public
    dashboard URL behind auth).
-4. Start the app and open the Web UI (port `5000`). If **Admin password** is
-   left blank, a random one is generated and printed to the app log on first
-   start; the setup wizard runs from there.
+4. Start the app and open the Web UI (port `5000`). Prefer setting **Admin
+   password** in the app options. If you leave it blank, a random one is
+   generated and printed to the app log on first start; the setup wizard
+   runs from there.
 
 ## How data is stored
 
@@ -30,13 +31,28 @@ survives restarts, updates and reinstalls:
 - `backup_dir` → `/data/backups` — a `.bak` file is written here before every
   change.
 
+This app also maps Home Assistant `/ssl` read-only, so you can set **ACME
+JSON path** to something under `/ssl/...` when Traefik writes `acme.json`
+there (for example `/ssl/traefik/acme.json`). `/share` and `/config` are
+mapped read-write as well.
+
+## Certificate resolver
+
+**Certificate resolver** defaults to `cloudflare`, matching the upstream
+image's `CERT_RESOLVER` environment default. Change it to your Traefik
+resolver name(s), comma-separated; the first is the default for new routes.
+
 ## Optional integrations
 
-Leaving a field blank disables the corresponding tab in the UI — nothing
-breaks, the feature just doesn't appear:
+Leaving most optional fields blank disables the corresponding tab in the UI
+— nothing breaks, the feature just doesn't appear. Fields that inherit an
+upstream image ENV default (such as **Certificate resolver**) still apply
+that default when left alone in older configs; this app's options now show
+`cloudflare` explicitly.
 
 - **Certificates tab** — set **ACME JSON path** to Traefik's `acme.json`
-  (or a directory of them, one per cert resolver).
+  (or a directory of them, one per cert resolver). Paths under `/ssl`,
+  `/share`, `/config`, or `/data` all work with the mounts above.
 - **Logs tab** — set **Access log path** to Traefik's access log.
 - **Static Config editor / Plugins tab** — set **Static config path** /
   **Plugins directory**.

@@ -26,13 +26,13 @@ configuration:
     description: Skip TLS verification for an https API with a self-signed or origin certificate.
   config_path:
     name: Config path
-    description: Directory (every .yml/.yaml in it) or single file that Traefik's file provider watches on this host.
+    description: Directory (every .yml/.yaml in it) or single file that Traefik's file provider watches. Default /config/traefik/dynamic.
   static_config_path:
     name: Static config path
-    description: Traefik's static config on this host. Enables the Static Config editor for this server.
+    description: Traefik's static config on this host (default /config/traefik/traefik.yml). Enables the Static Config editor for this server.
   acme_json_path:
     name: ACME JSON path
-    description: This host's acme.json (or comma-separated files, or a directory). Enables the Certificates tab.
+    description: This host's acme.json (default /ssl/traefik/acme.json), or comma-separated files, or a directory. Enables the Certificates tab.
   access_log_path:
     name: Access log path
     description: This host's Traefik access log. Enables the Logs tab.
