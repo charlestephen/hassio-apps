@@ -1,3 +1,20 @@
+## 1.15.4
+
+- Upgrading from upstream version 1.15.3 -> 1.15.4
+
+> Upstream v1.15.4: https://github.com/chr0nzz/traefik-manager/releases/tag/v1.15.4
+>
+> ## v1.15.4
+>
+> **Improvements:**
+> - **[dashboard]** The card pencil is now labelled Card settings, and Card settings has an Edit route button that opens the route editor ([#219](https://github.com/chr0nzz/traefik-manager/discussions/219))
+>
+> **Bug fixes:**
+> - **[routes, tls]** Show TLS and the default TLS options for routes that get TLS from their entry point, instead of No TLS and an unused profile ([#218](https://github.com/chr0nzz/traefik-manager/issues/218))
+> - **[logs]** Show the log date in local time with its time zone, and keep the logged value ([#220](https://github.com/chr0nzz/traefik-manager/issues/220))
+> - **[agent, security]** Build the agent with Go 1.26.10 for a crypto/x509 standard library advisory ([GO-2026-6809](https://pkg.go.dev/vuln/GO-2026-6809))
+> - **[docs, security]** Update vite to 6.4.5 in the docs toolchain ([GHSA-r825-w8mm-5pxw](https://github.com/advisories/GHSA-r825-w8mm-5pxw), [GHSA-698v-4r3x-3vcv](https://github.com/advisories/GHSA-698v-4r3x-3vcv), [GHSA-587h-7wmj-h5pm](https://github.com/advisories/GHSA-587h-7wmj-h5pm))
+
 ## 1.15.3
 
 - Upgrading from upstream version 1.15.2 -> 1.15.3

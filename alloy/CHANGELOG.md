@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.21.1
+
+- Upgrading from upstream version 1.21.0 -> 1.21.1
+
+> Upstream v1.21.1: https://github.com/grafana/alloy/releases/tag/v1.21.1
+>
+> ## [1.21.1](https://github.com/grafana/alloy/compare/v1.21.0...v1.21.1) (2026-10-21)
+>
+>
+> ### Bug Fixes 🐛
+>
+> * **faro.receiver:** Enforce download_from_origins on redirects and sourcemap URLs [backport] ([#7481](https://github.com/grafana/alloy/issues/7481)) ([530886e](https://github.com/grafana/alloy/commit/530886e87c22dd5bbf9783fbcc7fd4ccf1d3b824)) (@kgeckhart)
+> * **prometheus.exporter.kafka:** Avoid panic on empty consumer group member assignment [backport] ([#7441](https://github.com/grafana/alloy/issues/7441)) ([9b6b80a](https://github.com/grafana/alloy/commit/9b6b80a0437a293069ce4d6a06e692c3d1fd0fba)) (@ptodev)
+> * Update go version to 1.27.3 [backport] ([#7472](https://github.com/grafana/alloy/issues/7472)) ([88cfe69](https://github.com/grafana/alloy/commit/88cfe693521b490ef73ff953a907ff6b9ab50a10)) (@kalleep)
+>
+> ## Upgrading
+>
+> Read the [release notes] for specific instructions on upgrading from older versions:
+>
+> [release notes]: https://grafana.com/docs/alloy/v1.21/release-notes/
+>
+> ## Installation
+>
+> Refer to our [installation guide] for how to install Grafana Alloy.
+>
+> [installation guide]: https://grafana.com/docs/alloy/v1.21/get-started/install/
+
 ## 1.21.0
 
 - Upgrading from upstream version 1.20.1 -> 1.21.0
