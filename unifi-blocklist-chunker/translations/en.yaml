@@ -1,0 +1,34 @@
+configuration:
+  blocklist_urls:
+    name: Blocklist URLs
+    description: >-
+      Upstream DNS/IP list URLs to fetch and merge (txt, JSON, YAML, or TOML).
+      Add one URL per entry.
+  chunk_size:
+    name: Chunk size
+    description: >-
+      Maximum entries per served chunk file. UniFi commonly caps around 100000.
+  refresh_interval:
+    name: Refresh interval
+    description: >-
+      How often to re-fetch upstreams (Go duration, e.g. 6h, 30m). Use 0 to
+      disable periodic refresh.
+  base_url:
+    name: Public base URL
+    description: >-
+      Origin used when generating chunk links on / and /stats (e.g.
+      https://lists.example.com). Leave empty behind Traefik so X-Forwarded-*
+      headers set the public URL.
+  admin_token:
+    name: Admin token
+    description: >-
+      Password for the /manage UI and exclusion API (Basic auth password or
+      Bearer token). Leave empty to disable admin endpoints.
+  exclusions:
+    name: Seed exclusions
+    description: >-
+      Domains, IPs, or CIDRs to exclude from served chunks (exact match).
+      Merged into persistent storage on start; you can also add/remove entries
+      live at /manage behind your reverse proxy.
+network:
+  8080/tcp: Chunk lists, stats, search, and management UI

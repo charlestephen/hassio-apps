@@ -92,6 +92,12 @@ Or add it manually:
 - An authoritative + recursive DNS server with a web management UI, DNSSEC, and
   DNS-over-TLS / DNS-over-HTTPS.
 
+### &#10003; [UniFi Blocklist Chunker](unifi-blocklist-chunker/)
+
+- Merge upstream DNS/IP blocklists into UniFi-sized domain, IPv4, and IPv6
+  chunks. Config UI for list URLs and exclusions; `/manage` UI for on-the-fly
+  removals behind a reverse proxy.
+
 ### &#10003; [Traefik Manager](traefik-manager/)
 
 - Clean, self-hosted web UI for managing Traefik routes, middlewares,
