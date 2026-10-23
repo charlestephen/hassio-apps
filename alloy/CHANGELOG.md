@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.21.2
+
+- Upgrading from upstream version 1.21.1 -> 1.21.2
+
+> Upstream v1.21.2: https://github.com/grafana/alloy/releases/tag/v1.21.2
+>
+> ## [1.21.2](https://github.com/grafana/alloy/compare/v1.21.1...v1.21.2) (2026-10-22)
+>
+>
+> ### Bug Fixes 🐛
+>
+> * Migrate config from type string to type secret [backport] ([#7499](https://github.com/grafana/alloy/issues/7499)) ([6848963](https://github.com/grafana/alloy/commit/684896311bde2d3cbcb464c8df8990cddc772f72)) (@blewis12)
+>
+> ## Upgrading
+>
+> Read the [release notes] for specific instructions on upgrading from older versions:
+>
+> [release notes]: https://grafana.com/docs/alloy/v1.21/release-notes/
+>
+> ## Installation
+>
+> Refer to our [installation guide] for how to install Grafana Alloy.
+>
+> [installation guide]: https://grafana.com/docs/alloy/v1.21/get-started/install/
+
 ## 1.21.1
 
 - Upgrading from upstream version 1.21.0 -> 1.21.1
