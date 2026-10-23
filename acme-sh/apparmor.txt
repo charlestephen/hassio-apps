@@ -1,0 +1,56 @@
+#include <tunables/global>
+
+profile acme-sh flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  capability,
+  file,
+  signal,
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+
+  capability setgid,
+  capability setuid,
+  capability net_bind_service,
+  capability dac_read_search,
+
+  /bin/** rix,
+  /usr/bin/** rix,
+  /usr/local/bin/** rix,
+  /usr/sbin/** rix,
+  /sbin/** rix,
+
+  # Wrapper + acme.sh tree (official image layout)
+  /usr/local/bin/acme-run rix,
+  /acmebin/** rwix,
+  /root/.acme.sh/** rwix,
+
+  # Persisted state, certs, share, optional addon_config
+  /data/** rw,
+  /ssl/** rw,
+  /share/** rw,
+  /config/** rw,
+
+  /tmp/** mrwk,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+  /dev/null rw,
+  /dev/urandom r,
+  /dev/random r,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/ssl/** r,
+  /usr/share/zoneinfo/** r,
+  /usr/lib/** mr,
+  /lib/** mr,
+  /proc/sys/net/** r,
+}

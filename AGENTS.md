@@ -1,9 +1,13 @@
 ## Learned User Preferences
 
-- Sign commits and pushes with the user's signing key.
+- Sign commits and pushes with the user's signing key (GPG on YubiKey).
 - When the upstream updater rewrites an app, follow each file's existing style. In `CHANGELOG.md` only, leave a blank line and add `- Upgrading from upstream version <previous version> -> $APP_NEW_VERSION`, with the previous version written out and `$APP_NEW_VERSION` left for the updater script.
+- When debugging UI login, setup wizards, auth providers, or “config change didn’t take,” check a private/incognito window (or hard-refresh) early before deep infrastructure digs — browser cache has already burned hours on false alarms (e.g. PatchMon local-auth wizard).
+- When wrapping an upstream container as a Home Assistant app, prefer the upstream image's own `ENTRYPOINT`/`CMD` (export options as env, then `exec` that entrypoint). Only replace it when HA rules require something the upstream entrypoint cannot do (e.g. grafting s6 onto a scratch/static binary, or a custom wrapper that still ends in `exec` of upstream).
 
 ## Learned Workspace Facts
+
+- Every app ships a valid `apparmor.txt` whose `profile` name matches `config.yaml` `slug` exactly (hyphens included). Supervisor loads it from the repo; image rebuild is not required for profile-only changes, but `apparmor.txt` is in the build workflow path filter so related commits stay discoverable.
 
 - Home Assistant displays `version` from each app's `config.yaml`. That field must be a real version. `.github/workflows/track-upstream.yml` runs `scripts/update-upstream-version.py --all` for every app with `upstream_repo` in `build.yaml`, then `scripts/push-github-signed-commit.py` commits through GitHub's `createCommitOnBranch` API with no custom author or committer so the commit is signed. `build.yml` builds the images after that push and refuses a version that still contains `$`.
 - The updater strips a leading `v` from release tags and maps tags such as `REL-9_18` and `REL_18_6` to `9.18` and `18.6`. Sources that need the prefix keep it via `upstream_version_arg_prefix` or `upstream_build_from_prefix` (Alloy's download URL and Homarr's image tags). It ignores prerelease tags and will not replace a recorded version with an older one.
@@ -13,5 +17,7 @@
 - On each bump, the updater quotes upstream GitHub or Codeberg release notes into the app `CHANGELOG.md` as blockquote lines starting with `> Upstream `. If the release body is short, it uses the matching section of `CHANGELOG.md`, `CHANGES.md`, `HISTORY.md`, or `NEWS.md` at that tag. `python3 scripts/update-upstream-version.py --notes` backfills the current recorded version. pgAdmin, PostgreSQL, and Semaphore have no upstream release notes or changelog file, so they keep a one-line upgrade entry.
 - Trivy still scans images after builds and weekly, but it no longer uploads SARIF to GitHub code scanning. Upstream CVEs were dismissed as won't fix; uploading the same results reopened them.
 - `main` requires a verified commit signature. A local `git commit` from `github-actions[bot]` is unsigned and is rejected. Dependabot and Renovate open pull requests and do not update this `version` field, so they do not replace the updater.
-- The Acme.sh add-on has no `upstream_repo`. It follows `ghcr.io/acmesh-official/acme.sh:latest` and runs `acme.sh --upgrade` on start and before each renewal, so the version updater does not pin a release.
+- The Acme.sh add-on has no `upstream_repo`. It follows `ghcr.io/acmesh-official/acme.sh:latest` and runs `acme.sh --upgrade` on start and before each renewal, so the version updater does not pin a release. Certificate stores live at `/ssl/acme.sh/<domain>` with `/data/acme.sh/<domain>` as a symlink; it does not write `/ssl/<domain>/`. `env_vars` entries can be marked `secret` so values stay masked and out of logs.
 - Technitium polls for file changes (`DOTNET_USE_POLLING_FILE_WATCHER=1`) and disables config reload on change, because Home Assistant OS shares `fs.inotify.max_user_instances` across add-ons. It uses workstation GC to keep the heap smaller.
+- Traefik Manager and Traefik Manager Agent HA wrappers must export options then `exec` the upstream image entrypoints (`/app/scripts/docker-entrypoint.sh` with `/app/gunicorn.conf.py` for Manager; `/usr/local/bin/docker-entrypoint.sh tma` for Agent). The Agent exposes API port 8090 only (no Web UI). Upstream `CERT_RESOLVER` defaults to `cloudflare`.
+- n8n workflow files for this stack live under `n8n/` in this repo.

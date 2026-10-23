@@ -1,0 +1,56 @@
+#include <tunables/global>
+
+profile homarr flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  capability,
+  file,
+  signal,
+  mount,
+  umount,
+  remount,
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+
+  capability setgid,
+  capability setuid,
+  capability sys_admin,
+  capability dac_read_search,
+  capability net_bind_service,
+
+  /bin/** rix,
+  /usr/bin/** rix,
+  /usr/local/bin/** rix,
+  /usr/sbin/** rix,
+  /sbin/** rix,
+
+  # HA options wrapper then Homarr's own entrypoint (redis + nginx + Next.js)
+  /ha-entrypoint.sh rix,
+  /app/** rwix,
+  /usr/lib/** mr,
+  /lib/** mr,
+
+  /data/** rw,
+  /share/** rw,
+  /tmp/** mrwk,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+  /dev/** mrwkl,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
+  /usr/share/zoneinfo/** r,
+  /proc/sys/net/** r,
+  /proc/self/** r,
+  /sys/fs/cgroup/** r,
+}
