@@ -7,4 +7,4 @@ build_from:
 upstream_repo: "charlestephen/unifi-blocklist-chunker"
 upstream_version_arg: UNIFI_BLOCKLIST_CHUNKER_VERSION
 args:
-  UNIFI_BLOCKLIST_CHUNKER_VERSION: "0.1.0"
+  UNIFI_BLOCKLIST_CHUNKER_VERSION: "1.0.0"
