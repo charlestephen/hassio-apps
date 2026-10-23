@@ -1,10 +1,12 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "UniFi Blocklist Chunker"
-version: "1.0.0"
+version: "1.0.1"
 slug: "unifi_blocklist_chunker"
 description: "Merge upstream DNS/IP blocklists into UniFi-sized domain, IPv4, and IPv6 chunks"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/unifi-blocklist-chunker"
-image: "ghcr.io/charlestephen/hassio-addons-unifi_blocklist_chunker-{arch}"
+# Image name follows the app directory (hyphens), matching build.yml:
+#   ghcr.io/<owner>/hassio-addons-<dir>-{arch}
+image: "ghcr.io/charlestephen/hassio-addons-unifi-blocklist-chunker-{arch}"
 arch:
   - aarch64
   - amd64
