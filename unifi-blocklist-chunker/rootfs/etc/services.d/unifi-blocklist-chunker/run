@@ -1,0 +1,15 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Start unifi-blocklist-chunker
+# ==============================================================================
+set -euo pipefail
+
+ENVFILE=/var/run/unifi-blocklist-chunker.env
+set -a
+# shellcheck disable=SC1090
+[[ -f "${ENVFILE}" ]] && . "${ENVFILE}"
+set +a
+
+bashio::log.info "Starting unifi-blocklist-chunker on :${PORT:-8080} ..."
+exec /usr/bin/unifi-blocklist-chunker
