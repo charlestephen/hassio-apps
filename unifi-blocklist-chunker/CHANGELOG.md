@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1
+
+- Fix published image name: HA was pulling
+  `hassio-addons-unifi_blocklist_chunker-{arch}` (slug underscores) but CI
+  pushes `hassio-addons-unifi-blocklist-chunker-{arch}` (directory hyphens),
+  which GHCR surfaced as 403/DENIED.
+
 ## 1.0.0
 
 - First stable Home Assistant app release, wrapping upstream
