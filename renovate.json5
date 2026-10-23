@@ -108,6 +108,17 @@
     },
     {
       "customType": "regex",
+      "description": "Track unifi-blocklist-chunker version (multistage source image)",
+      "fileMatch": ["unifi-blocklist-chunker/Dockerfile$", "unifi-blocklist-chunker/build.yaml$"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "UNIFI_BLOCKLIST_CHUNKER_VERSION[=:]\\s*[\"']?(?<currentValue>[\\d.]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "ghcr.io/charlestephen/unifi-blocklist-chunker"
+    },
+    {
+      "customType": "regex",
       "description": "Track Terraform version (multistage source image, semaphore add-on)",
       "fileMatch": ["semaphore/Dockerfile$", "semaphore/build.yaml$"],
       "matchStringsStrategy": "any",
@@ -202,6 +213,11 @@
       "groupName": "Error Pages",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/tarampampam/error-pages"]
+    },
+    {
+      "groupName": "UniFi Blocklist Chunker",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/charlestephen/unifi-blocklist-chunker"]
     },
     {
       "groupName": "Semaphore UI",

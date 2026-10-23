@@ -1,0 +1,10 @@
+---
+# Multi-stage: upstream scratch binary copied onto the HA Alpine base (s6 + bashio).
+# https://github.com/hassio-addons/addon-base
+build_from:
+  aarch64: ghcr.io/hassio-addons/base:stable
+  amd64: ghcr.io/hassio-addons/base:stable
+upstream_repo: "charlestephen/unifi-blocklist-chunker"
+upstream_version_arg: UNIFI_BLOCKLIST_CHUNKER_VERSION
+args:
+  UNIFI_BLOCKLIST_CHUNKER_VERSION: "0.1.0"
