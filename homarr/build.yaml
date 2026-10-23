@@ -9,4 +9,4 @@ upstream_build_from: true
 upstream_build_from_prefix: v
 upstream_version_arg: HOMARR_VERSION
 args:
-  HOMARR_VERSION: "2.7.0"
+  HOMARR_VERSION: "2.8.0"
