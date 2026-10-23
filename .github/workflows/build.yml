@@ -8,6 +8,7 @@ on:
       - '*/Dockerfile'
       - '*/build.yaml'
       - '*/rootfs/**'
+      - '*/apparmor.txt'
   workflow_dispatch:
     inputs:
       addon:

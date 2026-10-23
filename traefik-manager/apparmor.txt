@@ -1,0 +1,47 @@
+#include <tunables/global>
+
+profile traefik-manager flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  capability,
+  file,
+  signal,
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+
+  capability setgid,
+  capability setuid,
+  capability dac_read_search,
+
+  /bin/** rix,
+  /usr/bin/** rix,
+  /usr/local/bin/** rix,
+
+  # HA options wrapper then upstream docker-entrypoint + gunicorn
+  /ha-entrypoint.sh rix,
+  /app/** rwix,
+  /usr/local/lib/** mr,
+  /usr/lib/** mr,
+  /lib/** mr,
+
+  /data/** rw,
+  /tmp/** mrwk,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
+  /usr/share/zoneinfo/** r,
+  /proc/sys/net/** r,
+  /proc/self/** r,
+}

@@ -1,0 +1,65 @@
+#include <tunables/global>
+
+profile resolved_watchdog flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # full_access + host_dbus: talks to the host system bus to restart
+  # systemd-resolved when the stub resolver hangs.
+  capability,
+  file,
+  signal,
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+
+  capability setgid,
+  capability setuid,
+  capability dac_read_search,
+  capability sys_admin,
+
+  # S6-Overlay
+  /init rix,
+  /bin/** rix,
+  /usr/bin/** rix,
+  /usr/local/bin/** rix,
+  /run/{s6,s6-rc*,service}/** rix,
+  /package/** rix,
+  /command/** rix,
+  /etc/s6/** rix,
+  /run/s6/** rix,
+  /etc/s6-overlay/{,**} rix,
+  /etc/services.d/** rwix,
+  /etc/cont-init.d/** rwix,
+  /etc/cont-finish.d/** rwix,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  # Bashio
+  /usr/lib/bashio/** rix,
+  /tmp/** mrwk,
+
+  # Probe + restart helpers used by the s6 service loop
+  /usr/bin/nslookup rix,
+  /usr/bin/timeout rix,
+  /usr/bin/dbus-send rix,
+  /usr/bin/bash rix,
+  /bin/bash rix,
+  /data/** rw,
+
+  # Host D-Bus (system bus) for RestartUnit on systemd-resolved
+  /run/dbus/system_bus_socket rw,
+  /var/run/dbus/system_bus_socket rw,
+  /etc/machine-id r,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /usr/share/zoneinfo/** r,
+  /proc/sys/net/** r,
+}
