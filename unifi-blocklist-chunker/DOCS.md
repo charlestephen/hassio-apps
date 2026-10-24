@@ -40,6 +40,7 @@ Controller (which rejects oversized external blocklists). This app wraps
 | `base_url` | *(empty)* | Public origin for chunk links. Leave empty behind Traefik (`X-Forwarded-*`). |
 | `admin_token` | *(empty)* | Secret for `/manage` and exclusion API. Empty → admin endpoints `503`. |
 | `exclusions` | `[]` | Seed exclusions (exact match). Merged add-only into `/data`; `/manage` entries survive. |
+| `exclusions_urls` | `[]` | Remote exclusion list URLs (e.g. `https://lists.example.com/excluded.txt`). Re-fetched on every refresh; unioned with persistent exclusions. |
 
 ### Example
 
@@ -54,6 +55,8 @@ admin_token: "replace-with-a-long-random-secret"
 exclusions:
   - "legit.example.com"
   - "203.0.113.10"
+exclusions_urls:
+  - "https://lists.example.com/excluded.txt"
 ```
 
 ## Endpoints

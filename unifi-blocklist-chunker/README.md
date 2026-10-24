@@ -86,6 +86,7 @@ added later via `/manage`.
 | `base_url` | *(empty)* | Public origin for generated chunk links (e.g. `https://lists.example.com`). Leave empty behind Traefik so `X-Forwarded-*` headers are used. |
 | `admin_token` | *(empty)* | Secret for `/manage` and exclusion API. Empty disables admin endpoints. |
 | `exclusions` | `[]` | Domains / IPs / CIDRs to seed as exclusions (exact match). |
+| `exclusions_urls` | `[]` | Remote exclusion list URLs (same formats as blocklists), e.g. `https://lists.example.com/excluded.txt`. Re-fetched each refresh. |
 
 ### Example
 
@@ -100,6 +101,8 @@ admin_token: "replace-with-a-long-random-secret"
 exclusions:
   - "legit.example.com"
   - "203.0.113.10"
+exclusions_urls:
+  - "https://lists.example.com/excluded.txt"
 ```
 
 Then:
