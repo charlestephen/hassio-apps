@@ -36,6 +36,7 @@ options:
   base_url: ""
   admin_token: ""
   exclusions: []
+  exclusions_urls: []
 schema:
   blocklist_urls:
     - url
@@ -45,3 +46,5 @@ schema:
   admin_token: password?
   exclusions:
     - str
+  exclusions_urls:
+    - url
