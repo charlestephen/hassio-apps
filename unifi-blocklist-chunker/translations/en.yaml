@@ -30,5 +30,11 @@ configuration:
       Domains, IPs, or CIDRs to exclude from served chunks (exact match).
       Merged into persistent storage on start; you can also add/remove entries
       live at /manage behind your reverse proxy.
+  exclusions_urls:
+    name: Exclusion list URLs
+    description: >-
+      Remote text/JSON/YAML/TOML lists of domains and IPs to exclude (e.g.
+      https://lists.example.com/excluded.txt). Re-fetched on every refresh and
+      unioned with persistent exclusions. Edit the remote file to change them.
 network:
   8080/tcp: Chunk lists, stats, search, and management UI

@@ -35,6 +35,11 @@ if [[ -n "${ADMIN_TOKEN}" ]]; then
   echo "ADMIN_TOKEN=${ADMIN_TOKEN}" >> "${ENVFILE}"
 fi
 
+EXCL_URLS="$(jq -r '(.exclusions_urls // []) | map(select(type=="string" and length>0)) | join(",")' "${OPTIONS}")"
+if [[ -n "${EXCL_URLS}" ]]; then
+  echo "EXCLUSIONS_URLS=${EXCL_URLS}" >> "${ENVFILE}"
+fi
+
 # Merge options.exclusions into the persisted file (add-only). Entries added
 # later via /manage survive restarts and are not wiped by this step.
 if [[ ! -f "${EXCL}" ]]; then
