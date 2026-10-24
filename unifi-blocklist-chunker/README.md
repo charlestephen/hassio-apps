@@ -131,6 +131,6 @@ leave **Public base URL** empty so generated links pick up
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[release-shield]: https://img.shields.io/badge/version-v1.0.1-blue.svg
+[release-shield]: https://img.shields.io/badge/version-v1.1.0-blue.svg
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/unifi-blocklist-chunker
 [upstream]: https://github.com/charlestephen/unifi-blocklist-chunker
