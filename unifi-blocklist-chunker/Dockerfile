@@ -1,6 +1,6 @@
 ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 # renovate: datasource=docker depName=ghcr.io/charlestephen/unifi-blocklist-chunker
-ARG UNIFI_BLOCKLIST_CHUNKER_VERSION=1.0.0
+ARG UNIFI_BLOCKLIST_CHUNKER_VERSION=1.1.0
 
 # Upstream image is scratch + a single static Go binary.
 FROM ghcr.io/charlestephen/unifi-blocklist-chunker:${UNIFI_BLOCKLIST_CHUNKER_VERSION} AS upstream
