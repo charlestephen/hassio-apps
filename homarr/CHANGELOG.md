@@ -1,5 +1,30 @@
 # Changelog
 
+## 2.8.2
+
+- Upgrading from upstream version 2.8.0 -> 2.8.2
+
+> Upstream v2.8.2: https://github.com/homarr-labs/homarr/releases/tag/v2.8.2
+>
+> ## What's Changed
+> * docs(agents): require browser before/after evidence for AI PRs and restrict triage skill to maintainers by @ajnart in https://github.com/homarr-labs/homarr/pull/7283
+> * fix(tdarr): refresh media transcoding data automatically by @Riccardo-Vecchi in https://github.com/homarr-labs/homarr/pull/7278
+> * fix(calendar): restore compact calendar font sizing by @ajnart in https://github.com/homarr-labs/homarr/pull/7284
+> * chore(lang): updated translations from crowdin by @homarr-crowdin[bot] in https://github.com/homarr-labs/homarr/pull/7279
+> * chore(release): automatic release v2.8.2 by @github-actions[bot] in https://github.com/homarr-labs/homarr/pull/7288
+>
+>
+> **Full Changelog**: https://github.com/homarr-labs/homarr/compare/v2.8.1...v2.8.2
+>
+> Upstream v2.8.1: https://github.com/homarr-labs/homarr/releases/tag/v2.8.1
+>
+> ## What's Changed
+> * fix(deps): patch Next.js security vulnerabilities by @ajnart in https://github.com/homarr-labs/homarr/pull/7280
+> * chore(release): automatic release v2.8.1 by @github-actions[bot] in https://github.com/homarr-labs/homarr/pull/7281
+>
+>
+> **Full Changelog**: https://github.com/homarr-labs/homarr/compare/v2.8.0...v2.8.1
+
 ## 2.8.0
 
 - Upgrading from upstream version 2.7.0 -> 2.8.0

@@ -4,7 +4,7 @@ Fetches any number of upstream IP and DNS blocklists, merges and deduplicates
 them, and re-serves them as plain-text chunks sized for the UniFi Network
 Controller (which rejects oversized external blocklists). This app wraps
 [unifi-blocklist-chunker](https://github.com/charlestephen/unifi-blocklist-chunker)
-`1.0.0`.
+`1.1.0`.
 
 ## How it works
 

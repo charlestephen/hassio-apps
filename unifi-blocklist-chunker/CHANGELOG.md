@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+- Upgrading from upstream version 1.0.1 -> 1.1.0
+
 ## 1.0.1
 
 - Fix published image name: HA was pulling
