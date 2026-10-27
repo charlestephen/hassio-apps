@@ -1,5 +1,5 @@
 build_from:
-  aarch64: codeberg.org/forgejo/forgejo:17.0.0
-  amd64: codeberg.org/forgejo/forgejo:17.0.0
+  aarch64: codeberg.org/forgejo/forgejo:17.0.1
+  amd64: codeberg.org/forgejo/forgejo:17.0.1
 upstream_repo: "codeberg.org/forgejo/forgejo"
 upstream_build_from: true
