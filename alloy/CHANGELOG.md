@@ -1,5 +1,43 @@
 # Changelog
 
+## 1.21.3
+
+- Upgrading from upstream version 1.21.2 -> 1.21.3
+
+> Upstream v1.21.3: https://github.com/grafana/alloy/releases/tag/v1.21.3
+>
+> ## [1.21.3](https://github.com/grafana/alloy/compare/v1.21.2...v1.21.3) (2026-10-28)
+>
+>
+> ### Bug Fixes 🐛
+>
+> * **beyla.ebpf:** Update Beyla to v3.38.1 ([#7570](https://github.com/grafana/alloy/issues/7570))
+> * **database_observability.postgres:** Improve table registry lifecycle and unqualified lookup ([#7551](https://github.com/grafana/alloy/issues/7551)) ([895aa64](https://github.com/grafana/alloy/commit/895aa64b7e43dc1f99ddfb9537fd61a275366ce5)) (@cristiangreco)
+> * **deps:** Update github.com/andybalholm/brotli to v1.2.7 ([#7546](https://github.com/grafana/alloy/issues/7546)) ([c913882](https://github.com/grafana/alloy/commit/c913882cc7049ce4af21851f1745b4605ce07e75)) (@thampiotr)
+> * Hide HTTP proxy env vars in support bundles ([#7560](https://github.com/grafana/alloy/issues/7560)) ([014cd6a](https://github.com/grafana/alloy/commit/014cd6a7f6b2f7ba3eeaf55737ff460988ccc6f0)) (@ptodev)
+> * **loki.source.cloudflare:** Stop additional_fields from corrupting the extended and all field presets ([#7557](https://github.com/grafana/alloy/issues/7557)) ([3091601](https://github.com/grafana/alloy/commit/3091601f73cfe0d25d41838dd9eb3f9303a22a94)) (@vjsairam)
+> * **loki.source.kubernetes,loki.source.podlogs:** Prevent re-ingesting logs on re-tails ([#7512](https://github.com/grafana/alloy/issues/7512)) ([8cda438](https://github.com/grafana/alloy/commit/8cda438c07c8af02dcd1e02577c421d807d1a724)) (@kalleep)
+> * **mimir.alerts.kubernetes:** Pick up Secret changes without a restart ([#7555](https://github.com/grafana/alloy/issues/7555)) ([031f4eb](https://github.com/grafana/alloy/commit/031f4ebf45fde64af926535079eb4ee90e3cf6db)) (@Churi12)
+> * **mimir.rules.kubernetes:** Fix non-recovering unhealthy state after a failed restart when Mimir is unreachable ([#7554](https://github.com/grafana/alloy/issues/7554)) ([a60d95c](https://github.com/grafana/alloy/commit/a60d95cb1a7daaad15e0f675960a58152a21c49c)) (@TheoBrigitte)
+> * **otelcol.exporter.otlphttp:** Deprecate enabled in the cookies block ([#7552](https://github.com/grafana/alloy/issues/7552)) ([0e8389a](https://github.com/grafana/alloy/commit/0e8389acacb86d1507ae251445dd93535377e5cb)) (@kgeckhart)
+> * **otelcol.exporter.prometheus:** Pass missing `include_scope_labels` to converter ([#7558](https://github.com/grafana/alloy/issues/7558)) ([52e7e14](https://github.com/grafana/alloy/commit/52e7e1421face3116eae642d693203d867db0bbb)) (@mizuochik)
+> * **otelcol.processor.tail_sampling:** Pass invert_match through for boolean_attribute policies ([#7547](https://github.com/grafana/alloy/issues/7547)) ([5d7b5ea](https://github.com/grafana/alloy/commit/5d7b5ea3518866718876c1a425288fe066fa15a0)) (@kgeckhart)
+> * **otelcol:** Report full build version including pre-release suffix in service.version ([#7548](https://github.com/grafana/alloy/issues/7548)) ([401bf58](https://github.com/grafana/alloy/commit/401bf581ff0881712c44f9d43cf3dea592e94cde)) (@thampiotr)
+> * **prometheus.operator:** Initialize controller-runtime logging ([#7556](https://github.com/grafana/alloy/issues/7556)) ([ff0f144](https://github.com/grafana/alloy/commit/ff0f144a52bba829344afb5b83eddf86de0ce17b)) (@mvanhorn)
+> * **remotecfg:** Restore last success metric in notModified response ([#7549](https://github.com/grafana/alloy/issues/7549)) ([df3d2fd](https://github.com/grafana/alloy/commit/df3d2fd14dc28a0ff7cd089aaa599c05dbe9a59e)) (@tpaschalis)
+>
+> ## Upgrading
+>
+> Read the [release notes] for specific instructions on upgrading from older versions:
+>
+> [release notes]: https://grafana.com/docs/alloy/v1.21/release-notes/
+>
+> ## Installation
+>
+> Refer to our [installation guide] for how to install Grafana Alloy.
+>
+> [installation guide]: https://grafana.com/docs/alloy/v1.21/get-started/install/
+
 ## 1.21.2
 
 - Upgrading from upstream version 1.21.1 -> 1.21.2
