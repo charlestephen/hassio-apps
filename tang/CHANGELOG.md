@@ -1,5 +1,25 @@
 # Changelog
 
+## 16
+
+- Upgrading from upstream version 15 -> 16
+
+> Upstream v16: https://github.com/latchset/tang/releases/tag/v16
+>
+> ## What's Changed
+> * CentOS 8 is discontinued. Remove and use CentOS10 by @sarroutbi in https://github.com/latchset/tang/pull/151
+> * Remove lunar (EOL) and add noble instead by @sarroutbi in https://github.com/latchset/tang/pull/152
+> * Fix memory leak reported by clang tool by @sarroutbi in https://github.com/latchset/tang/pull/149
+> * Use latest codecov GH action version (v5) by @sarroutbi in https://github.com/latchset/tang/pull/155
+> * Don't use centos10 development (use stable) by @sarroutbi in https://github.com/latchset/tang/pull/154
+> * Use CODECOV_TOKEN_20250228 as codecov GH token by @sarroutbi in https://github.com/latchset/tang/pull/156
+> * added cross compile setup by @n80fr1n60 in https://github.com/latchset/tang/pull/153
+>
+> ## New Contributors
+> * @n80fr1n60 made their first contribution in https://github.com/latchset/tang/pull/153
+>
+> **Full Changelog**: https://github.com/latchset/tang/compare/v15...v16
+
 ## 15
 
 - Upgrading from upstream version 1.0.11-1 -> 15
