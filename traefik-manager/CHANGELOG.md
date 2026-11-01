@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.15.5
+
+- Upgrading from upstream version 1.15.4-1 -> 1.15.5
+
+> Upstream v1.15.5: https://github.com/chr0nzz/traefik-manager/releases/tag/v1.15.5
+>
+> ## v1.15.5
+>
+> **Enhancements:**
+> - **[settings]** Add a Save button with an unsaved changes cue to Settings, Connection
+> - **[routes]** Remove domain chips from the route form with a small x
+> - **[routes]** Switch domains with one click, Ctrl or Shift click to pick several
+> - **[settings]** Accept commas, spaces or new lines between domains, also in `DOMAINS`
+> - **[server]** Add the Traefik 3.7.15, 3.7.16 and 2.11.60 advisories to the version check
+> - **[static]** Show when `global.aliasHeadersStrategy` (Traefik 3.7.17) applies to an entry point, and offer Keep to opt one out
+>
+> **Bug fixes:**
+> - **[auth]** Generate one first-start password when both workers boot together, instead of logging two where only one works ([#222](https://github.com/chr0nzz/traefik-manager/discussions/222))
+> - **[routes, certs]** Refill the wildcard certificate fields when the selected domain changes
+> - **[routes]** Make bulk Enable and Disable act on the selected routes again
+> - **[plugins]** Show the Restart now banner after editing or removing a plugin, not only after adding one
+> - **[static]** Read the header strategy option from the server being edited, and leave it as it is in the file when the Traefik version cannot be read, instead of risking an option that stops Traefik starting
+> - **[static]** Label the header strategy on the entry point row with the key that is in the file
+> - **[static]** Stop older mobile apps removing `aliasHeadersStrategy` when they save an entry point
+> - **[static]** Clear the header strategy when adding an entry point after editing another one
+
 ## 1.15.4-1
 
 - Hand off to upstream `/app/scripts/docker-entrypoint.sh` and
