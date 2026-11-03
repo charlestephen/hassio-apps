@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.19.18
+
+- Upgrading from upstream version 2.19.17 -> 2.19.18
+
+> Upstream v2.19.18: https://github.com/semaphoreui/semaphore/releases/tag/v2.19.18
+>
+> ## Changelog
+> * `SEMAPHORE_SESSION_INACTIVITY_HOURS` &mdash; How long a login session may stay unused, in hours, before it is rejected and expired.
+
 ## 2.19.17
 
 - Upgrading from upstream version 2.19.16 -> 2.19.17
