@@ -10,5 +10,6 @@
   published.
 - track-upstream via `upstream_repo` + Docker Hub image gate
   (`qmcgaw/gluetun`).
+- Gluetun dashboard icon; expanded DOCS (verify curls, WireGuard, persistence).
 
 > Upstream v3.41.3: https://github.com/qdm12/gluetun/releases/tag/v3.41.3

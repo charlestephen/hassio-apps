@@ -4,6 +4,18 @@ configuration:
     description: >-
       Bind address for the Web UI / API (e.g. :7070). Applied only when seeding
       a new config.yaml.
+  auth_enabled:
+    name: Enable HTTP Basic Auth
+    description: >-
+      Protect the Web UI and JSON API (recommended). /healthz stays open.
+  auth_username:
+    name: Auth username
+    description: HTTP Basic Auth username (default admin).
+  auth_password:
+    name: Auth password
+    description: >-
+      Leave empty on first start so RatioReign generates a password and logs it.
+      Set explicitly to pin a known password in the seeded config.
   min_upload_rate_kbs:
     name: Min upload rate (kB/s)
     description: Lower bound for the simulated aggregate upload speed.
@@ -34,4 +46,4 @@ configuration:
       Paste a complete config.yaml to overwrite /data/config.yaml on every
       start. Leave empty so the Web UI owns the file after the first boot.
 network:
-  7070/tcp: Web UI and JSON API
+  7070/tcp: Web UI and JSON API (Basic Auth by default)
