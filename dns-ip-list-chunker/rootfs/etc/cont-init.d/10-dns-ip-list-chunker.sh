@@ -45,7 +45,7 @@ fi
 # Emit LISTS_FILE as JSON (upstream accepts YAML or JSON).
 jq '{
   custom_blocklists: [(.custom_blocklists // [])[] | select((.name // "") != "" and ((.entries // "") | length) > 0) | {name, category: (.category // ""), entries}],
-  exclusion_lists: [(.exclusion_lists // [])[] | select((.name // "") != "" and ((.entries // "") | length) > 0) | {name, category: (.category // ""), entries, output_allowlist: (.output_allowlist // true)}]
+  exclusion_lists: [(.exclusion_lists // [])[] | select((.name // "") != "" and ((.entries // "") | length) > 0) | {name, category: (.category // ""), entries, output_allowlist: (.output_allowlist == true)}]
 }' "${OPTIONS}" > "${LISTS}"
 
 if [[ ! -f "${EXCL}" ]]; then
