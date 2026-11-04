@@ -1,0 +1,51 @@
+#include <tunables/global>
+
+profile network_optimizer_speedtest flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  capability,
+  file,
+  signal,
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+
+  capability setgid,
+  capability setuid,
+  capability net_bind_service,
+  capability dac_override,
+  capability chown,
+
+  /ha-entrypoint.sh rix,
+  /docker-entrypoint.sh rix,
+  /docker-entrypoint.d/** rix,
+  /usr/sbin/nginx rix,
+  /usr/bin/** rix,
+  /bin/** rix,
+  /sbin/** rix,
+
+  /usr/share/nginx/html/** rw,
+  /etc/nginx/** rw,
+  /var/cache/nginx/** rwk,
+  /var/log/nginx/** rwk,
+  /var/run/** mrwkl,
+  /run/** rwk,
+
+  /data/** rw,
+  /tmp/** mrwk,
+  /dev/tty rw,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
+  /usr/share/zoneinfo/** r,
+  /proc/sys/net/** r,
+  /proc/self/** r,
+}

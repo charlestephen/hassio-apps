@@ -64,6 +64,18 @@ Or add it manually:
 - Multi-provider VPN client (OpenVPN / WireGuard) with HTTP and Shadowsocks
   proxies. Thin wrapper on the official `qmcgaw/gluetun` image.
 
+### &#10003; [Network Optimizer](network-optimizer/)
+
+- UniFi network optimization, monitoring, security audit, and Wi-Fi health.
+  Thin wrapper on `ghcr.io/ozark-connect/network-optimizer`. Pair with the
+  Speed Test app; set `reverse_proxied_host_name` / `host_name` so assigned
+  URLs work.
+
+### &#10003; [Network Optimizer Speed Test](network-optimizer-speedtest/)
+
+- OpenSpeedTest frontend that posts results to Network Optimizer. Thin wrapper
+  on `ghcr.io/ozark-connect/speedtest`.
+
 ### &#10003; [Linkding](linkding/)
 
 - Self-hosted bookmark manager (SQLite by default), with basic config plus

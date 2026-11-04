@@ -1,0 +1,47 @@
+configuration:
+  tz:
+    name: Timezone
+    description: IANA timezone (TZ).
+  host_ip:
+    name: Host IP
+    description: LAN IP used when posting results to Network Optimizer over HTTP.
+  host_name:
+    name: Host name
+    description: DNS name for direct HTTP result posts and canonical redirects.
+  reverse_proxied_host_name:
+    name: Reverse-proxied host name
+    description: >-
+      HTTPS hostname of Network Optimizer (where results are POSTed). Use the
+      same value as on the main app.
+  reverse_proxied_port:
+    name: Reverse-proxied port
+    description: Network Optimizer front-end port when not 443.
+  trusted_proxies:
+    name: Trusted proxies
+    description: Comma-separated CIDRs/IPs for X-Forwarded-* (parity with main app).
+  trusted_proxy_hops:
+    name: Trusted proxy hops
+    description: Max forwarded hops to trust.
+  trust_cf_connecting_ip:
+    name: Trust CF-Connecting-IP
+    description: Trust Cloudflare CF-Connecting-IP header.
+  openspeedtest_port:
+    name: Published port
+    description: Host port mapped to this app (default 3005). Must match Network Optimizer's openspeedtest_port.
+  openspeedtest_host:
+    name: Speed test host name
+    description: Canonical hostname browsers should use for this UI.
+  openspeedtest_https:
+    name: HTTPS
+    description: Clients reach this speed test over HTTPS.
+  openspeedtest_https_port:
+    name: HTTPS port
+    description: HTTPS port (default 443).
+  external_server_id:
+    name: External server ID
+    description: Optional WAN external speed-test server id.
+  extra_env:
+    name: Extra environment
+    description: Multiline KEY=VALUE for additional upstream settings.
+network:
+  3000/tcp: OpenSpeedTest web UI

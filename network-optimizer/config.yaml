@@ -1,0 +1,82 @@
+name: Network Optimizer
+description: >-
+  UniFi network optimization, monitoring, security audit, Wi-Fi health, and
+  speed-test orchestration. Thin wrapper on ghcr.io/ozark-connect/network-optimizer.
+url: https://github.com/charlestephen/hassio-apps/tree/main/network-optimizer
+version: "2.10.7"
+stage: stable
+homeassistant: "2026.6.0"
+slug: network_optimizer
+image: ghcr.io/charlestephen/hassio-addons-network-optimizer-{arch}
+init: false
+startup: application
+boot: auto
+panel_icon: mdi:lan
+webui: http://[HOST]:[PORT:8042]
+arch:
+  - aarch64
+  - amd64
+# Host networking matches upstream compose — path analysis, traceroute, and
+# LAN probes see the real host topology. Ports below document bind targets for
+# the Web UI / iperf3 and drive the Supervisor "Open Web UI" URL.
+host_network: true
+ports:
+  8042/tcp: 8042
+  5201/tcp: 5201
+ports_description:
+  8042/tcp: Web UI and API
+  5201/tcp: iperf3 server (when enabled)
+map:
+  - type: data
+    read_only: false
+  - type: ssl
+    read_only: true
+backup: cold
+# NET_RAW: ICMP traceroute (complements upstream setcap on traceroute.db).
+privileged:
+  - NET_RAW
+
+# Environment mirrors upstream docker-compose (see DOCS.md).
+# URL correctness: set reverse_proxied_host_name (HTTPS proxy) or host_name /
+# host_ip (direct HTTP) so canonical redirects, CORS, and speed-test posts
+# follow the URL you actually use — the LOOHP community add-on never set these.
+options:
+  tz: America/New_York
+  app_password: ""
+  bind_localhost_only: false
+  host_ip: ""
+  host_name: ""
+  reverse_proxied_host_name: ""
+  reverse_proxied_port: ""
+  trusted_proxies: ""
+  trusted_proxy_hops: ""
+  trust_cf_connecting_ip: false
+  openspeedtest_port: "3005"
+  openspeedtest_host: ""
+  openspeedtest_https: false
+  openspeedtest_https_port: "443"
+  iperf3_server_enabled: false
+  log_level: Information
+  app_log_level: Information
+  demo_mode_mappings: ""
+  extra_env: ""
+schema:
+  tz: str
+  app_password: password
+  bind_localhost_only: bool
+  host_ip: str?
+  host_name: str?
+  reverse_proxied_host_name: str?
+  reverse_proxied_port: str?
+  trusted_proxies: str?
+  trusted_proxy_hops: str?
+  trust_cf_connecting_ip: bool
+  openspeedtest_port: str
+  openspeedtest_host: str?
+  openspeedtest_https: bool
+  openspeedtest_https_port: str
+  iperf3_server_enabled: bool
+  log_level: list(Trace|Debug|Information|Warning|Error|Critical)
+  app_log_level: list(Trace|Debug|Information|Warning|Error|Critical)
+  demo_mode_mappings: str?
+  extra_env: str?

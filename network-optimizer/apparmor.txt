@@ -1,0 +1,63 @@
+#include <tunables/global>
+
+profile network_optimizer flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  capability,
+  file,
+  signal,
+  mount,
+  umount,
+  remount,
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+  network packet,
+  network raw,
+
+  capability net_raw,
+  capability net_bind_service,
+  capability setgid,
+  capability setuid,
+  capability dac_override,
+  capability chown,
+  capability sys_chroot,
+
+  /ha-entrypoint.sh rix,
+  /entrypoint.sh rix,
+  /usr/bin/** rix,
+  /bin/** rix,
+  /sbin/** rix,
+  /usr/sbin/** rix,
+  /usr/local/bin/** rix,
+  /app/** rix,
+  /app/NetworkOptimizer.Web.dll r,
+  /app/tools/** rix,
+
+  /data/** rw,
+  /app/data/** rw,
+  /app/ssh-keys/** rw,
+  /app/logs/** rw,
+  /ssl/** rw,
+
+  /tmp/** mrwk,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+  /dev/** r,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
+  /etc/ssl/** r,
+  /usr/share/zoneinfo/** r,
+  /proc/sys/net/** r,
+  /proc/self/** r,
+}
