@@ -15,8 +15,11 @@ on:
         description: 'Single app slug to build (blank = all)'
         required: false
 
+# Job-level packages:write is not always enough for first-time GHCR package
+# creation on this account; grant it at workflow scope too.
 permissions:
   contents: read
+  packages: write
 
 jobs:
   discover:
