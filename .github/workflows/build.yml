@@ -24,24 +24,66 @@ jobs:
     outputs:
       addons: ${{ steps.set.outputs.addons }}
     steps:
+      # fetch-depth 2 so push events can diff against the previous commit.
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
       - id: set
         env:
           ADDON_INPUT: ${{ github.event.inputs.addon }}
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
         run: |
-          if [ -n "$ADDON_INPUT" ]; then
-            if [[ ! "$ADDON_INPUT" =~ ^[a-z0-9_-]+$ ]] || [ ! -f "$ADDON_INPUT/config.yaml" ] || [ ! -f "$ADDON_INPUT/build.yaml" ]; then
+          set -euo pipefail
+
+          is_app() {
+            [ -f "$1/config.yaml" ] && [ -f "$1/build.yaml" ]
+          }
+
+          if [ -n "${ADDON_INPUT:-}" ]; then
+            if [[ ! "$ADDON_INPUT" =~ ^[a-z0-9_-]+$ ]] || ! is_app "$ADDON_INPUT"; then
               echo "Unknown app slug: $ADDON_INPUT" >&2
               exit 1
             fi
-            jq -rn --arg a "$ADDON_INPUT" '"addons=" + ([$a] | tojson)' >> "$GITHUB_OUTPUT"
+            list=$(jq -cn --arg a "$ADDON_INPUT" '[$a]')
+            echo "Building single app from workflow_dispatch: $list"
+          elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            # Blank dispatch = intentional full rebuild of every app.
+            list=$(for d in */; do is_app "${d%/}" && echo "${d%/}"; done | jq -R . | jq -sc .)
+            echo "Building all apps (manual dispatch): $list"
           else
-            list=$(for d in */; do [ -f "${d}config.yaml" ] && [ -f "${d}build.yaml" ] && echo "${d%/}"; done | jq -R . | jq -sc .)
-            echo "addons=${list}" >> "$GITHUB_OUTPUT"
+            # Push: only apps whose own tree changed in this commit.
+            if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              range="HEAD~1..HEAD"
+            else
+              range="${BEFORE}..${SHA}"
+            fi
+            echo "Detecting changed apps in $range"
+            mapfile -t dirs < <(
+              git diff --name-only "$range" 2>/dev/null \
+                | awk -F/ 'NF>=2 {print $1}' \
+                | sort -u
+            )
+            apps=()
+            for d in "${dirs[@]+"${dirs[@]}"}"; do
+              if is_app "$d"; then
+                apps+=("$d")
+              fi
+            done
+            if [ "${#apps[@]}" -eq 0 ]; then
+              list='[]'
+              echo "No app directories changed; skipping builds"
+            else
+              list=$(printf '%s\n' "${apps[@]}" | jq -R . | jq -sc .)
+              echo "Building changed apps: $list"
+            fi
           fi
+          echo "addons=${list}" >> "$GITHUB_OUTPUT"
 
   build:
     needs: discover
+    if: needs.discover.outputs.addons != '[]'
     permissions:
       contents: read
       packages: write
