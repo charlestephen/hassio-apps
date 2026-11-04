@@ -5,5 +5,5 @@ build_from:
   amd64: ghcr.io/hassio-addons/base:stable
 upstream_repo: "pgadmin-org/pgadmin4"
 args:
-  PGADMIN_VERSION: "9.18"
+  PGADMIN_VERSION: "9.19"
 upstream_version_arg: PGADMIN_VERSION
