@@ -13,6 +13,7 @@ import os
 import re
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -441,6 +442,11 @@ def update_app(app_dir: Path, release_tag: str, *, force: bool) -> None:
     build_path = app_dir / "build.yaml"
     config_path = app_dir / "config.yaml"
     build = yaml.safe_load(build_path.read_text(encoding="utf-8")) or {}
+    image = str(build.get("upstream_docker_image") or "").strip()
+    if image and not docker_hub_tag_exists(image, release_tag):
+        raise SystemExit(
+            f"{app_dir.name}: Docker Hub has no {image}:{release_tag}; refusing bump"
+        )
     version = normalize_version(release_tag)
     old = read_config_version(config_path)
     (app_dir / "upstream_version.txt").write_text(f"{release_tag}\n", encoding="utf-8")
@@ -502,6 +508,47 @@ def choose_tag(names: set[str], pattern: str) -> str:
     return max(names, key=lambda name: version_key(normalize_version(name)))
 
 
+def docker_hub_tag_exists(image: str, tag: str) -> bool:
+    """True when Docker Hub has repositories/<image>/tags/<tag>."""
+    image = image.removeprefix("docker.io/")
+    if image.count("/") != 1 or not tag:
+        raise RuntimeError(f"Invalid upstream_docker_image/tag: {image!r} {tag!r}")
+    url = f"https://hub.docker.com/v2/repositories/{image}/tags/{urllib.parse.quote(tag, safe='')}"
+    try:
+        payload = fetch_json(url, None)
+    except LookupError:
+        return False
+    return isinstance(payload, dict) and bool(payload.get("name"))
+
+
+def filter_tag_by_docker_hub(build: dict, tag: str, token: str | None) -> str:
+    """If upstream_docker_image is set, require that Hub tag; else walk older releases."""
+    image = str(build.get("upstream_docker_image") or "").strip()
+    if not image:
+        return tag
+    if docker_hub_tag_exists(image, tag):
+        return tag
+    print(
+        f"skip {tag}: Docker Hub has no {image}:{tag}; looking for an older release with an image",
+        file=sys.stderr,
+    )
+    upstream = str(build.get("upstream_repo") or "").strip()
+    try:
+        records = release_records(upstream, token)
+    except (LookupError, RuntimeError, urllib.error.URLError, TimeoutError):
+        records = []
+    for record in records:
+        candidate = record["tag"]
+        if candidate == tag:
+            continue
+        if is_prerelease(candidate):
+            continue
+        if docker_hub_tag_exists(image, candidate):
+            print(f"using {candidate}: Docker Hub has {image}:{candidate}", file=sys.stderr)
+            return candidate
+    raise RuntimeError(f"no Docker Hub tag found for {image} among recent releases (wanted {tag})")
+
+
 def latest_github_tag(repo: str, prefix: str, pattern: str, token: str | None) -> str:
     names: set[str] = set()
     if prefix:
@@ -553,10 +600,12 @@ def latest_tag(build: dict, token: str | None) -> str:
     prefix = str(build.get("upstream_tag_prefix") or "")
     pattern = str(build.get("upstream_tag_pattern") or "")
     if repo.startswith("codeberg.org/"):
-        return latest_codeberg_tag(repo, pattern)
-    if "/" not in repo:
+        tag = latest_codeberg_tag(repo, pattern)
+    elif "/" not in repo:
         raise RuntimeError(f"Unsupported upstream_repo value: {repo}")
-    return latest_github_tag(repo, prefix, pattern, token)
+    else:
+        tag = latest_github_tag(repo, prefix, pattern, token)
+    return filter_tag_by_docker_hub(build, tag, token)
 
 
 def tracked_apps(root: Path) -> list[tuple[Path, dict]]:

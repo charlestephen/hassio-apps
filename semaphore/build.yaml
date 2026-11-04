@@ -4,8 +4,11 @@ build_from:
   aarch64: ghcr.io/hassio-addons/base:stable
   amd64: ghcr.io/hassio-addons/base:stable
 upstream_repo: "semaphoreui/semaphore"
+# Dockerfile FROM uses this Hub image at the GitHub release tag (vX.Y.Z).
+# track-upstream skips releases that have no matching Hub tag yet.
+upstream_docker_image: "semaphoreui/semaphore"
 upstream_version_arg: SEMAPHORE_VERSION
 args:
-  SEMAPHORE_VERSION: "2.19.18"
+  SEMAPHORE_VERSION: "2.19.17"
   TERRAFORM_VERSION: "1.16.5"
   OPENTOFU_VERSION: "1.13.2"
