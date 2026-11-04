@@ -25,16 +25,25 @@ if [ -n "${CUSTOM}" ]; then
     log "wrote ${CONFIG} from config_yaml option"
 elif [ ! -f "${CONFIG}" ]; then
     LISTEN="$(get listen_addr)"; LISTEN="${LISTEN:-:7070}"
+    AUTH_EN="$(get auth_enabled)"; AUTH_EN="${AUTH_EN:-true}"
+    AUTH_USER="$(get auth_username)"; AUTH_USER="${AUTH_USER:-admin}"
+    AUTH_PASS="$(get auth_password)"
     MIN_R="$(get min_upload_rate_kbs)"; MIN_R="${MIN_R:-30}"
     MAX_R="$(get max_upload_rate_kbs)"; MAX_R="${MAX_R:-160}"
     SEEDS="$(get simultaneous_seed)"; SEEDS="${SEEDS:-20}"
     PROFILE="$(get client_profile)"; PROFILE="${PROFILE:-qbittorrent-4.6.3}"
     KEEP="$(get keep_torrent_with_zero_leechers)"; KEEP="${KEEP:-true}"
     TARGET="$(get upload_ratio_target)"; TARGET="${TARGET:--1}"
+    # Quote password for YAML; empty string lets upstream auto-generate.
+    AUTH_PASS_YAML=$(printf '%s' "${AUTH_PASS}" | jq -Rs .)
     cat > "${CONFIG}" <<EOF
 # Generated once by the Home Assistant app. Edit via the Web UI or replace
 # this file; set config_yaml in the app options to force-overwrite on start.
 listenAddr: "${LISTEN}"
+auth:
+  enabled: ${AUTH_EN}
+  username: "${AUTH_USER}"
+  password: ${AUTH_PASS_YAML}
 minUploadRateKBs: ${MIN_R}
 maxUploadRateKBs: ${MAX_R}
 simultaneousSeed: ${SEEDS}
@@ -53,7 +62,7 @@ qbittorrent:
   password: CHANGE_ME
   pollInterval: 30s
 EOF
-    log "seeded starter ${CONFIG}"
+    log "seeded starter ${CONFIG} (auth.enabled=${AUTH_EN}; empty password → upstream generates one)"
 else
     log "keeping existing ${CONFIG}"
 fi

@@ -3,7 +3,7 @@ description: >-
   Headless BitTorrent ratio-farming daemon — tracker announces and simulated
   upload without transferring torrent data. Thin wrapper on the official image.
 url: https://github.com/charlestephen/hassio-apps/tree/main/ratioreign
-version: "2.1.0"
+version: "2.2.0"
 stage: stable
 homeassistant: "2026.6.0"
 slug: ratioreign
@@ -22,13 +22,16 @@ map:
 ports:
   7070/tcp: 7070
 ports_description:
-  7070/tcp: Web UI and JSON API
+  7070/tcp: Web UI and JSON API (HTTP Basic Auth by default)
 backup: cold
 
 # Most settings are edited in RatioReign's own Web UI (persisted under /data).
 # Optional HA fields only seed or override the YAML on disk.
 options:
   listen_addr: ":7070"
+  auth_enabled: true
+  auth_username: admin
+  auth_password: ""
   min_upload_rate_kbs: 30
   max_upload_rate_kbs: 160
   simultaneous_seed: 20
@@ -39,6 +42,9 @@ options:
   config_yaml: ""
 schema:
   listen_addr: str
+  auth_enabled: bool
+  auth_username: str
+  auth_password: password
   min_upload_rate_kbs: int(0,)
   max_upload_rate_kbs: int(0,)
   simultaneous_seed: int(1,)

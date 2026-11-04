@@ -10,5 +10,7 @@
   Prometheus scrape.
 - Optional exporters: OTLP/HTTP traces, metrics, logs; Prometheus remote_write.
 - track-upstream via `upstream_repo` + Docker Hub image gate.
+- Official CNCF OpenTelemetry icon; expanded DOCS (pipelines, Alloy split,
+  advanced YAML).
 
 > Upstream v0.164.0: https://github.com/open-telemetry/opentelemetry-collector-contrib/releases/tag/v0.164.0

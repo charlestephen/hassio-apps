@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/charlestephen/ratioreign:2.1.0
+ARG BUILD_FROM=ghcr.io/charlestephen/ratioreign:2.2.0
 
 # Thin Home Assistant wrapper on RatioReign's official image. The upstream
 # entrypoint is a single static binary; we only map HA options /data into the
@@ -9,7 +9,7 @@ USER root
 RUN apk upgrade --no-cache \
     && apk add --no-cache jq su-exec
 
-ARG RATIOREIGN_VERSION=2.1.0
+ARG RATIOREIGN_VERSION=2.2.0
 ENV RATIOREIGN_VERSION=${RATIOREIGN_VERSION}
 
 COPY rootfs/ /
