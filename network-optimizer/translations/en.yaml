@@ -1,0 +1,72 @@
+configuration:
+  tz:
+    name: Timezone
+    description: IANA timezone (TZ).
+  app_password:
+    name: Initial admin password
+    description: >-
+      Optional. Leave empty so Network Optimizer generates a password and
+      prints it in the Log tab on first start.
+  bind_localhost_only:
+    name: Bind localhost only
+    description: >-
+      Bind 8042 on localhost only. Keep off on Home Assistant so LAN clients
+      and the Supervisor Open Web UI link can reach the app.
+  host_ip:
+    name: Host IP
+    description: >-
+      LAN IP for CORS and speed-test result posts when not behind an HTTPS
+      reverse proxy.
+  host_name:
+    name: Host name
+    description: >-
+      DNS name for direct HTTP access (e.g. homeassistant.local). Used for
+      canonical URLs when reverse_proxied_host_name is empty.
+  reverse_proxied_host_name:
+    name: Reverse-proxied host name
+    description: >-
+      Public HTTPS hostname (Traefik/NPM/Caddy). Set this when you assign a
+      URL — required for correct redirects, CORS, OIDC callbacks, and
+      speed-test posts.
+  reverse_proxied_port:
+    name: Reverse-proxied port
+    description: Front-end port when not 443.
+  trusted_proxies:
+    name: Trusted proxies
+    description: Comma-separated CIDRs/IPs allowed to send X-Forwarded-* headers.
+  trusted_proxy_hops:
+    name: Trusted proxy hops
+    description: Max number of forwarded hops to trust.
+  trust_cf_connecting_ip:
+    name: Trust CF-Connecting-IP
+    description: Trust Cloudflare CF-Connecting-IP header.
+  openspeedtest_port:
+    name: OpenSpeedTest port
+    description: Host port of the Network Optimizer Speed Test app (default 3005).
+  openspeedtest_host:
+    name: OpenSpeedTest host
+    description: Hostname browsers use for the speed test UI.
+  openspeedtest_https:
+    name: OpenSpeedTest HTTPS
+    description: Speed test is reached over HTTPS.
+  openspeedtest_https_port:
+    name: OpenSpeedTest HTTPS port
+    description: HTTPS port for the speed test (default 443).
+  iperf3_server_enabled:
+    name: Enable iperf3 server
+    description: Accept client-initiated iperf3 tests on port 5201.
+  log_level:
+    name: Default log level
+    description: Microsoft.Extensions.Logging default level.
+  app_log_level:
+    name: App log level
+    description: NetworkOptimizer namespace log level.
+  demo_mode_mappings:
+    name: Demo mode mappings
+    description: Upstream DEMO_MODE_MAPPINGS string (advanced).
+  extra_env:
+    name: Extra environment
+    description: Multiline KEY=VALUE for any additional upstream settings.
+network:
+  8042/tcp: Web UI and API
+  5201/tcp: iperf3 server
