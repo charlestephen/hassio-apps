@@ -1,0 +1,37 @@
+configuration:
+  listen_addr:
+    name: Listen address
+    description: >-
+      Bind address for the Web UI / API (e.g. :7070). Applied only when seeding
+      a new config.yaml.
+  min_upload_rate_kbs:
+    name: Min upload rate (kB/s)
+    description: Lower bound for the simulated aggregate upload speed.
+  max_upload_rate_kbs:
+    name: Max upload rate (kB/s)
+    description: Upper bound for the simulated aggregate upload speed.
+  simultaneous_seed:
+    name: Simultaneous seeds
+    description: Max torrents announcing as seeding at once.
+  client_profile:
+    name: Client profile
+    description: >-
+      Name of a *.client profile to impersonate (no extension), e.g.
+      qbittorrent-4.6.3. With qBittorrent sync, a matching version profile can
+      be auto-generated.
+  keep_torrent_with_zero_leechers:
+    name: Keep zero-leecher torrents
+    description: >-
+      If disabled, archive a torrent once its tracker reports zero leechers.
+  upload_ratio_target:
+    name: Upload ratio target
+    description: >-
+      Archive a torrent once uploaded/size reaches this ratio. Use -1 to
+      disable.
+  config_yaml:
+    name: Full config YAML (optional)
+    description: >-
+      Paste a complete config.yaml to overwrite /data/config.yaml on every
+      start. Leave empty so the Web UI owns the file after the first boot.
+network:
+  7070/tcp: Web UI and JSON API
