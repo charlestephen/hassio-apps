@@ -3,7 +3,8 @@ configuration:
     name: Blocklist URLs
     description: >-
       Upstream DNS/IP list URLs to fetch and merge (txt, JSON, YAML, or TOML).
-      Add one URL per entry.
+      Optional category tag before the URL, e.g. threat:https://example.com/list.txt
+      (untagged sources use default). Add one entry per line.
   chunk_size:
     name: Chunk size
     description: >-
