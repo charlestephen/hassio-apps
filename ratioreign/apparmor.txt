@@ -1,0 +1,48 @@
+#include <tunables/global>
+
+profile ratioreign flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  capability,
+  file,
+  signal,
+
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+
+  capability setgid,
+  capability setuid,
+  capability dac_override,
+  capability chown,
+
+  /ha-entrypoint.sh rix,
+  /usr/local/bin/ratioreign rix,
+  /usr/bin/** rix,
+  /bin/** rix,
+  /sbin/su-exec rix,
+  /usr/sbin/su-exec rix,
+  /app/** r,
+  /app/config/** rw,
+  /app/profiles/** r,
+
+  /data/** rw,
+  /tmp/** mrwk,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
+  /usr/share/zoneinfo/** r,
+  /proc/sys/net/** r,
+  /proc/self/** r,
+}

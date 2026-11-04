@@ -1,0 +1,48 @@
+name: RatioReign
+description: >-
+  Headless BitTorrent ratio-farming daemon — tracker announces and simulated
+  upload without transferring torrent data. Thin wrapper on the official image.
+url: https://github.com/charlestephen/hassio-apps/tree/main/ratioreign
+version: "2.1.0"
+stage: stable
+homeassistant: "2026.6.0"
+slug: ratioreign
+image: ghcr.io/charlestephen/hassio-addons-ratioreign-{arch}
+init: false
+startup: application
+boot: auto
+panel_icon: mdi:chart-timeline-variant-shimmer
+webui: http://[HOST]:[PORT:7070]
+arch:
+  - aarch64
+  - amd64
+map:
+  - type: data
+    read_only: false
+ports:
+  7070/tcp: 7070
+ports_description:
+  7070/tcp: Web UI and JSON API
+backup: cold
+
+# Most settings are edited in RatioReign's own Web UI (persisted under /data).
+# Optional HA fields only seed or override the YAML on disk.
+options:
+  listen_addr: ":7070"
+  min_upload_rate_kbs: 30
+  max_upload_rate_kbs: 160
+  simultaneous_seed: 20
+  client_profile: qbittorrent-4.6.3
+  keep_torrent_with_zero_leechers: true
+  upload_ratio_target: -1
+  # If non-empty, written as /data/config.yaml on every start (advanced).
+  config_yaml: ""
+schema:
+  listen_addr: str
+  min_upload_rate_kbs: int(0,)
+  max_upload_rate_kbs: int(0,)
+  simultaneous_seed: int(1,)
+  client_profile: str
+  keep_torrent_with_zero_leechers: bool
+  upload_ratio_target: int
+  config_yaml: str?

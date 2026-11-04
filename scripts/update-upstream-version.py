@@ -443,9 +443,9 @@ def update_app(app_dir: Path, release_tag: str, *, force: bool) -> None:
     config_path = app_dir / "config.yaml"
     build = yaml.safe_load(build_path.read_text(encoding="utf-8")) or {}
     image = str(build.get("upstream_docker_image") or "").strip()
-    if image and not docker_hub_tag_exists(image, release_tag):
+    if image and not docker_hub_has_release_image(image, release_tag):
         raise SystemExit(
-            f"{app_dir.name}: Docker Hub has no {image}:{release_tag}; refusing bump"
+            f"{app_dir.name}: Docker Hub has no {image} image for {release_tag}; refusing bump"
         )
     version = normalize_version(release_tag)
     old = read_config_version(config_path)
@@ -521,15 +521,28 @@ def docker_hub_tag_exists(image: str, tag: str) -> bool:
     return isinstance(payload, dict) and bool(payload.get("name"))
 
 
+def docker_hub_tags_for_release(tag: str) -> list[str]:
+    """Candidate Hub tags for a GitHub release tag (try raw tag and stripped v)."""
+    tags = [tag]
+    version = normalize_version(tag)
+    if version and version != tag:
+        tags.append(version)
+    return tags
+
+
+def docker_hub_has_release_image(image: str, tag: str) -> bool:
+    return any(docker_hub_tag_exists(image, candidate) for candidate in docker_hub_tags_for_release(tag))
+
+
 def filter_tag_by_docker_hub(build: dict, tag: str, token: str | None) -> str:
     """If upstream_docker_image is set, require that Hub tag; else walk older releases."""
     image = str(build.get("upstream_docker_image") or "").strip()
     if not image:
         return tag
-    if docker_hub_tag_exists(image, tag):
+    if docker_hub_has_release_image(image, tag):
         return tag
     print(
-        f"skip {tag}: Docker Hub has no {image}:{tag}; looking for an older release with an image",
+        f"skip {tag}: Docker Hub has no {image} tag matching {tag}; looking for an older release with an image",
         file=sys.stderr,
     )
     upstream = str(build.get("upstream_repo") or "").strip()
@@ -543,8 +556,8 @@ def filter_tag_by_docker_hub(build: dict, tag: str, token: str | None) -> str:
             continue
         if is_prerelease(candidate):
             continue
-        if docker_hub_tag_exists(image, candidate):
-            print(f"using {candidate}: Docker Hub has {image}:{candidate}", file=sys.stderr)
+        if docker_hub_has_release_image(image, candidate):
+            print(f"using {candidate}: Docker Hub has an image for {image}", file=sys.stderr)
             return candidate
     raise RuntimeError(f"no Docker Hub tag found for {image} among recent releases (wanted {tag})")
 

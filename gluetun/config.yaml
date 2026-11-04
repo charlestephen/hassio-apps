@@ -1,0 +1,102 @@
+name: Gluetun
+description: >-
+  Lightweight multi-provider VPN client (OpenVPN / WireGuard) with built-in
+  HTTP and Shadowsocks proxies. Thin wrapper on qmcgaw/gluetun.
+url: https://github.com/charlestephen/hassio-apps/tree/main/gluetun
+version: "3.41.3"
+stage: stable
+homeassistant: "2026.6.0"
+slug: gluetun
+image: ghcr.io/charlestephen/hassio-addons-gluetun-{arch}
+init: false
+startup: services
+boot: auto
+panel_icon: mdi:vpn
+arch:
+  - aarch64
+  - amd64
+# TUN device + NET_ADMIN required by upstream Gluetun.
+devices:
+  - /dev/net/tun
+privileged:
+  - NET_ADMIN
+map:
+  - type: data
+    read_only: false
+  - type: ssl
+    read_only: true
+ports:
+  8000/tcp: 8000
+  8888/tcp: 8888
+  8388/tcp: 8388
+  8388/udp: 8388
+ports_description:
+  8000/tcp: HTTP control server
+  8888/tcp: HTTP proxy
+  8388/tcp: Shadowsocks (TCP)
+  8388/udp: Shadowsocks (UDP)
+backup: cold
+
+# Environment variables mirror upstream Gluetun.
+# Wiki: https://github.com/qdm12/gluetun-wiki
+options:
+  tz: "America/New_York"
+  vpn_service_provider: "private internet access"
+  vpn_type: openvpn
+  vpn_endpoint_port: ""
+  server_countries: ""
+  server_regions: ""
+  server_cities: ""
+  server_hostnames: ""
+  openvpn_user: ""
+  openvpn_password: ""
+  openvpn_protocol: udp
+  wireguard_private_key: ""
+  wireguard_addresses: ""
+  wireguard_public_key: ""
+  wireguard_preshared_key: ""
+  wireguard_endpoint_ip: ""
+  wireguard_endpoint_port: ""
+  vpn_port_forwarding: false
+  firewall_vpn_input_ports: ""
+  dot: true
+  dot_providers: cloudflare
+  httpproxy: true
+  httpproxy_user: ""
+  httpproxy_password: ""
+  shadowsocks: false
+  shadowsocks_password: ""
+  log_level: info
+  updater_period: "24h"
+  # Multiline KEY=VALUE for any other Gluetun env (advanced).
+  extra_env: ""
+schema:
+  tz: str
+  vpn_service_provider: str
+  vpn_type: list(openvpn|wireguard)
+  vpn_endpoint_port: str?
+  server_countries: str?
+  server_regions: str?
+  server_cities: str?
+  server_hostnames: str?
+  openvpn_user: str?
+  openvpn_password: password?
+  openvpn_protocol: list(udp|tcp)
+  wireguard_private_key: password?
+  wireguard_addresses: str?
+  wireguard_public_key: str?
+  wireguard_preshared_key: password?
+  wireguard_endpoint_ip: str?
+  wireguard_endpoint_port: str?
+  vpn_port_forwarding: bool
+  firewall_vpn_input_ports: str?
+  dot: bool
+  dot_providers: str
+  httpproxy: bool
+  httpproxy_user: str?
+  httpproxy_password: password?
+  shadowsocks: bool
+  shadowsocks_password: password?
+  log_level: list(debug|info|warn|error)
+  updater_period: str
+  extra_env: str?

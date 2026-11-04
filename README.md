@@ -59,6 +59,11 @@ Or add it manually:
 - A self-hosted Git forge for code hosting, review, team collaboration, package
   registry, and CI/CD.
 
+### &#10003; [Gluetun](gluetun/)
+
+- Multi-provider VPN client (OpenVPN / WireGuard) with HTTP and Shadowsocks
+  proxies. Thin wrapper on the official `qmcgaw/gluetun` image.
+
 ### &#10003; [Linkding](linkding/)
 
 - Self-hosted bookmark manager (SQLite by default), with basic config plus
@@ -72,6 +77,11 @@ Or add it manually:
 
 - PostgreSQL 18 database server — usable as the Home Assistant recorder backend
   or a database for other services on the network.
+
+### &#10003; [RatioReign](ratioreign/)
+
+- Headless BitTorrent ratio-farming daemon (tracker announces + simulated
+  upload). Thin wrapper on `ghcr.io/charlestephen/ratioreign`.
 
 ### &#10003; [Resolved Watchdog](resolved-watchdog/)
 

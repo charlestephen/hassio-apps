@@ -1,0 +1,12 @@
+---
+# Thin wrapper on the official multi-arch RatioReign image.
+build_from:
+  aarch64: ghcr.io/charlestephen/ratioreign:2.1.0
+  amd64: ghcr.io/charlestephen/ratioreign:2.1.0
+upstream_repo: "charlestephen/ratioreign"
+upstream_build_from: true
+# Docker Hub / GHCR publish tags without the leading v (2.1.0).
+upstream_docker_image: "charlestephen/ratioreign"
+upstream_version_arg: RATIOREIGN_VERSION
+args:
+  RATIOREIGN_VERSION: "2.1.0"

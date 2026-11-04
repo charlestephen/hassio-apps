@@ -1,0 +1,97 @@
+configuration:
+  tz:
+    name: Timezone
+    description: IANA timezone for the container (TZ), e.g. America/New_York.
+  vpn_service_provider:
+    name: VPN service provider
+    description: >-
+      Provider name as Gluetun expects it (e.g. private internet access,
+      mullvad, nordvpn, protonvpn, custom). See the Gluetun wiki.
+  vpn_type:
+    name: VPN type
+    description: openvpn or wireguard.
+  vpn_endpoint_port:
+    name: VPN endpoint port
+    description: Optional override for the VPN server port.
+  server_countries:
+    name: Server countries
+    description: Comma-separated country filters (e.g. Netherlands,USA).
+  server_regions:
+    name: Server regions
+    description: Comma-separated region filters.
+  server_cities:
+    name: Server cities
+    description: Comma-separated city filters.
+  server_hostnames:
+    name: Server hostnames
+    description: Comma-separated VPN server hostnames.
+  openvpn_user:
+    name: OpenVPN username
+    description: Provider username / service ID for OpenVPN.
+  openvpn_password:
+    name: OpenVPN password
+    description: Provider password for OpenVPN.
+  openvpn_protocol:
+    name: OpenVPN protocol
+    description: udp or tcp.
+  wireguard_private_key:
+    name: WireGuard private key
+    description: Client private key (base64).
+  wireguard_addresses:
+    name: WireGuard addresses
+    description: Interface address(es), e.g. 10.64.0.2/32.
+  wireguard_public_key:
+    name: WireGuard peer public key
+    description: Server / peer public key.
+  wireguard_preshared_key:
+    name: WireGuard preshared key
+    description: Optional PSK.
+  wireguard_endpoint_ip:
+    name: WireGuard endpoint IP
+    description: Peer endpoint IP (custom / some providers).
+  wireguard_endpoint_port:
+    name: WireGuard endpoint port
+    description: Peer endpoint port.
+  vpn_port_forwarding:
+    name: VPN port forwarding
+    description: Enable provider port forwarding when supported.
+  firewall_vpn_input_ports:
+    name: Firewall VPN input ports
+    description: Extra ports allowed in through the kill switch (comma-separated).
+  dot:
+    name: DNS over TLS
+    description: Enable built-in DNS-over-TLS resolver.
+  dot_providers:
+    name: DoT providers
+    description: Comma-separated DoT providers (e.g. cloudflare,google).
+  httpproxy:
+    name: HTTP proxy
+    description: Enable the built-in HTTP proxy on port 8888.
+  httpproxy_user:
+    name: HTTP proxy user
+    description: Optional proxy auth username.
+  httpproxy_password:
+    name: HTTP proxy password
+    description: Optional proxy auth password.
+  shadowsocks:
+    name: Shadowsocks
+    description: Enable Shadowsocks on port 8388.
+  shadowsocks_password:
+    name: Shadowsocks password
+    description: Password required when Shadowsocks is enabled.
+  log_level:
+    name: Log level
+    description: debug, info, warn, or error.
+  updater_period:
+    name: Server list updater period
+    description: How often to refresh VPN server data (Go duration, e.g. 24h).
+  extra_env:
+    name: Extra environment
+    description: >-
+      Advanced. One KEY=VALUE per line for any other Gluetun setting not
+      listed above. See the Gluetun wiki.
+network:
+  8000/tcp: HTTP control server
+  8888/tcp: HTTP proxy
+  8388/tcp: Shadowsocks (TCP)
+  8388/udp: Shadowsocks (UDP)
