@@ -1,12 +1,16 @@
 # Official contrib image is FROM scratch (binary only). Copy that binary onto
 # the Home Assistant base so the HA options wrapper has a shell, then exec the
 # same upstream binary with --config.
+#
+# ARGs used in FROM must be declared before the first FROM (BuildKit).
+ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 ARG OTELCOL_VERSION=0.164.0
+
 FROM docker.io/otel/opentelemetry-collector-contrib:${OTELCOL_VERSION} AS otelcol
 
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 FROM ${BUILD_FROM}
 
+# Re-declare for use inside this stage.
 ARG OTELCOL_VERSION=0.164.0
 ENV OTELCOL_VERSION=${OTELCOL_VERSION}
 
@@ -17,7 +21,7 @@ COPY --from=otelcol /otelcol-contrib /usr/bin/otelcol-contrib
 COPY rootfs/ /
 RUN chmod +x /ha-entrypoint.sh
 
-# OTLP gRPC / HTTP; collector self-metrics (zpages / telemetry as configured)
+# OTLP gRPC / HTTP; collector self-metrics
 EXPOSE 4317/tcp 4318/tcp 8888/tcp
 
 ARG BUILD_ARCH
