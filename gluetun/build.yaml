@@ -1,0 +1,13 @@
+---
+# Thin wrapper on qdm12/gluetun's official multi-arch image (Docker Hub:
+# qmcgaw/gluetun). GitHub repo is qdm12/gluetun.
+build_from:
+  aarch64: docker.io/qmcgaw/gluetun:v3.41.3
+  amd64: docker.io/qmcgaw/gluetun:v3.41.3
+upstream_repo: "qdm12/gluetun"
+upstream_build_from: true
+upstream_build_from_prefix: v
+upstream_docker_image: "qmcgaw/gluetun"
+upstream_version_arg: GLUETUN_VERSION
+args:
+  GLUETUN_VERSION: "3.41.3"
