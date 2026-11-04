@@ -2,32 +2,50 @@ configuration:
   blocklist_urls:
     name: Blocklist URLs
     description: >-
-      Upstream list URLs (txt, JSON, YAML, TOML, CSV). Optional category tag,
-      e.g. threat:https://example.com/list.txt.
-  chunk_size:
-    name: Chunk size
-    description: Maximum entries per served chunk file.
-  refresh_interval:
-    name: Refresh interval
-    description: Go duration between re-fetches (e.g. 6h). Use 0 to disable.
-  base_url:
-    name: Public base URL
-    description: Origin for generated chunk links. Leave empty behind a reverse proxy.
-  admin_token:
-    name: Admin token
-    description: Password for /manage and the exclusion API.
-  exclusions_urls:
-    name: Exclusion list URLs
-    description: Remote lists of domains/IPs to exclude from block feeds.
+      Upstream DNS/IP list URLs to fetch and merge (txt, hosts, adblock, JSON,
+      YAML, TOML, or CSV). Optional category tag before the URL, e.g.
+      threat:https://example.com/list.txt (untagged sources use default). Add
+      one entry per line. Required unless you define Custom blocklists.
   custom_blocklists:
     name: Custom blocklists
     description: >-
-      Inline named lists. Paste domains, IPs, or CIDRs one per line in entries.
-      Optional category for /lists/<category>/… feeds.
+      Named inline block lists. Set a name, optional category (for
+      /lists/<category>/… feeds), and paste domains, IPs, or CIDRs one per line
+      in entries. Merged with Blocklist URLs on every refresh.
+  chunk_size:
+    name: Chunk size
+    description: >-
+      Maximum entries per served chunk file. Many DNS/router controllers
+      (including UniFi) commonly cap around 100000.
+  refresh_interval:
+    name: Refresh interval
+    description: >-
+      How often to re-fetch upstreams (Go duration, e.g. 6h, 30m). Use 0 to
+      disable periodic refresh (POST /refresh still works).
+  base_url:
+    name: Public base URL
+    description: >-
+      Origin used when generating chunk links on / and /stats (e.g.
+      https://lists.example.com). Leave empty behind Traefik so X-Forwarded-*
+      headers set the public URL.
+  admin_token:
+    name: Admin token
+    description: >-
+      Password for the /manage UI and exclusion API (Basic auth password or
+      Bearer token). Leave empty to disable admin endpoints (they return 503).
+  exclusions_urls:
+    name: Exclusion list URLs
+    description: >-
+      Remote text/JSON/YAML/TOML/CSV lists of domains and IPs to withhold from
+      block feeds (e.g. https://lists.example.com/excluded.txt). Re-fetched on
+      every refresh and unioned with /manage exclusions and Exclusion / allow
+      lists.
   exclusion_lists:
     name: Exclusion / allow lists
     description: >-
-      Inline named lists withheld from block feeds. Enable output_allowlist to
-      publish /allowlists/<category>/… for DNS/router allowlist subscriptions.
+      Named inline lists withheld from block feeds. Paste domains, IPs, or
+      CIDRs one per line. Set an optional category. Enable Output allowlist to
+      also publish /allowlists/<category>/… chunk URLs for DNS/routers that
+      subscribe to allowlists.
 network:
-  8080/tcp: Chunk lists, stats, search, and management UI
+  8080/tcp: Chunk lists, allowlists, stats, search, and management UI
