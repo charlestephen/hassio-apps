@@ -7,7 +7,7 @@ version: "2.10.7"
 stage: stable
 homeassistant: "2026.6.0"
 slug: network_optimizer
-image: ghcr.io/charlestephen/hassio-addons-network-optimizer-{arch}
+image: ghcr.io/charlestephen/hassio-apps/network-optimizer-{arch}
 init: false
 startup: application
 boot: auto
