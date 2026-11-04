@@ -1,0 +1,55 @@
+name: OTLP Collector
+description: >-
+  OpenTelemetry Collector Contrib — receive logs, traces, and metrics over OTLP;
+  scrape Docker container stats; export to Tempo / Loki / Prometheus-compatible backends.
+url: https://github.com/charlestephen/hassio-apps/tree/main/otlp-collector
+version: "0.164.0"
+stage: stable
+homeassistant: "2026.6.0"
+slug: otlp_collector
+image: ghcr.io/charlestephen/hassio-addons-otlp-collector-{arch}
+init: false
+startup: services
+boot: auto
+panel_icon: mdi:chart-timeline-variant
+arch:
+  - aarch64
+  - amd64
+# docker_stats needs the host Docker socket; Supervisor only mounts it when
+# Protection mode is off (see DOCS.md).
+docker_api: true
+hassio_api: true
+map:
+  - type: data
+    read_only: false
+ports:
+  4317/tcp: 4317
+  4318/tcp: 4318
+  8888/tcp: 8888
+ports_description:
+  4317/tcp: OTLP gRPC
+  4318/tcp: OTLP HTTP
+  8888/tcp: Collector internal Prometheus metrics
+backup: cold
+
+options:
+  log_level: info
+  enable_docker_stats: true
+  # Optional Prometheus scrape target (e.g. Home Assistant :8123/api/prometheus)
+  prometheus_scrape_targets: ""
+  # Exporters — leave empty to disable that pipeline branch
+  otlp_traces_endpoint: ""
+  otlp_metrics_endpoint: ""
+  otlp_logs_endpoint: ""
+  prometheus_remote_write_endpoint: ""
+  # If set, written as /data/collector.yaml on every start (advanced).
+  config_yaml: ""
+schema:
+  log_level: list(debug|info|warn|error)
+  enable_docker_stats: bool
+  prometheus_scrape_targets: str?
+  otlp_traces_endpoint: str?
+  otlp_metrics_endpoint: str?
+  otlp_logs_endpoint: str?
+  prometheus_remote_write_endpoint: str?
+  config_yaml: str?

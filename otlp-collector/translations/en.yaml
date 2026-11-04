@@ -1,0 +1,42 @@
+configuration:
+  log_level:
+    name: Log level
+    description: Collector process log verbosity (debug, info, warn, error).
+  enable_docker_stats:
+    name: Enable Docker stats
+    description: >-
+      Scrape container metrics via the Docker socket. Requires Protection mode
+      off so the Supervisor mounts /run/docker.sock.
+  prometheus_scrape_targets:
+    name: Prometheus scrape targets
+    description: >-
+      Optional comma-separated host:port (or URL) list to scrape, e.g.
+      homeassistant:8123 for the HA Prometheus endpoint.
+  otlp_traces_endpoint:
+    name: OTLP traces endpoint
+    description: >-
+      Base URL for otlphttp traces export (e.g. http://tempo:4318). Leave empty
+      to skip.
+  otlp_metrics_endpoint:
+    name: OTLP metrics endpoint
+    description: Base URL for otlphttp metrics export. Leave empty to skip.
+  otlp_logs_endpoint:
+    name: OTLP logs endpoint
+    description: >-
+      Base URL for otlphttp logs export (e.g. http://loki:3100/otlp). Leave
+      empty to skip.
+  prometheus_remote_write_endpoint:
+    name: Prometheus remote_write endpoint
+    description: >-
+      Full remote_write URL for Prometheus / Mimir (in addition to or instead
+      of OTLP metrics). Leave empty to skip.
+  config_yaml:
+    name: Full collector YAML (optional)
+    description: >-
+      Paste a complete OpenTelemetry Collector config to overwrite
+      /data/collector.yaml on every start. Leave empty to use the generated
+      default.
+network:
+  4317/tcp: OTLP gRPC
+  4318/tcp: OTLP HTTP
+  8888/tcp: Collector Prometheus metrics

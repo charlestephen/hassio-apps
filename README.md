@@ -69,6 +69,12 @@ Or add it manually:
 - Self-hosted bookmark manager (SQLite by default), with basic config plus
   arbitrary environment-variable injection from the UI. Ingress + port 9090.
 
+### &#10003; [OTLP Collector](otlp-collector/)
+
+- OpenTelemetry Collector Contrib — OTLP logs/traces/metrics hub, Docker stats,
+  optional Prometheus scrape; export to Tempo / Loki / Prometheus. Pair with
+  Alloy for Docker container log tailing.
+
 ### &#10003; [pgAdmin](pgadmin/)
 
 - pgAdmin 4 web UI to administer and query the PostgreSQL app.
