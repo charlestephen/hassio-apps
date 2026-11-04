@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "UniFi Blocklist Chunker"
-version: "1.2.0"
+version: "1.2.1"
 slug: "unifi_blocklist_chunker"
 description: "Merge upstream DNS/IP blocklists into UniFi-sized domain, IPv4, and IPv6 chunks"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/unifi-blocklist-chunker"
@@ -29,7 +29,8 @@ ports_description:
 
 options:
   blocklist_urls:
-    - "https://example.com/dns-blocklist.txt"
+    - "threat:https://example.com/threat-blocklist.txt"
+    - "dns-blocklisting:https://example.com/dns-blocklist.txt"
     - "https://example.com/ip-blocklist.txt"
   chunk_size: 100000
   refresh_interval: "6h"
@@ -38,8 +39,9 @@ options:
   exclusions: []
   exclusions_urls: []
 schema:
+  # str (not url): allows optional category tags like threat:https://…
   blocklist_urls:
-    - url
+    - str
   chunk_size: int(1,)
   refresh_interval: str
   base_url: str?
