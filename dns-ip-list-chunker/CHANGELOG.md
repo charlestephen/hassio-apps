@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.1
+
+- Expand README, DOCS, and UI translations to prior depth: how-it-works,
+  endpoints (including `/allowlists/…`), exclusions semantics, reverse-proxy
+  notes, and full configuration examples.
+- Fix `output_allowlist` mapping: unset/`false` no longer coerced to `true`
+  via jq `//`.
+
 ## 1.3.0
 
 - Rename app to **DNS/IP List Chunker** (`dns-ip-list-chunker`); wraps upstream
