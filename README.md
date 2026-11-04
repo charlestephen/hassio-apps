@@ -92,7 +92,7 @@ Or add it manually:
 - An authoritative + recursive DNS server with a web management UI, DNSSEC, and
   DNS-over-TLS / DNS-over-HTTPS.
 
-### &#10003; [UniFi Blocklist Chunker](unifi-blocklist-chunker/)
+### &#10003; [DNS/IP List Chunker](dns-ip-list-chunker/)
 
 - Merge upstream DNS/IP blocklists into UniFi-sized domain, IPv4, and IPv6
   chunks. Config UI for list URLs and exclusions; `/manage` UI for on-the-fly

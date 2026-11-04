@@ -1,0 +1,12 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+set -euo pipefail
+
+ENVFILE=/var/run/dns-ip-list-chunker.env
+set -a
+# shellcheck disable=SC1090
+[[ -f "${ENVFILE}" ]] && . "${ENVFILE}"
+set +a
+
+bashio::log.info "Starting dns-ip-list-chunker on :${PORT:-8080} ..."
+exec /usr/bin/dns-ip-list-chunker
