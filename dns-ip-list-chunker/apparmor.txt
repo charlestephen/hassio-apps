@@ -1,6 +1,6 @@
 #include <tunables/global>
 
-profile unifi_blocklist_chunker flags=(attach_disconnected,mediate_deleted) {
+profile dns_ip_list_chunker flags=(attach_disconnected,mediate_deleted) {
   #include <abstractions/base>
 
   capability,
@@ -41,7 +41,7 @@ profile unifi_blocklist_chunker flags=(attach_disconnected,mediate_deleted) {
   /tmp/** mrwk,
 
   # Chunker binary + persisted exclusions
-  /usr/bin/unifi-blocklist-chunker rix,
+  /usr/bin/dns-ip-list-chunker rix,
   /data/** rw,
 
   /etc/nsswitch.conf r,

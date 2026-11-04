@@ -1,13 +1,12 @@
 ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
-# renovate: datasource=docker depName=ghcr.io/charlestephen/unifi-blocklist-chunker
-ARG UNIFI_BLOCKLIST_CHUNKER_VERSION=1.2.0
+# renovate: datasource=docker depName=ghcr.io/charlestephen/dns-ip-list-chunker
+ARG DNS_IP_LIST_CHUNKER_VERSION=1.3.0
 
-# Upstream image is scratch + a single static Go binary.
-FROM ghcr.io/charlestephen/unifi-blocklist-chunker:${UNIFI_BLOCKLIST_CHUNKER_VERSION} AS upstream
+FROM ghcr.io/charlestephen/dns-ip-list-chunker:${DNS_IP_LIST_CHUNKER_VERSION} AS upstream
 
 FROM ${BUILD_FROM}
 
-COPY --from=upstream /unifi-blocklist-chunker /usr/bin/unifi-blocklist-chunker
+COPY --from=upstream /dns-ip-list-chunker /usr/bin/dns-ip-list-chunker
 
 COPY rootfs/ /
 
