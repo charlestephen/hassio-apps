@@ -18,11 +18,26 @@ the wrapper **`exec`s** `/usr/bin/otelcol-contrib --config …`.
 [Grafana Alloy](../alloy/) app (`loki.source.docker`). The Collector has no
 first-class Docker-logs API receiver; Alloy already solves that on HA OS.
 
+## Architecture (thin wrapper)
+
+1. HA options → `/data/collector.yaml` (unless you paste a full `config_yaml`).
+2. Default pipeline: OTLP receiver → `batch` → configured exporters (or
+   `debug` if nothing is set, so the app still starts).
+3. Optional `docker_stats` receiver (needs Docker socket / Protection mode
+   off).
+4. Optional Prometheus scrape targets from a comma-separated list.
+5. Process is the upstream `otelcol-contrib` binary — no S6 rewrite of the
+   collector itself.
+
+Icon/logo are the official CNCF OpenTelemetry mark.
+
 ## Protection mode
 
 Turn **Protection mode off** if you enable **Docker stats**. The Supervisor
 only mounts the host Docker socket when protection is disabled. OTLP receive /
 export alone does not need the socket.
+
+AppArmor profile name: `otlp_collector` (matches `slug`).
 
 ## Quick start
 
@@ -32,6 +47,13 @@ export alone does not need the socket.
 3. Optionally enable Docker stats and/or Prometheus scrape targets.
 4. Start the app. Point instrumented apps at
    `http://<ha-host>:4318` (OTLP/HTTP) or `:4317` (OTLP/gRPC).
+
+### Example app → collector
+
+```text
+OTEL_EXPORTER_OTLP_ENDPOINT=http://homeassistant.local:4318
+OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+```
 
 ## Configuration
 
@@ -59,7 +81,14 @@ prometheus_remote_write_endpoint: "http://mimir:9009/api/v1/push"
 config_yaml: ""
 ```
 
-Generated config is stored at `/data/collector.yaml`.
+Generated config is stored at `/data/collector.yaml`. Inspect it from the
+Supervisor file browser or a backup when debugging pipelines.
+
+### Advanced: full YAML paste
+
+Set `config_yaml` to a complete collector config when you need processors,
+auth extensions, or exporters the options form does not expose. The wrapper
+writes that file every start and does not merge with the generated template.
 
 ## Ports
 
@@ -78,6 +107,13 @@ Health check listens on **13133** inside the container (not published by default
   stats metrics, optional Prometheus scrape, export to your backends.
 
 Use both; do not expect this app to replace Alloy’s Docker log tailing.
+
+| Concern | Prefer |
+| --- | --- |
+| `docker logs` / journal of containers | Alloy |
+| App SDKs emitting OTLP | OTLP Collector |
+| cAdvisor-style container CPU/mem via Docker API | OTLP Collector `docker_stats` |
+| Host node_exporter style | Alloy or a scrape target |
 
 ## Notes
 
