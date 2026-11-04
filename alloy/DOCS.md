@@ -6,6 +6,9 @@ host and, out of the box, ships the logs of **every container on the host** to a
 Loki endpoint. You can also replace the bundled config with any Alloy
 configuration of your own.
 
+For an OTLP receive/export hub (traces, metrics, app logs) plus Docker stats,
+see the sibling [OTLP Collector](../otlp-collector/) app.
+
 ## Installation
 
 1. Add this repository to **Settings → Add-ons → Add-on Store → ⋮ → Repositories**:
