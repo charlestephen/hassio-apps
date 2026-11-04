@@ -158,7 +158,17 @@ jobs:
           VERSION: ${{ steps.meta.outputs.version }}
           DATE: ${{ steps.meta.outputs.date }}
         run: |
-          IMG="ghcr.io/${OWNER}/hassio-addons-${A}-${ARCH}"
+          # Prefer the image: template from config.yaml so apps can use
+          # repo-scoped GHCR names (ghcr.io/owner/repo/app-arch). Flat
+          # user packages (hassio-addons-*) work for existing apps; new
+          # package creates have been denied write_package on this account.
+          IMG=$(grep -E '^image:[[:space:]]*' "$A/config.yaml" | head -1 \
+            | sed -E 's/^image:[[:space:]]*//; s/[\"'\'']//g; s/[[:space:]]+$//')
+          IMG="${IMG//\{arch\}/${ARCH}}"
+          if [ -z "$IMG" ]; then
+            IMG="ghcr.io/${OWNER}/hassio-addons-${A}-${ARCH}"
+          fi
+          echo "Pushing ${IMG}:${VERSION}"
           mapfile -t EXTRA < extra_build_args
           docker buildx build \
             --platform "${PLATFORM}" \
