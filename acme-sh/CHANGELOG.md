@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4
+
+- Add `ca: custom` plus `acme_server` for a custom ACME directory URL
+  (ACME proxy, Step CA, or other provider). Passed through as
+  `--server` on account register, default CA, and issue.
+
 ## 1.0.3
 
 - Add a per-certificate `dns_sleep` option, passed to acme.sh as
