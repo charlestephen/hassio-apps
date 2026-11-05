@@ -42,6 +42,12 @@ if [[ -n "${EXCL_URLS}" ]]; then
   echo "EXCLUSIONS_URLS=${EXCL_URLS}" >> "${ENVFILE}"
 fi
 
+if jq -e '.allowlist_also_excludes == true' "${OPTIONS}" >/dev/null; then
+  echo "ALLOWLIST_ALSO_EXCLUDES=true" >> "${ENVFILE}"
+else
+  echo "ALLOWLIST_ALSO_EXCLUDES=false" >> "${ENVFILE}"
+fi
+
 # Emit LISTS_FILE as JSON (upstream accepts YAML or JSON).
 jq '{
   custom_blocklists: [(.custom_blocklists // [])[] | select((.name // "") != "" and ((.entries // "") | length) > 0) | {name, category: (.category // ""), entries}],
