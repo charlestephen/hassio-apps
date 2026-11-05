@@ -126,6 +126,12 @@ Or add it manually:
   chunks. Config UI for list URLs and exclusions; `/manage` UI for on-the-fly
   removals behind a reverse proxy.
 
+### &#10003; [Hawser Agent for Dockhand](dockhand-hawser/)
+
+- Runs the [Hawser](https://github.com/Finsys/hawser) agent so
+  [Dockhand](https://dockhand.pro) can manage this Home Assistant Docker host
+  (Edge or Standard mode). Version tracks upstream Hawser releases.
+
 ### &#10003; [Traefik Manager](traefik-manager/)
 
 - Clean, self-hosted web UI for managing Traefik routes, middlewares,
