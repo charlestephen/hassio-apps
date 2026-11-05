@@ -16,9 +16,10 @@ hours.
 | Option | Description |
 |---|---|
 | `email` | Account email. Certificates are not issued until this is set. |
-| `ca` | `letsencrypt`, `letsencrypt_test`, or `zerossl`. |
+| `ca` | `letsencrypt`, `letsencrypt_test`, `zerossl`, or `custom`. |
+| `acme_server` | When `ca` is `custom`: ACME directory URL (or an acme.sh short name) for your CA, ACME proxy, or Step CA. Example: `https://acme.example.com/acme/directory`. Ignored for the built-in CA choices. |
 | `certificates` | One entry per certificate. |
-| `env_vars` | Environment variables exported before every acme.sh command. Names must be shell identifiers. Values are masked on the config screen; set `secret: true` on tokens and passwords so they are flagged as secret and never written to the log. |
+| `env_vars` | Environment variables exported before every acme.sh command. Names must be shell identifiers. Values are masked on the config screen; set `secret: true` on tokens and passwords so they are flagged as secret and never written to the log. Use this for provider credentials and for `HTTP_PROXY` / `HTTPS_PROXY` if acme.sh must reach the CA through an HTTP proxy. |
 
 Each certificate:
 
@@ -37,6 +38,20 @@ Each certificate:
 | `home_assistant` | Copy this certificate to `/ssl/fullchain.pem` and `/ssl/privkey.pem`. If more than one entry sets this, the last one wins and the log says so. |
 
 `standalone` binds port 80 on the host. That port has to be free.
+
+## Custom ACME provider / proxy
+
+Set `ca` to `custom` and put the ACME directory URL in `acme_server`. That
+value is passed to acme.sh as `--server` for account registration, the
+default CA, and every issue. Examples:
+
+- Internal ACME proxy or reverse-proxied CA:
+  `https://acme.lan.example/directory`
+- Step CA: `https://ca.example:9000/acme/acme/directory`
+- Any other ACME v2 directory URL
+
+Outbound HTTP(S) proxy for reaching the CA is separate from `acme_server`:
+set `HTTP_PROXY` / `HTTPS_PROXY` in `env_vars` if needed.
 
 ## UniFi OS
 
