@@ -4,6 +4,8 @@ ARG BUILD_FROM=ghcr.io/ozark-connect/speedtest:2.10.7
 # image (customized OpenSpeedTest). Upstream /docker-entrypoint.sh preserved.
 FROM ${BUILD_FROM}
 
+# HA entrypoint must start as root to read /data/options.json and exec upstream.
+# hadolint ignore=DL3002
 USER root
 # Alpine nginx base.
 RUN apk upgrade --no-cache \
