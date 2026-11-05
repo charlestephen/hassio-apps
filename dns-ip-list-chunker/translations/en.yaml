@@ -43,9 +43,16 @@ configuration:
   exclusion_lists:
     name: Exclusion / allow lists
     description: >-
-      Named inline lists withheld from block feeds. Paste domains, IPs, or
-      CIDRs one per line. Set an optional category. Enable Output allowlist to
-      also publish /allowlists/<category>/… chunk URLs for DNS/routers that
-      subscribe to allowlists.
+      Named inline lists. Without Output allowlist, entries are withheld from
+      block feeds. With Output allowlist enabled, entries publish under
+      /allowlists/<category>/… for DNS/routers that subscribe to allowlists;
+      they stay in block feeds unless Allowlist also excludes is on. Paste
+      domains, IPs, or CIDRs one per line. Optional category slug.
+  allowlist_also_excludes:
+    name: Allowlist also excludes
+    description: >-
+      Off by default. When on, entries from Output allowlist lists are also
+      stripped from exported block feeds. Leave off if only some clients should
+      get the allow feeds while others keep the full blocklist.
 network:
   8080/tcp: Chunk lists, allowlists, stats, search, and management UI

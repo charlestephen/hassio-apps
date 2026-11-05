@@ -5,7 +5,7 @@ custom lists), merges and deduplicates them, and re-serves them as plain-text
 chunks sized for DNS servers and routers that reject oversized external
 blocklists or allowlists. This app wraps
 [dns-ip-list-chunker](https://github.com/charlestephen/dns-ip-list-chunker)
-`1.3.0`.
+`1.4.0`.
 
 Formerly **UniFi Blocklist Chunker** — same engine, generic naming. Works with
 UniFi, Technitium, Pi-hole-style subscribers, NextDNS-compatible URL feeds, or
@@ -26,11 +26,11 @@ any device that accepts a plain-text URL of domains / IPs / CIDRs.
 3. Deduplicated entries join the global **all** feed and exactly **one**
    category (first source wins). Each feed is sorted and split into domain /
    IPv4 / IPv6 chunks of at most **Chunk size** entries.
-4. **Exclusion / allow lists** (inline) and **Exclusion list URLs** withhold
-   matching entries from block feeds. Lists with **Output allowlist** enabled
-   also publish `/allowlists/<category>/…` for DNS/routers that subscribe to
-   allowlists. Live changes via `/manage` persist on `/data` and are re-applied
-   on every refresh.
+4. Pure **Exclusion / allow lists** (no Output allowlist) and **Exclusion list
+   URLs** withhold matching entries from block feeds. Lists with **Output
+   allowlist** publish `/allowlists/<category>/…`; those entries stay in the
+   blocklist unless **Allowlist also excludes** is enabled. `/manage` changes
+   persist on `/data` and re-apply every refresh.
 5. A failed source is skipped; other sources still apply. A refresh that yields
    zero entries keeps the previous snapshot.
 
@@ -60,6 +60,7 @@ any device that accepts a plain-text URL of domains / IPs / CIDRs.
 | `admin_token` | *(empty)* | Secret for `/manage` and exclusion API. Empty → admin endpoints `503`. |
 | `exclusions_urls` | `[]` | Remote exclusion list URLs. Re-fetched on every refresh; unioned with persistent `/manage` exclusions and inline exclusion lists. |
 | `exclusion_lists` | `[]` | Named inline exclude/allow lists: `name`, optional `category`, multiline `entries`, optional `output_allowlist` (publish `/allowlists/<category>/…`). |
+| `allowlist_also_excludes` | `false` | When `true`, Output allowlist entries are also stripped from exported block feeds. Leave off to apply allow feeds only to some clients. |
 
 ### Example
 
@@ -87,6 +88,7 @@ exclusion_lists:
     entries: |
       school.edu
       10.0.0.0/8
+allowlist_also_excludes: false
 ```
 
 ## Endpoints
@@ -114,9 +116,9 @@ via `/manage` or the API apply immediately, persist on `/data`, and are
 re-applied on every refresh. Remote `exclusions_urls` and inline
 `exclusion_lists` are unioned with that persistent store each refresh.
 
-When **Output allowlist** is enabled on an exclusion list, those entries are
-still withheld from block feeds **and** published as chunked allowlist URLs
-under `/allowlists/<category>/…` for subscribers that want an allow feed.
+When **Output allowlist** is enabled, those entries are published as chunked
+allowlist URLs under `/allowlists/<category>/…`. They are stripped from block
+feeds only if **Allowlist also excludes** is on (default off).
 
 Browser auth for `/manage`: HTTP Basic — **any username**, password =
 `admin_token`. API clients may send `Authorization: Bearer <token>`.

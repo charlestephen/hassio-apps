@@ -1,6 +1,6 @@
 ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 # renovate: datasource=docker depName=ghcr.io/charlestephen/dns-ip-list-chunker
-ARG DNS_IP_LIST_CHUNKER_VERSION=1.3.0
+ARG DNS_IP_LIST_CHUNKER_VERSION=1.4.0
 
 FROM ghcr.io/charlestephen/dns-ip-list-chunker:${DNS_IP_LIST_CHUNKER_VERSION} AS upstream
 

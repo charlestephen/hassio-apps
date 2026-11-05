@@ -1,6 +1,7 @@
 # Home Assistant App: DNS/IP List Chunker
 
 [![Release][release-shield]][release]
+[![Open your Home Assistant instance and show the dashboard of an app.][ha-badge]][ha-link]
 
 ![Supports aarch64 Architecture][aarch64-shield]
 ![Supports amd64 Architecture][amd64-shield]
@@ -9,7 +10,7 @@ Fetches any number of upstream IP and DNS blocklists (plus optional inline
 custom lists), merges and deduplicates them, and re-serves them as plain-text
 chunks sized for DNS servers and routers that reject oversized external
 blocklists or allowlists. Powered by
-[charlestephen/dns-ip-list-chunker][upstream] `1.3.0`.
+[charlestephen/dns-ip-list-chunker][upstream] `1.4.0`.
 
 Formerly **UniFi Blocklist Chunker** — same engine, generic naming. Paste list
 URLs (and/or custom textareas) in the config UI, open `/` for chunk links to
@@ -33,10 +34,11 @@ exclude entries on the fly.
    **one** category (first source wins) and also appears in the global **all**
    feed. Feeds are sorted and split into domain / IPv4 / IPv6 chunks of at most
    **Chunk size** entries.
-4. **Exclusion / allow lists** and **Exclusion list URLs** withhold matches
-   from block feeds. With **Output allowlist** enabled, those entries also
-   publish `/allowlists/<category>/…` for allowlist subscribers. `/manage`
-   exclusions persist on `/data` and survive restarts.
+4. **Exclusion / allow lists** without **Output allowlist**, plus **Exclusion
+   list URLs** and `/manage`, withhold matches from block feeds. With **Output
+   allowlist** enabled, entries publish `/allowlists/<category>/…` and stay in
+   the blocklist unless **Allowlist also excludes** is on (so allow feeds can
+   target only some clients). `/manage` exclusions persist on `/data`.
 5. A failed source never takes the service down: other sources still apply,
    and a refresh yielding zero entries keeps the previous snapshot.
 
@@ -95,6 +97,7 @@ each refresh and unioned with the persistent `/manage` file.
 | `admin_token` | *(empty)* | Secret for `/manage` and exclusion API. Empty disables admin endpoints. |
 | `exclusions_urls` | `[]` | Remote exclusion list URLs (same formats as blocklists). Re-fetched each refresh. |
 | `exclusion_lists` | `[]` | Named inline exclude/allow lists; set `output_allowlist: true` to publish `/allowlists/<category>/…`. |
+| `allowlist_also_excludes` | `false` | When `true`, Output allowlist entries are also stripped from exported block feeds. |
 
 ### Example
 
@@ -122,6 +125,7 @@ exclusion_lists:
     entries: |
       school.edu
       10.0.0.0/8
+allowlist_also_excludes: false
 ```
 
 Then:
@@ -154,6 +158,8 @@ leave **Public base URL** empty so generated links pick up
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[release-shield]: https://img.shields.io/badge/version-v1.3.1-blue.svg
+[release-shield]: https://img.shields.io/badge/version-v1.4.0-blue.svg
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/dns-ip-list-chunker
 [upstream]: https://github.com/charlestephen/dns-ip-list-chunker
+[ha-badge]: https://my.home-assistant.io/badges/supervisor_addon.svg
+[ha-link]: https://my.home-assistant.io/redirect/supervisor_addon/?addon=dns_ip_list_chunker&repository_url=https%3A%2F%2Fgithub.com%2Fcharlestephen%2Fhassio-apps

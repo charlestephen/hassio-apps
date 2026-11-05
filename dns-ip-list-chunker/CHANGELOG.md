@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.4.0
+
+- Wrap upstream `dns-ip-list-chunker` `1.4.0`.
+- New option **Allowlist also excludes** (`allowlist_also_excludes`, default
+  `false` → `ALLOWLIST_ALSO_EXCLUDES`): when on, Output allowlist entries are
+  also stripped from exported block feeds. Default keeps them in the blocklist
+  so allow feeds can be applied only to some clients.
+- README “Add to my Home Assistant” button points at this app + repository.
+
+> Upstream v1.4.0: https://github.com/charlestephen/dns-ip-list-chunker/releases/tag/v1.4.0
+
 ## 1.3.1
 
 - Expand README, DOCS, and UI translations to prior depth: how-it-works,
