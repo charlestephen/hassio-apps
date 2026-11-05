@@ -4,8 +4,12 @@ ARG BUILD_FROM=ghcr.io/ozark-connect/network-optimizer:2.10.7
 # Upstream entrypoint (/entrypoint.sh) is preserved after options → env.
 FROM ${BUILD_FROM}
 
+# HA entrypoint must start as root to read /data/options.json and exec upstream.
+# hadolint ignore=DL3002
 USER root
-# Debian ASP.NET base — jq for /data/options.json.
+# Debian ASP.NET base — jq for /data/options.json. Track base image patches
+# rather than pin a specific jq Debian revision.
+# hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install -y --no-install-recommends jq \
     && rm -rf /var/lib/apt/lists/*

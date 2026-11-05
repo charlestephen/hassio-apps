@@ -5,6 +5,8 @@ ARG BUILD_FROM=ghcr.io/charlestephen/ratioreign:2.2.0
 # paths RatioReign expects, then exec it.
 FROM ${BUILD_FROM}
 
+# HA entrypoint must start as root to map /data and drop privileges via su-exec.
+# hadolint ignore=DL3002
 USER root
 RUN apk upgrade --no-cache \
     && apk add --no-cache jq su-exec
