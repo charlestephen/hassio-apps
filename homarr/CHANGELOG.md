@@ -2,6 +2,7 @@
 
 ## 2.11.1
 
+- Fix build: install `jq` with `apt-get` — Homarr 2.11+ is Debian Trixie, not Alpine
 - Upgrading from upstream version 2.10.1 -> 2.11.1
 
 > Upstream v2.11.1: https://github.com/homarr-labs/homarr/releases/tag/v2.11.1
