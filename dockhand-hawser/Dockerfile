@@ -28,13 +28,12 @@ RUN \
     && BASE_URL="https://github.com/Finsys/hawser/releases/download/v${HAWSER_VERSION}" \
     && curl -sSLf -o "/tmp/${ASSET}" "${BASE_URL}/${ASSET}" \
     && curl -sSLf -o /tmp/checksums.txt "${BASE_URL}/checksums.txt" \
-    && EXPECTED="$(awk -v a="${ASSET}" '$2 == a { print $1 }' /tmp/checksums.txt)" \
-    && [ -n "${EXPECTED}" ] \
-    && ACTUAL="$(sha256sum "/tmp/${ASSET}" | awk '{print $1}')" \
-    && [ "${EXPECTED}" = "${ACTUAL}" ] \
+    && awk -v a="${ASSET}" '$2 == a { print $1 "  /tmp/" $2 }' /tmp/checksums.txt > /tmp/hawser.sha256 \
+    && [ -s /tmp/hawser.sha256 ] \
+    && sha256sum -c /tmp/hawser.sha256 \
     && tar -xzf "/tmp/${ASSET}" -C /tmp hawser \
     && install -m 0755 /tmp/hawser /usr/local/bin/hawser \
-    && rm -rf /tmp/hawser "/tmp/${ASSET}" /tmp/checksums.txt
+    && rm -rf /tmp/hawser "/tmp/${ASSET}" /tmp/checksums.txt /tmp/hawser.sha256
 
 ENV HAWSER_VERSION=${HAWSER_VERSION}
 
