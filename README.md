@@ -91,6 +91,11 @@ Or add it manually:
 
 - pgAdmin 4 web UI to administer and query the PostgreSQL app.
 
+### &#10003; [Pocket ID](pocket-id/)
+
+- OpenID Connect Certified™ / OAuth 2.0 provider with passkey-only sign-in.
+  Thin wrapper on `pocketid/pocket-id`; version tracks upstream releases.
+
 ### &#10003; [PostgreSQL](postgres/)
 
 - PostgreSQL 18 database server — usable as the Home Assistant recorder backend

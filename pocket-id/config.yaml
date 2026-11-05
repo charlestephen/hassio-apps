@@ -1,0 +1,63 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: Pocket ID
+description: >-
+  OpenID Connect Certified™ and OAuth 2.0 provider with passkey-only sign-in.
+  Thin wrapper on the official Pocket ID image.
+url: https://github.com/charlestephen/hassio-apps/tree/main/pocket-id
+version: "2.19.2"
+stage: stable
+homeassistant: "2026.6.0"
+slug: pocket_id
+image: ghcr.io/charlestephen/hassio-addons-pocket-id-{arch}
+init: false
+startup: application
+boot: auto
+panel_icon: mdi:shield-key
+webui: http://[HOST]:[PORT:1411]
+arch:
+  - aarch64
+  - amd64
+map:
+  - type: data
+    read_only: false
+  - type: ssl
+    read_only: true
+ports:
+  1411/tcp: 1411
+ports_description:
+  1411/tcp: Pocket ID web UI and OIDC endpoints
+backup: cold
+
+# Essentials + common ops knobs. Anything else (SMTP, LDAP, UI overrides,
+# OTEL, …) goes through env_vars — see https://pocket-id.org/docs/configuration/environment-variables
+options:
+  app_url: ""
+  encryption_key: ""
+  trust_proxy: "false"
+  trusted_platform: ""
+  maxmind_license_key: ""
+  puid: 0
+  pgid: 0
+  port: 1411
+  log_level: info
+  analytics_disabled: false
+  version_check_disabled: false
+  db_connection_string: ""
+  env_vars: []
+schema:
+  app_url: str?
+  encryption_key: password?
+  trust_proxy: str
+  trusted_platform: str?
+  maxmind_license_key: password?
+  puid: int(0,)
+  pgid: int(0,)
+  port: port
+  log_level: list(debug|info|warn|error)
+  analytics_disabled: bool
+  version_check_disabled: bool
+  db_connection_string: str?
+  env_vars:
+    - name: str
+      value: password?
+      secret: bool?

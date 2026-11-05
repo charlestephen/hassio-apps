@@ -1,0 +1,55 @@
+---
+configuration:
+  app_url:
+    name: App URL
+    description: >-
+      Public URL browsers open Pocket ID at (e.g. https://id.example.com), with
+      no path. Passkeys are bound to this domain. Leave empty only for local
+      bring-up (defaults to http://localhost:1411).
+  encryption_key:
+    name: Encryption key
+    description: >-
+      At least 16 bytes; encrypts token signing keys. Leave blank to auto-generate
+      a stable key on first start (stored under /data/.encryption_key).
+  trust_proxy:
+    name: Trust proxy
+    description: >-
+      false (default), true (trust every peer — only if unreachable except via
+      your proxy), or a comma-separated list of proxy IPs/CIDRs for X-Forwarded-For.
+  trusted_platform:
+    name: Trusted platform header
+    description: >-
+      Optional client-IP header from a CDN (e.g. CF-Connecting-IP). Prefer this
+      over listing CDN ranges in Trust proxy.
+  maxmind_license_key:
+    name: MaxMind license key
+    description: Free MaxMind key so Pocket ID can download GeoLite2 for audit locations.
+  puid:
+    name: PUID
+    description: Unix UID Pocket ID runs as (upstream entrypoint). 0 = root.
+  pgid:
+    name: PGID
+    description: Unix GID Pocket ID runs as. 0 = root.
+  port:
+    name: Listen port
+    description: TCP port inside the container (default 1411). Match the Network mapping.
+  log_level:
+    name: Log level
+    description: "Verbosity: debug, info, warn or error."
+  analytics_disabled:
+    name: Disable analytics
+    description: Turn off the daily heartbeat that counts running instances.
+  version_check_disabled:
+    name: Disable version check
+    description: Turn off the check for new releases on GitHub.
+  db_connection_string:
+    name: Database connection string
+    description: >-
+      Leave empty for SQLite under /data. Or a postgres:// URL for PostgreSQL.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Arbitrary Pocket ID variables (SMTP_*, LDAP_*, UI_CONFIG_DISABLED, OTEL_*,
+      …). Mark secrets with secret: true so values stay out of logs.
+network:
+  1411/tcp: Pocket ID web UI and OIDC endpoints.
