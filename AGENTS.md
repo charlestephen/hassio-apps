@@ -4,6 +4,7 @@
 - When the upstream updater rewrites an app, follow each file's existing style. In `CHANGELOG.md` only, leave a blank line and add `- Upgrading from upstream version <previous version> -> $APP_NEW_VERSION`, with the previous version written out and `$APP_NEW_VERSION` left for the updater script.
 - When debugging UI login, setup wizards, auth providers, or “config change didn’t take,” check a private/incognito window (or hard-refresh) early before deep infrastructure digs — browser cache has already burned hours on false alarms (e.g. PatchMon local-auth wizard).
 - When wrapping an upstream container as a Home Assistant app, prefer the upstream image's own `ENTRYPOINT`/`CMD` (export options as env, then `exec` that entrypoint). Only replace it when HA rules require something the upstream entrypoint cannot do (e.g. grafting s6 onto a scratch/static binary, or a custom wrapper that still ends in `exec` of upstream).
+- Always ship an `apparmor.txt` with every Home Assistant app; never leave a new app without one.
 
 ## Learned Workspace Facts
 

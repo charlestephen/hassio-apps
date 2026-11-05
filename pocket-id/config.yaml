@@ -12,6 +12,7 @@ image: ghcr.io/charlestephen/hassio-addons-pocket-id-{arch}
 init: false
 startup: application
 boot: auto
+apparmor: true
 panel_icon: mdi:shield-key
 webui: http://[HOST]:[PORT:1411]
 arch:

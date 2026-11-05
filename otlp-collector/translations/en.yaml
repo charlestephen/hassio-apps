@@ -2,41 +2,53 @@ configuration:
   log_level:
     name: Log level
     description: Collector process log verbosity (debug, info, warn, error).
-  enable_docker_stats:
-    name: Enable Docker stats
+  otlp_endpoint:
+    name: OTLP endpoint
     description: >-
-      Scrape container metrics via the Docker socket. Requires Protection mode
-      off so the Supervisor mounts /run/docker.sock.
-  prometheus_scrape_targets:
-    name: Prometheus scrape targets
-    description: >-
-      Optional comma-separated host:port (or URL) list to scrape, e.g.
-      homeassistant:8123 for the HA Prometheus endpoint.
+      Shared OTLP/HTTP base URL for traces, metrics, and logs (e.g.
+      http://tempo:4318 or http://victoria-logs:9428/insert/opentelemetry).
+      Per-signal fields below override this when set.
   otlp_traces_endpoint:
-    name: OTLP traces endpoint
-    description: >-
-      Base URL for otlphttp traces export (e.g. http://tempo:4318). Leave empty
-      to skip.
+    name: OTLP traces endpoint (override)
+    description: Optional; overrides OTLP endpoint for traces only.
   otlp_metrics_endpoint:
-    name: OTLP metrics endpoint
-    description: Base URL for otlphttp metrics export. Leave empty to skip.
+    name: OTLP metrics endpoint (override)
+    description: Optional; overrides OTLP endpoint for metrics only.
   otlp_logs_endpoint:
-    name: OTLP logs endpoint
-    description: >-
-      Base URL for otlphttp logs export (e.g. http://loki:3100/otlp). Leave
-      empty to skip.
+    name: OTLP logs endpoint (override)
+    description: Optional; overrides OTLP endpoint for logs only.
   prometheus_remote_write_endpoint:
     name: Prometheus remote_write endpoint
     description: >-
-      Full remote_write URL for Prometheus / Mimir (in addition to or instead
-      of OTLP metrics). Leave empty to skip.
+      Optional full remote_write URL (VictoriaMetrics / Mimir) in addition to
+      OTLP metrics. Leave empty to skip.
+  enable_docker_stats:
+    name: Enable Docker stats
+    description: >-
+      Scrape container CPU/memory/network via the Docker socket. Requires
+      Protection mode off.
+  scrape_homeassistant:
+    name: Scrape Home Assistant Prometheus
+    description: >-
+      Scrape homeassistant:8123/api/prometheus (enable under Settings → System
+      → Analytics). Use a long-lived access token below if the endpoint requires auth.
+  ha_prometheus_token:
+    name: Home Assistant access token
+    description: >-
+      Long-lived access token for the Prometheus scrape (Bearer). Leave empty
+      only if the endpoint allows unauthenticated scrapes.
+  prometheus_scrape_targets:
+    name: Extra Prometheus scrape targets
+    description: >-
+      Optional comma-separated host:port (or URL) list to scrape in addition to
+      Home Assistant.
   config_yaml:
     name: Full collector YAML (optional)
     description: >-
-      Paste a complete OpenTelemetry Collector config to overwrite
-      /data/collector.yaml on every start. Leave empty to use the generated
-      default.
+      Paste a complete OpenTelemetry Collector config to replace the generated
+      default entirely. Leave empty to use the built-in Home Assistant / Docker
+      pipeline.
 network:
-  4317/tcp: OTLP gRPC
-  4318/tcp: OTLP HTTP
+  4317/tcp: OTLP gRPC (apps push here)
+  4318/tcp: OTLP HTTP (apps push here)
   8888/tcp: Collector Prometheus metrics
