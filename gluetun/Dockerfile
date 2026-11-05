@@ -4,6 +4,8 @@ ARG BUILD_FROM=docker.io/qmcgaw/gluetun:v3.41.3
 # Gluetun environment variables, then exec upstream /gluetun-entrypoint.
 FROM ${BUILD_FROM}
 
+# HA entrypoint must start as root to read /data/options.json and exec upstream.
+# hadolint ignore=DL3002
 USER root
 # jq parses /data/options.json. Upstream image is Alpine-based.
 RUN apk upgrade --no-cache \
