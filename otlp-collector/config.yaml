@@ -1,7 +1,7 @@
 name: OTLP Collector
 description: >-
-  OpenTelemetry Collector Contrib — receive logs, traces, and metrics over OTLP;
-  scrape Docker container stats; export to Tempo / Loki / Prometheus-compatible backends.
+  OpenTelemetry Collector Contrib — collect Home Assistant / Docker metrics and
+  receive OTLP logs, traces, and metrics; export to an endpoint you choose.
 url: https://github.com/charlestephen/hassio-apps/tree/main/otlp-collector
 version: "0.164.0"
 stage: stable
@@ -19,6 +19,7 @@ arch:
 # Protection mode is off (see DOCS.md).
 docker_api: true
 hassio_api: true
+apparmor: true
 map:
   - type: data
     read_only: false
@@ -27,29 +28,40 @@ ports:
   4318/tcp: 4318
   8888/tcp: 8888
 ports_description:
-  4317/tcp: OTLP gRPC
-  4318/tcp: OTLP HTTP
+  4317/tcp: OTLP gRPC (apps push here)
+  4318/tcp: OTLP HTTP (apps push here)
   8888/tcp: Collector internal Prometheus metrics
 backup: cold
 
 options:
   log_level: info
-  enable_docker_stats: true
-  # Optional Prometheus scrape target (e.g. Home Assistant :8123/api/prometheus)
-  prometheus_scrape_targets: ""
-  # Exporters — leave empty to disable that pipeline branch
+  # One OTLP/HTTP base URL for traces + metrics + logs (e.g. http://otel:4318
+  # or http://victoria-logs:9428/insert/opentelemetry). Leave empty only for
+  # bring-up (debug exporter) or when using config_yaml / per-signal URLs.
+  otlp_endpoint: ""
+  # Optional per-signal overrides (win over otlp_endpoint when set).
   otlp_traces_endpoint: ""
   otlp_metrics_endpoint: ""
   otlp_logs_endpoint: ""
+  # Optional Prometheus remote_write (VictoriaMetrics / Mimir) in addition to OTLP metrics.
   prometheus_remote_write_endpoint: ""
-  # If set, written as /data/collector.yaml on every start (advanced).
+  enable_docker_stats: true
+  # Scrape Home Assistant's Prometheus endpoint (Settings → System → Analytics).
+  scrape_homeassistant: true
+  ha_prometheus_token: ""
+  # Extra comma-separated scrape targets (host:port or URL).
+  prometheus_scrape_targets: ""
+  # Paste a complete collector YAML to replace the generated default entirely.
   config_yaml: ""
 schema:
   log_level: list(debug|info|warn|error)
-  enable_docker_stats: bool
-  prometheus_scrape_targets: str?
+  otlp_endpoint: str?
   otlp_traces_endpoint: str?
   otlp_metrics_endpoint: str?
   otlp_logs_endpoint: str?
   prometheus_remote_write_endpoint: str?
+  enable_docker_stats: bool
+  scrape_homeassistant: bool
+  ha_prometheus_token: password?
+  prometheus_scrape_targets: str?
   config_yaml: str?

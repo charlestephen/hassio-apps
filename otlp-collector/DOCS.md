@@ -2,51 +2,40 @@
 
 OpenTelemetry Collector Contrib as a Home Assistant app. It wraps the official
 [`otel/opentelemetry-collector-contrib`](https://hub.docker.com/r/otel/opentelemetry-collector-contrib)
-image `0.164.0`: the upstream binary is copied onto the HA base image (the
-upstream container is `FROM scratch`), options become a collector YAML, then
-the wrapper **`exec`s** `/usr/bin/otelcol-contrib --config …`.
+image `0.164.0`: the upstream binary is copied onto the HA base image, options
+become a collector YAML, then the wrapper **`exec`s**
+`/usr/bin/otelcol-contrib --config …`.
 
-## What this app is for
+## Default pipeline (no custom YAML)
 
-| Signal | How it gets in | Typical export |
+With **OTLP endpoint** set (and Protection mode off for Docker):
+
+| Signal | Sources | Export |
 | --- | --- | --- |
-| Traces | OTLP gRPC `:4317` / HTTP `:4318` | Tempo / any OTLP traces URL |
-| Metrics | OTLP + optional Docker stats + optional Prometheus scrape | OTLP metrics and/or Prometheus remote_write |
-| Logs | OTLP (apps push here) | Loki OTLP (`http://loki:3100/otlp`) or any OTLP logs URL |
+| Metrics | OTLP receive, Docker stats, Home Assistant `/api/prometheus`, optional extra scrapes | OTLP/HTTP (+ optional Prometheus remote_write) |
+| Traces | OTLP receive (`:4317` / `:4318`) | OTLP/HTTP |
+| Logs | OTLP receive | OTLP/HTTP |
 
-**Container stdout/stderr logs** are best collected with the existing
-[Grafana Alloy](../alloy/) app (`loki.source.docker`). The Collector has no
-first-class Docker-logs API receiver; Alloy already solves that on HA OS.
+Optional auto-enable when paths exist in the container:
 
-## Architecture (thin wrapper)
+- `hostmetrics` if `/hostfs/proc` is mounted
+- `filelog` for Docker json logs if `/var/lib/docker/containers` is mounted
+- `journald` if `/var/log/journal` or `/run/log/journal` is mounted
 
-1. HA options → `/data/collector.yaml` (unless you paste a full `config_yaml`).
-2. Default pipeline: OTLP receiver → `batch` → configured exporters (or
-   `debug` if nothing is set, so the app still starts).
-3. Optional `docker_stats` receiver (needs Docker socket / Protection mode
-   off).
-4. Optional Prometheus scrape targets from a comma-separated list.
-5. Process is the upstream `otelcol-contrib` binary — no S6 rewrite of the
-   collector itself.
-
-Icon/logo are the official CNCF OpenTelemetry mark.
-
-## Protection mode
-
-Turn **Protection mode off** if you enable **Docker stats**. The Supervisor
-only mounts the host Docker socket when protection is disabled. OTLP receive /
-export alone does not need the socket.
-
-AppArmor profile name: `otlp_collector` (matches `slug`).
+Stock Supervisor maps only give the Docker **socket** (with Protection mode
+off), so Docker stats work out of the box; host/journal/filelog need extra
+mounts or use [Grafana Alloy](../alloy/) for container log tailing.
 
 ## Quick start
 
 1. Install **OTLP Collector**.
-2. Set at least one exporter URL (traces, metrics, and/or logs). With none set,
-   the app uses a `debug` exporter so it still starts for bring-up.
-3. Optionally enable Docker stats and/or Prometheus scrape targets.
-4. Start the app. Point instrumented apps at
-   `http://<ha-host>:4318` (OTLP/HTTP) or `:4317` (OTLP/gRPC).
+2. Turn **Protection mode → OFF** (required for Docker stats).
+3. Set **OTLP endpoint** to your backend base URL, e.g.
+   `http://24c4882f-victoria-logs:9428/insert/opentelemetry` or
+   `http://tempo:4318`.
+4. (Recommended) Create a long-lived HA token and paste it into **Home Assistant
+   access token**; keep **Scrape Home Assistant Prometheus** on.
+5. Start. Point instrumented apps at `http://<ha-host>:4318`.
 
 ### Example app → collector
 
@@ -59,36 +48,24 @@ OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
 
 | Option | Default | Description |
 | --- | --- | --- |
+| `otlp_endpoint` | *(empty)* | Shared OTLP/HTTP base for traces, metrics, and logs. |
+| `otlp_*_endpoint` | *(empty)* | Optional per-signal overrides. |
+| `prometheus_remote_write_endpoint` | *(empty)* | Extra metrics sink (VictoriaMetrics / Mimir). |
+| `enable_docker_stats` | `true` | Container metrics via Docker socket. |
+| `scrape_homeassistant` | `true` | Scrape `homeassistant:8123/api/prometheus`. |
+| `ha_prometheus_token` | *(empty)* | Bearer token for that scrape. |
+| `prometheus_scrape_targets` | *(empty)* | Extra comma-separated scrape targets. |
+| `config_yaml` | *(empty)* | **Full collector YAML** — replaces the generated config every start. |
 | `log_level` | `info` | Collector log verbosity. |
-| `enable_docker_stats` | `true` | `docker_stats` receiver on `unix:///var/run/docker.sock`. |
-| `prometheus_scrape_targets` | *(empty)* | Comma-separated scrape targets (`host:port` or URL). |
-| `otlp_traces_endpoint` | *(empty)* | Base URL for `otlphttp` traces (e.g. `http://tempo:4318`). |
-| `otlp_metrics_endpoint` | *(empty)* | Base URL for `otlphttp` metrics. |
-| `otlp_logs_endpoint` | *(empty)* | Base URL for `otlphttp` logs (e.g. `http://loki:3100/otlp`). |
-| `prometheus_remote_write_endpoint` | *(empty)* | Prometheus / Mimir remote_write URL. |
-| `config_yaml` | *(empty)* | Full collector YAML; overwrites `/data/collector.yaml` every start. |
 
-### Example
+### Bring your own config
 
-```yaml
-log_level: info
-enable_docker_stats: true
-prometheus_scrape_targets: "homeassistant:8123"
-otlp_traces_endpoint: "http://tempo:4318"
-otlp_metrics_endpoint: ""
-otlp_logs_endpoint: "http://loki:3100/otlp"
-prometheus_remote_write_endpoint: "http://mimir:9009/api/v1/push"
-config_yaml: ""
-```
+Paste a complete OpenTelemetry Collector config into **Full collector YAML**.
+When that field is non-empty, none of the other options are applied (except the
+binary still starts with that file). Use this for auth extensions, processors,
+or backends the form does not cover.
 
-Generated config is stored at `/data/collector.yaml`. Inspect it from the
-Supervisor file browser or a backup when debugging pipelines.
-
-### Advanced: full YAML paste
-
-Set `config_yaml` to a complete collector config when you need processors,
-auth extensions, or exporters the options form does not expose. The wrapper
-writes that file every start and does not merge with the generated template.
+Generated config (when not overridden) is written to `/data/collector.yaml`.
 
 ## Ports
 
@@ -96,30 +73,19 @@ writes that file every start and does not merge with the generated template.
 | --- | --- |
 | `4317/tcp` | OTLP gRPC |
 | `4318/tcp` | OTLP HTTP |
-| `8888/tcp` | Collector self-metrics (Prometheus format) |
+| `8888/tcp` | Collector self-metrics |
 
-Health check listens on **13133** inside the container (not published by default).
+Health check listens on **13133** inside the container (not published).
 
-## Coexistence with Alloy
+## Protection mode
 
-- **Alloy** — Docker container logs → Loki (and optional host metrics).
-- **OTLP Collector** — OTLP hub for traces/metrics/logs from apps, Docker
-  stats metrics, optional Prometheus scrape, export to your backends.
+**Off** for Docker stats. OTLP receive/export alone does not need the socket.
 
-Use both; do not expect this app to replace Alloy’s Docker log tailing.
-
-| Concern | Prefer |
-| --- | --- |
-| `docker logs` / journal of containers | Alloy |
-| App SDKs emitting OTLP | OTLP Collector |
-| cAdvisor-style container CPU/mem via Docker API | OTLP Collector `docker_stats` |
-| Host node_exporter style | Alloy or a scrape target |
+AppArmor profile name: `otlp_collector`.
 
 ## Notes
 
-- Upstream docs:
+- Upstream:
   [opentelemetry-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib).
-- track-upstream bumps when GitHub releases a tag that also exists on Docker
-  Hub as `otel/opentelemetry-collector-contrib:<version>` (Hub tags omit `v`).
-- Image pin follows Hub availability (e.g. `0.164.0` when `0.164.1` is not
-  published yet).
+- track-upstream follows GitHub releases that also exist on Docker Hub as
+  `otel/opentelemetry-collector-contrib:<version>`.
