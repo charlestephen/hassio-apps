@@ -18,7 +18,9 @@ profile otlp_collector flags=(attach_disconnected,mediate_deleted) {
   capability setgid,
   capability setuid,
   capability dac_override,
+  capability dac_read_search,
   capability net_bind_service,
+  capability sys_ptrace,
 
   /ha-entrypoint.sh rix,
   /usr/bin/otelcol-contrib rix,
@@ -33,6 +35,13 @@ profile otlp_collector flags=(attach_disconnected,mediate_deleted) {
   /var/run/docker.sock rw,
   /dev/tty rw,
 
+  # Optional host mounts (hostmetrics / journal / docker json logs)
+  /hostfs/** r,
+  /var/lib/docker/containers/** r,
+  /var/log/journal/** r,
+  /run/log/journal/** r,
+  /etc/machine-id r,
+
   /etc/nsswitch.conf r,
   /etc/hosts r,
   /etc/resolv.conf r,
@@ -42,4 +51,6 @@ profile otlp_collector flags=(attach_disconnected,mediate_deleted) {
   /usr/share/zoneinfo/** r,
   /proc/sys/net/** r,
   /proc/self/** r,
+  @{PROC}/** r,
+  @{sys}/** r,
 }
