@@ -1,0 +1,13 @@
+---
+# Thin wrapper on Pocket ID's official multi-arch image (Docker Hub:
+# pocketid/pocket-id; also published as ghcr.io/pocket-id/pocket-id).
+build_from:
+  aarch64: docker.io/pocketid/pocket-id:v2.19.2
+  amd64: docker.io/pocketid/pocket-id:v2.19.2
+upstream_repo: "pocket-id/pocket-id"
+upstream_build_from: true
+upstream_build_from_prefix: v
+upstream_docker_image: "pocketid/pocket-id"
+upstream_version_arg: POCKET_ID_VERSION
+args:
+  POCKET_ID_VERSION: "2.19.2"

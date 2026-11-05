@@ -1,0 +1,51 @@
+#include <tunables/global>
+
+profile pocket_id flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  capability,
+  file,
+  signal,
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+
+  capability setgid,
+  capability setuid,
+  capability chown,
+  capability dac_override,
+  capability dac_read_search,
+  capability net_bind_service,
+
+  /ha-entrypoint.sh rix,
+  /bin/** rix,
+  /usr/bin/** rix,
+  /sbin/** rix,
+  /usr/sbin/** rix,
+  /usr/local/bin/** rix,
+  /app/** rix,
+  /app/data/** rw,
+  /app/docker/** rix,
+
+  /data/** rw,
+  /ssl/** r,
+  /tmp/** mrwk,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
+  /usr/share/zoneinfo/** r,
+  /proc/sys/net/** r,
+  /proc/self/** r,
+  /sys/fs/cgroup/** r,
+}
