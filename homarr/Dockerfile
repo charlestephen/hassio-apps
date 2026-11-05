@@ -1,15 +1,19 @@
-ARG BUILD_FROM=ghcr.io/homarr-labs/homarr:2.11.1
+ARG BUILD_FROM=ghcr.io/homarr-labs/homarr:v2.11.1
 
 # Thin Home Assistant wrapper on Homarr's official image. Homarr is a
 # self-contained monolith (its own entrypoint supervises redis + nginx +
 # Next.js), so we do NOT add s6-overlay; we only inject the app options as
 # environment variables and then hand off to Homarr's own entrypoint.
+# Upstream 2.11+ ships on debian:trixie-slim (was Alpine).
 FROM ${BUILD_FROM}
 
 # jq: parse /data/options.json in the wrapper entrypoint.
 # openssl is already present in the Homarr image (used for SECRET_ENCRYPTION_KEY).
-RUN apk upgrade --no-cache \
-    && apk add --no-cache jq
+# Track base image patches rather than pin a specific jq Debian revision.
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends jq \
+    && rm -rf /var/lib/apt/lists/*
 
 # Surface the Homarr version to the runtime entrypoint (for log output).
 ARG HOMARR_VERSION=2.11.1
