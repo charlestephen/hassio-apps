@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Acme.sh"
-version: "1.0.3"
+version: "1.0.4"
 slug: "acme-sh"
 description: "Issue and renew certificates with acme.sh, then run deploy hooks"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/acme-sh"
@@ -22,11 +22,15 @@ map:
 options:
   email: ""
   ca: letsencrypt
+  acme_server: ""
   certificates: []
   env_vars: []
 schema:
   email: str
-  ca: list(letsencrypt|letsencrypt_test|zerossl)
+  ca: list(letsencrypt|letsencrypt_test|zerossl|custom)
+  # ACME directory URL (or acme.sh short name) when ca is custom — e.g. an
+  # ACME proxy, Step CA, or other provider: https://acme.example/directory
+  acme_server: str?
   certificates:
     - domain: str
       alt_domains: str?

@@ -478,10 +478,30 @@ write_crontab() {
   log "renewal schedule written to $LE_CONFIG_HOME/crontab"
 }
 
-CA=$(jq -r '.ca // "letsencrypt"' "$OPTIONS" 2>/dev/null || true)
-case "${CA:-}" in
-  letsencrypt | letsencrypt_test | zerossl) ;;
-  *) CA=letsencrypt ;;
+CA_OPT=$(jq -r '.ca // "letsencrypt"' "$OPTIONS" 2>/dev/null || true)
+ACME_SERVER=$(jq -r '.acme_server // empty' "$OPTIONS" 2>/dev/null || true)
+case "${CA_OPT:-}" in
+  letsencrypt | letsencrypt_test | zerossl)
+    CA=$CA_OPT
+    ;;
+  custom)
+    case "${ACME_SERVER:-}" in
+      "")
+        log "ca is custom but acme_server is empty; falling back to letsencrypt"
+        CA=letsencrypt
+        ;;
+      http://* | https://* | [A-Za-z0-9_]*)
+        CA=$ACME_SERVER
+        ;;
+      *)
+        log "acme_server is not a usable ACME directory URL or short name; falling back to letsencrypt"
+        CA=letsencrypt
+        ;;
+    esac
+    ;;
+  *)
+    CA=letsencrypt
+    ;;
 esac
 
 load_env
