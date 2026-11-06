@@ -4,7 +4,7 @@ description: >-
   HomeKit bridge for non-HomeKit devices. Thin wrapper on the official
   homebridge/homebridge image (host networking required for discovery).
 url: https://github.com/charlestephen/hassio-apps/tree/main/homebridge
-version: "2026-11-02-1"
+version: "2026-11-02-2"
 stage: stable
 homeassistant: "2026.6.0"
 slug: homebridge
@@ -17,8 +17,11 @@ apparmor: true
 # Bind-mount /data/homebridge over upstream Docker VOLUME at /homebridge.
 privileged:
   - SYS_ADMIN
+# Host Avahi/mDNS via D-Bus (do not run a second Avahi in the container).
+host_dbus: true
 panel_icon: mdi:home-automation
-webui: http://[HOST]:[PORT:8581]
+# Use https when https_cert_file / https_key_file are set; otherwise http.
+webui: https://[HOST]:[PORT:8581]
 arch:
   - aarch64
   - amd64
@@ -27,6 +30,8 @@ host_network: true
 map:
   - type: data
     read_only: false
+  - type: ssl
+    read_only: true
 # With host_network these document the UI port; the host listens directly.
 ports:
   8581/tcp: 8581
@@ -36,13 +41,19 @@ backup: cold
 
 options:
   tz: "America/New_York"
-  # Upstream default is 1. Set 0 if the host already runs Avahi and you see
-  # mDNS conflicts (then prefer host Avahi; see DOCS.md).
-  enable_avahi: true
+  # Off by default: host_network already sees the host mDNS stack. Enabling
+  # in-container Avahi causes "another mdns processor on the same host".
+  enable_avahi: false
+  # Paths inside the container (Supervisor mounts HA /ssl here). Both required
+  # to turn on Config UI HTTPS before first boot.
+  https_cert_file: ""
+  https_key_file: ""
   env_vars: []
 schema:
   tz: str
   enable_avahi: bool
+  https_cert_file: str?
+  https_key_file: str?
   env_vars:
     - name: str
       value: password?

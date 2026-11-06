@@ -28,12 +28,36 @@ plugins, persist). At start it is bind-mounted over upstream’s `/homebridge`
 path so their `/init` keeps working. Needs `SYS_ADMIN` — turn **Protection
 mode** off for this app if Supervisor prompts. App backups include `/data`.
 
+HA **`/ssl`** is mounted read-only so you can point the UI at existing
+certificates (Let’s Encrypt / Acme.sh / etc.).
+
+## HTTPS (Config UI)
+
+Set both options before start (or restart after):
+
+| Option | Example |
+| --- | --- |
+| `https_cert_file` | `/ssl/fullchain.pem` |
+| `https_key_file` | `/ssl/privkey.pem` |
+
+The wrapper writes those paths into the UI `ssl` block in `config.json` so
+HTTPS is on for first boot. Open `https://<home-assistant-ip>:8581`.
+
+## mDNS / Avahi
+
+This app uses **host networking**. Leave **Enable in-container Avahi** off
+(default) and keep `host_dbus` so Homebridge uses the host’s mDNS/Avahi.
+Turning in-container Avahi on usually yields *“another mdns processor on the
+same host”* and breaks discovery.
+
 ## Options
 
 | Option | Default | Notes |
 | --- | --- | --- |
 | `tz` | `America/New_York` | `TZ` for the container. |
-| `enable_avahi` | `true` | Upstream `ENABLE_AVAHI` (`1`/`0`). Disable if host Avahi already owns mDNS and discovery conflicts. |
+| `enable_avahi` | `false` | In-container Avahi. Leave off on host network. |
+| `https_cert_file` | _(empty)_ | Full-chain PEM under `/ssl`. |
+| `https_key_file` | _(empty)_ | Private key PEM under `/ssl`. |
 | `env_vars` | `[]` | Extra environment variables. |
 
 Everything else (plugins, bridge settings, startup script) is managed in the

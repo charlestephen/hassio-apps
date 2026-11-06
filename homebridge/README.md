@@ -8,9 +8,9 @@ _HomeKit support for non-HomeKit devices — thin wrapper on the official
 
 ## About
 
-Uses **host networking**, persists under `/data/homebridge`, bind-mounts that
-over upstream `/homebridge`, then `exec`s `/init`. Config UI on port **8581**.
-Version tracks dated stable tags from
+Uses **host networking** + host D-Bus (no in-container Avahi by default),
+persists under `/data/homebridge`, optional UI TLS from `/ssl`, then `exec`s
+`/init`. Config UI on port **8581**. Version tracks dated stable tags from
 [docker-homebridge](https://github.com/homebridge/docker-homebridge).
 
 See [DOCS.md](DOCS.md).

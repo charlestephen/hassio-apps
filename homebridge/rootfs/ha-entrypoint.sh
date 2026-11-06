@@ -3,9 +3,11 @@
 # ==============================================================================
 # Home Assistant wrapper for Homebridge (homebridge/homebridge Docker image).
 #
-# HA state lives at /data/homebridge (Supervisor /data). Upstream hard-codes
-# /homebridge and declares it as a Docker VOLUME, so we bind-mount our dir over
-# that path (SYS_ADMIN) instead of rm/symlink. Then exec upstream /init.
+# HA state: /data/homebridge (bind-mounted over upstream VOLUME /homebridge).
+# TLS: optional cert/key under /ssl → written into UI config.json before /init.
+# mDNS: host_network shares the host stack — leave ENABLE_AVAHI=0 and use
+# host D-Bus (host_dbus) so HAP talks to the host Avahi instead of starting a
+# second daemon ("another mdns processor on the same host").
 #   Upstream: https://github.com/homebridge/docker-homebridge
 # ==============================================================================
 set -euo pipefail
@@ -14,6 +16,7 @@ OPTIONS="/data/options.json"
 VERSION="${HOMEBRIDGE_DOCKER_VERSION:-unknown}"
 STORE="/data/homebridge"
 UPSTREAM="/homebridge"
+CONFIG_JSON="${STORE}/config.json"
 
 log() { echo "[homebridge-addon] $*"; }
 
@@ -30,13 +33,77 @@ dir_has_entries() {
     return 1
 }
 
+require_ssl_path() {
+    local label="$1" path="$2"
+    case "${path}" in
+        /ssl/*) ;;
+        *) log "ERROR: ${label} must be under /ssl/ (got ${path})"; exit 1 ;;
+    esac
+    if [ ! -f "${path}" ]; then
+        log "ERROR: ${label} not found: ${path}"
+        exit 1
+    fi
+}
+
+# Ensure config.json has a config-ui platform block with ssl.key / ssl.cert.
+apply_ui_ssl() {
+    local key="$1" cert="$2"
+    if [ ! -f "${CONFIG_JSON}" ]; then
+        log "creating ${CONFIG_JSON} with UI HTTPS for first boot"
+        cat > "${CONFIG_JSON}" <<EOF
+{
+  "bridge": {
+    "name": "Homebridge",
+    "username": "CC:22:3D:E3:CE:30",
+    "port": 51826,
+    "pin": "031-45-154"
+  },
+  "platforms": [
+    {
+      "platform": "config",
+      "name": "Config",
+      "port": 8581,
+      "ssl": {
+        "key": "${key}",
+        "cert": "${cert}"
+      }
+    }
+  ]
+}
+EOF
+        return
+    fi
+
+    local tmp
+    tmp="$(mktemp)"
+    if ! jq \
+        --arg key "${key}" \
+        --arg cert "${cert}" '
+      .platforms //= []
+      | (if any(.platforms[]?; .platform == "config") then . else
+          .platforms += [{platform:"config", name:"Config", port:8581}]
+        end)
+      | .platforms |= map(
+          if .platform == "config" then
+            .ssl = ((.ssl // {}) + {key:$key, cert:$cert})
+            | del(.ssl.pfx, .ssl.passphrase)
+          else . end
+        )
+    ' "${CONFIG_JSON}" > "${tmp}"; then
+        rm -f "${tmp}"
+        log "ERROR: failed to patch ${CONFIG_JSON} for SSL"
+        exit 1
+    fi
+    mv "${tmp}" "${CONFIG_JSON}"
+    log "set UI ssl.key + ssl.cert in ${CONFIG_JSON}"
+}
+
 if [ ! -f "${OPTIONS}" ]; then
     log "WARNING: ${OPTIONS} missing; starting with image defaults"
 fi
 
 mkdir -p "${STORE}"
 
-# One-time: pull anything left on the anonymous VOLUME into our store.
 if ! dir_has_entries "${STORE}" && dir_has_entries "${UPSTREAM}"; then
     log "migrating ${UPSTREAM} -> ${STORE}"
     cp -a "${UPSTREAM}/." "${STORE}/" || true
@@ -57,12 +124,27 @@ if [ -n "${_v}" ]; then
     log "set TZ=${TZ}"
 fi
 
+# Default off: a second Avahi on host_network fights the host mDNS stack.
 if is_true enable_avahi; then
     export ENABLE_AVAHI=1
+    log "set ENABLE_AVAHI=1 (in-container Avahi — only if the host has no mDNS)"
 else
     export ENABLE_AVAHI=0
+    log "set ENABLE_AVAHI=0 (use host mDNS via host_dbus)"
 fi
-log "set ENABLE_AVAHI=${ENABLE_AVAHI}"
+
+CERT="$(get https_cert_file)"
+KEY="$(get https_key_file)"
+if [ -n "${CERT}" ] || [ -n "${KEY}" ]; then
+    if [ -z "${CERT}" ] || [ -z "${KEY}" ]; then
+        log "ERROR: set both https_cert_file and https_key_file (under /ssl/...)"
+        exit 1
+    fi
+    require_ssl_path https_cert_file "${CERT}"
+    require_ssl_path https_key_file "${KEY}"
+    apply_ui_ssl "${KEY}" "${CERT}"
+    log "Config UI HTTPS enabled from ${CERT} + ${KEY}"
+fi
 
 eval "$(
     jq -r '
