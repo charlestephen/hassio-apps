@@ -4,7 +4,7 @@ description: >-
   HomeKit bridge for non-HomeKit devices. Thin wrapper on the official
   homebridge/homebridge image (host networking required for discovery).
 url: https://github.com/charlestephen/hassio-apps/tree/main/homebridge
-version: "2026-11-02-3"
+version: "2026-11-02-4"
 stage: stable
 homeassistant: "2026.6.0"
 slug: homebridge
@@ -17,8 +17,8 @@ apparmor: true
 # Host Avahi/mDNS via D-Bus (do not run a second Avahi in the container).
 host_dbus: true
 panel_icon: mdi:home-automation
-# Use https when https_cert_file / https_key_file are set; otherwise http.
-webui: https://[HOST]:[PORT:8581]
+# Supervisor expands [PROTO:https] from the `https` bool option.
+webui: "[PROTO:https]://[HOST]:[PORT:8581]"
 arch:
   - aarch64
   - amd64
@@ -45,6 +45,8 @@ options:
   # Off by default: host_network already sees the host mDNS stack. Enabling
   # in-container Avahi causes "another mdns processor on the same host".
   enable_avahi: false
+  # Open Web UI uses https when true (set true if Config UI TLS is enabled).
+  https: false
   # Paths inside the container (Supervisor mounts HA /ssl here). Both required
   # to turn on Config UI HTTPS before first boot.
   https_cert_file: ""
@@ -53,6 +55,7 @@ options:
 schema:
   tz: str
   enable_avahi: bool
+  https: bool
   https_cert_file: str?
   https_key_file: str?
   env_vars:

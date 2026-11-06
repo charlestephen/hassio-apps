@@ -27,8 +27,9 @@ Defaults:
 - ACME storage: `/ssl/traefik/acme.json`
 
 Create the `traefik` folder yourself and drop YAML there before or right after
-first start. If you previously stored files under `/config/traefik/` from
-`3.7.17`, move them to `homeassistant/traefik/`.
+first start. On upgrade from `3.7.17`, any leftover `/config/traefik/` (or
+legacy `addon_configs/…_traefik`) is copied into `/homeassistant/traefik/` once
+and then removed.
 
 ## Quick start
 

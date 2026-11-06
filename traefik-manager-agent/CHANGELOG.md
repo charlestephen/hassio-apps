@@ -1,3 +1,10 @@
+# Changelog
+
+## 1.15.5-1
+
+- Map `homeassistant_config` / `ssl` (typed) instead of short-form `config:rw` / `ssl:rw`.
+- Default Traefik paths use `/homeassistant/traefik/` (aligned with the Traefik app).
+
 ## 1.15.5
 
 - Upgrading from upstream version 1.15.4-1 -> 1.15.5

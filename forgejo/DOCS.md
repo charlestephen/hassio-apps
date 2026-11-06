@@ -96,6 +96,10 @@ password reset, PR/issue notifications).
 
 ## Data & Storage
 
+App config is under `/config` (`app_config` → host `/app_configs/<slug>_forgejo`).
+On upgrade from the old `addon_config` layout, any leftover
+`/addon_configs/…_forgejo` folder is copied into `/config` once and then removed.
+
 | Path | Contents |
 |---|---|
 | `/data/forgejo.db` | SQLite database (users, issues, PRs, settings) |

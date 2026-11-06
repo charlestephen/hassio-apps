@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Linkding"
-version: "1.47.0-1"
+version: "1.47.0-2"
 slug: "linkding"
 description: "Linkding bookmark manager (SQLite) with env-var injection via the config UI"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/linkding"
@@ -22,6 +22,9 @@ boot: auto
 # there (linkding's fixed /etc/linkding/data is symlinked to /config).
 map:
   - type: app_config
+    read_only: false
+  # Legacy host dir for one-shot migrate → /config then delete.
+  - type: all_addon_configs
     read_only: false
 
 # ----------------------------------------------------------------------------

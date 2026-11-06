@@ -9,7 +9,9 @@ image wrapped with the Home Assistant app framework, using **SQLite** by default
 Bookmarks live in SQLite under the app's dedicated **config directory**,
 mounted at `/config` inside the app (host path `/app_configs/<slug>_linkding`,
 browsable via the Samba/SSH apps). linkding's `/etc/linkding/data` is
-symlinked there, so data survives restarts and updates.
+symlinked there, so data survives restarts and updates. On upgrade from the
+old `addon_config` layout, any leftover `/addon_configs/…_linkding` folder is
+copied into `/config` once and then removed.
 
 ## First run
 
