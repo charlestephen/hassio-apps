@@ -3,35 +3,22 @@
 # ==============================================================================
 # Home Assistant wrapper for Homebridge (homebridge/homebridge Docker image).
 #
-# HA state: /data/homebridge (bind-mounted over upstream VOLUME /homebridge).
-# TLS: optional cert/key under /ssl → written into UI config.json before /init.
-# mDNS: host_network shares the host stack — leave ENABLE_AVAHI=0 and use
-# host D-Bus (host_dbus) so HAP talks to the host Avahi instead of starting a
-# second daemon ("another mdns processor on the same host").
+# Supervisor mounts this app's data volume at /homebridge (same path upstream
+# Docker uses: -v …:/homebridge). No bind-mount / SYS_ADMIN. Then exec /init.
 #   Upstream: https://github.com/homebridge/docker-homebridge
 # ==============================================================================
 set -euo pipefail
 
-OPTIONS="/data/options.json"
+# Data volume is mounted at /homebridge (see config.yaml map path).
+OPTIONS="/homebridge/options.json"
 VERSION="${HOMEBRIDGE_DOCKER_VERSION:-unknown}"
-STORE="/data/homebridge"
-UPSTREAM="/homebridge"
+STORE="/homebridge"
 CONFIG_JSON="${STORE}/config.json"
 
 log() { echo "[homebridge-addon] $*"; }
 
 get() { jq -r --arg k "$1" '.[$k] // empty' "${OPTIONS}" 2>/dev/null || true; }
 is_true() { [ "$(jq -r --arg k "$1" '.[$k] // false' "${OPTIONS}" 2>/dev/null)" = "true" ]; }
-
-dir_has_entries() {
-    local d="$1" f
-    [[ -d "$d" ]] || return 1
-    for f in "$d"/* "$d"/.[!.]* "$d"/..?*; do
-        [[ -e "$f" ]] || continue
-        return 0
-    done
-    return 1
-}
 
 require_ssl_path() {
     local label="$1" path="$2"
@@ -98,24 +85,29 @@ EOF
     log "set UI ssl.key + ssl.cert in ${CONFIG_JSON}"
 }
 
-if [ ! -f "${OPTIONS}" ]; then
-    log "WARNING: ${OPTIONS} missing; starting with image defaults"
-fi
-
 mkdir -p "${STORE}"
 
-if ! dir_has_entries "${STORE}" && dir_has_entries "${UPSTREAM}"; then
-    log "migrating ${UPSTREAM} -> ${STORE}"
-    cp -a "${UPSTREAM}/." "${STORE}/" || true
+# 2026-11-02-1/-2 stored state under /data/homebridge while data was mounted
+# at /data. After remapping data → /homebridge, that becomes nested. Prefer
+# the nested store (real plugins/config) over any empty top-level leftovers.
+if [ -d "${STORE}/homebridge" ] && [ -f "${STORE}/homebridge/config.json" ]; then
+    log "flattening nested ${STORE}/homebridge from prior addon layout"
+    nested="${STORE}/.migrate-homebridge"
+    mv "${STORE}/homebridge" "${nested}"
+    shopt -s dotglob nullglob
+    for f in "${nested}"/*; do
+        base="$(basename "${f}")"
+        # Never clobber Supervisor options.
+        [ "${base}" = "options.json" ] && continue
+        rm -rf "${STORE}/${base}"
+        mv "${f}" "${STORE}/"
+    done
+    shopt -u dotglob nullglob
+    rm -rf "${nested}"
 fi
 
-if mountpoint -q "${UPSTREAM}" 2>/dev/null; then
-    log "${UPSTREAM} already mounted"
-elif mount --bind "${STORE}" "${UPSTREAM}"; then
-    log "bind-mounted ${STORE} over ${UPSTREAM}"
-else
-    log "ERROR: bind-mount ${STORE} -> ${UPSTREAM} failed (need SYS_ADMIN; turn Protection mode off)"
-    exit 1
+if [ ! -f "${OPTIONS}" ]; then
+    log "WARNING: ${OPTIONS} missing; starting with image defaults"
 fi
 
 _v="$(get tz)"
@@ -173,5 +165,5 @@ jq -c '(.env_vars // [])[]?' "${OPTIONS}" 2>/dev/null | while IFS= read -r row; 
     fi
 done
 
-log "Starting Homebridge Docker ${VERSION}; store=${STORE} ..."
+log "Starting Homebridge Docker ${VERSION}; store=${STORE} (Supervisor data) ..."
 exec /init

@@ -22,10 +22,6 @@ profile homebridge flags=(attach_disconnected,mediate_deleted) {
   capability dac_read_search,
   capability net_bind_service,
   capability net_admin,
-  capability sys_admin,
-
-  mount,
-  umount,
 
   /ha-entrypoint.sh rix,
   /init rix,
@@ -44,7 +40,6 @@ profile homebridge flags=(attach_disconnected,mediate_deleted) {
   /etc/cont-init.d/** rwix,
   /etc/cont-finish.d/** rwix,
 
-  /data/** rw,
   /homebridge/** rw,
   /var/lib/homebridge/** rw,
   /ssl/** r,
