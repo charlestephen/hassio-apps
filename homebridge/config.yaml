@@ -4,7 +4,7 @@ description: >-
   HomeKit bridge for non-HomeKit devices. Thin wrapper on the official
   homebridge/homebridge image (host networking required for discovery).
 url: https://github.com/charlestephen/hassio-apps/tree/main/homebridge
-version: "2026-11-02"
+version: "2026-11-02-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: homebridge
@@ -14,6 +14,9 @@ init: false
 startup: application
 boot: auto
 apparmor: true
+# Bind-mount /data/homebridge over upstream Docker VOLUME at /homebridge.
+privileged:
+  - SYS_ADMIN
 panel_icon: mdi:home-automation
 webui: http://[HOST]:[PORT:8581]
 arch:

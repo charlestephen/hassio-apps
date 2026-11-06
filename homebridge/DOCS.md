@@ -3,7 +3,8 @@
 Thin Home Assistant wrapper around the official
 [`homebridge/homebridge`](https://github.com/homebridge/docker-homebridge)
 Docker image (`2026-11-02`). Follows upstream’s Docker guide: **host
-networking**, data under `/homebridge`, then the image’s own `/init`.
+networking**, then the image’s own `/init`. Config/plugins persist on the
+HA data volume (not upstream’s `/homebridge` mount path).
 
 ## Why host networking
 
@@ -22,8 +23,10 @@ Do **not** put this behind Home Assistant Ingress — use the Config UI on port
 
 ## Data
 
-Supervisor `/data` is linked to `/homebridge` (config, plugins, persist).
-Backups of this app include that volume.
+State lives at **`/data/homebridge`** on the Supervisor data volume (config,
+plugins, persist). At start it is bind-mounted over upstream’s `/homebridge`
+path so their `/init` keeps working. Needs `SYS_ADMIN` — turn **Protection
+mode** off for this app if Supervisor prompts. App backups include `/data`.
 
 ## Options
 
