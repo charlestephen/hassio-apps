@@ -51,6 +51,22 @@ variables** using names from the
 [Pocket ID env reference](https://pocket-id.org/docs/configuration/environment-variables).
 Mark tokens/passwords with `secret: true`.
 
+## Clients in this repo
+
+### Homarr
+
+Callback: `https://<homarr-fqdn>/api/auth/callback/oidc`. Enable **PKCE**.
+In Homarr set **Token endpoint auth method** to `client_secret_post` (Pocket ID
+does not support `client_secret_basic`), **Base URL** to Homarr’s public
+origin, issuer to this app’s App URL (no trailing slash), scopes
+`openid email profile groups`. See Homarr’s DOCS for the full option table.
+
+### pgAdmin
+
+Callback: `https://<pgadmin-fqdn>/oauth2/authorize`. Use discovery metadata
+`https://<pocket-id-fqdn>/.well-known/openid-configuration` in pgAdmin’s OAuth2
+options (or `config_local.py`). See pgAdmin’s DOCS.
+
 ## Notes
 
 - Do **not** put Pocket ID behind Home Assistant Ingress for production —

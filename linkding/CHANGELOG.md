@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.47.0-2
+
+- One-shot migrate: copy legacy `addon_configs/…_linkding` into `/config`, then remove that host directory.
+
 ## 1.47.0-1
 
 - Prefer Supervisor `app_config` map (replaces deprecated `addon_config`).

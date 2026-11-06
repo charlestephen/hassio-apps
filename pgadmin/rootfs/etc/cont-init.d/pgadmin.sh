@@ -9,13 +9,13 @@ readonly USER_CFG="/config/config_local.py"
 mkdir -p "${DATA_DIR}/sessions" "${DATA_DIR}/storage"
 
 # pgAdmin configuration (config_local.py), in order of precedence:
-#   1. /config/config_local.py  — a full Python config you drop in (wholesale
-#      replacement; use this for OIDC / OAUTH2_CONFIG, LDAP, etc.)
+#   1. /config/config_local.py  — a full Python config you drop in (wholesale)
 #   2. the `config` app option — the same, supplied inline
-#   3. the built-in default below — persisted storage in /data/pgadmin
+#   3. generated — storage + OIDC (when enabled) + optional config_vars
+#   4. built-in storage-only default
 #
-# A custom config replaces the whole file, so include the storage settings you
-# want to keep (see DOCS.md for a complete OIDC template).
+# A custom config (1/2) replaces the whole file, so include the storage settings
+# you want to keep (see DOCS.md).
 if bashio::fs.file_exists "${USER_CFG}"; then
   bashio::log.info "Using custom pgAdmin config from ${USER_CFG}"
   cp "${USER_CFG}" /pgadmin4/config_local.py
@@ -23,17 +23,88 @@ elif bashio::config.has_value 'config'; then
   bashio::log.info "Using inline pgAdmin config from the app options"
   bashio::config 'config' > /pgadmin4/config_local.py
 else
-  bashio::log.info "Using the built-in default pgAdmin config"
-  cat > /pgadmin4/config_local.py <<EOF
-SERVER_MODE = True
-DATA_DIR = '/data/pgadmin'
-LOG_FILE = '/data/pgadmin/pgadmin4.log'
-SQLITE_PATH = '/data/pgadmin/pgadmin4.db'
-SESSION_DB_PATH = '/data/pgadmin/sessions'
-STORAGE_DIR = '/data/pgadmin/storage'
-AZURE_CREDENTIAL_CACHE_DIR = '/data/pgadmin/azurecredentialcache'
-KERBEROS_CCACHE_DIR = '/data/pgadmin/krbccache'
-EOF
+  # Generate via Python so secrets are escaped with repr() (no shell interpolation).
+  bashio::log.info "Generating pgAdmin config_local.py from options"
+  /venv/bin/python - <<'PY'
+import json
+import re
+from pathlib import Path
+
+opts = json.load(open("/data/options.json", encoding="utf-8"))
+
+lines = [
+    "SERVER_MODE = True",
+    "DATA_DIR = '/data/pgadmin'",
+    "LOG_FILE = '/data/pgadmin/pgadmin4.log'",
+    "SQLITE_PATH = '/data/pgadmin/pgadmin4.db'",
+    "SESSION_DB_PATH = '/data/pgadmin/sessions'",
+    "STORAGE_DIR = '/data/pgadmin/storage'",
+    "AZURE_CREDENTIAL_CACHE_DIR = '/data/pgadmin/azurecredentialcache'",
+    "KERBEROS_CCACHE_DIR = '/data/pgadmin/krbccache'",
+]
+
+if opts.get("oauth2_enabled"):
+    client_id = (opts.get("oauth2_client_id") or "").strip()
+    client_secret = opts.get("oauth2_client_secret") or ""
+    meta = (opts.get("oauth2_server_metadata_url") or "").strip()
+    if not client_id or not client_secret or not meta:
+        raise SystemExit(
+            "oauth2_enabled requires oauth2_client_id, oauth2_client_secret, "
+            "and oauth2_server_metadata_url"
+        )
+
+    raw_sources = (opts.get("authentication_sources") or "").strip()
+    if not raw_sources:
+        raw_sources = "oauth2,internal"
+    sources = [p.strip() for p in raw_sources.split(",") if p.strip()]
+
+    name = (opts.get("oauth2_name") or "oidc").strip() or "oidc"
+    display = (opts.get("oauth2_display_name") or "Login with SSO").strip() or "Login with SSO"
+    scope = (opts.get("oauth2_scope") or "openid email profile").strip() or "openid email profile"
+    icon = (opts.get("oauth2_icon") or "fa-openid").strip() or "fa-openid"
+    color = (opts.get("oauth2_button_color") or "#3253a8").strip() or "#3253a8"
+    auto_create = bool(opts.get("oauth2_auto_create_user", True))
+
+    lines.append(f"AUTHENTICATION_SOURCES = {sources!r}")
+    lines.append(f"OAUTH2_AUTO_CREATE_USER = {auto_create!r}")
+    lines.append(
+        "OAUTH2_CONFIG = ["
+        + repr(
+            {
+                "OAUTH2_NAME": name,
+                "OAUTH2_DISPLAY_NAME": display,
+                "OAUTH2_CLIENT_ID": client_id,
+                "OAUTH2_CLIENT_SECRET": client_secret,
+                "OAUTH2_SERVER_METADATA_URL": meta,
+                "OAUTH2_SCOPE": scope,
+                "OAUTH2_ICON": icon,
+                "OAUTH2_BUTTON_COLOR": color,
+            }
+        )
+        + "]"
+    )
+
+ident = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+for item in opts.get("config_vars") or []:
+    name = (item.get("name") or "").strip()
+    if not name or not ident.match(name):
+        continue
+    value = item.get("value")
+    if value in ("True", "False", "None") or (
+        isinstance(value, str) and value.isdigit()
+    ):
+        lines.append(f"{name} = {value}")
+    elif isinstance(value, bool):
+        lines.append(f"{name} = {value!r}")
+    elif isinstance(value, int) and not isinstance(value, bool):
+        lines.append(f"{name} = {value!r}")
+    elif value is None:
+        lines.append(f"{name} = None")
+    else:
+        lines.append(f"{name} = {value!r}")
+
+Path("/pgadmin4/config_local.py").write_text("\n".join(lines) + "\n", encoding="utf-8")
+PY
 fi
 
 # First run: create the config DB and the initial administrator account.

@@ -40,6 +40,9 @@ on and use a custom config that doesn't reference `unix:///var/run/docker.sock`.
 
 There are three ways to configure Alloy, in order of precedence:
 
+On upgrade from the old `addon_config` layout, any leftover
+`/addon_configs/…_alloy` folder is copied into `/config` once and then removed.
+
 ### 1. `/config/config.alloy` (file — highest precedence)
 
 Drop a complete `config.alloy` into this app's config directory

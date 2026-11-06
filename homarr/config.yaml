@@ -1,7 +1,7 @@
 name: Homarr
 description: Modern, feature-rich, self-hosted dashboard for your homelab with widgets, integrations and SSO/OIDC.
 url: https://homarr.dev
-version: "2.11.1-1"
+version: "2.11.1-2"
 stage: stable
 homeassistant: "2026.6.0"
 slug: homarr
@@ -147,7 +147,7 @@ schema:
   oidc_force_userinfo: bool
   oidc_enable_dangerous_account_linking: bool
   oidc_enable_dangerous_credentials_linking: bool
-  oidc_token_endpoint_auth_method: str?
+  oidc_token_endpoint_auth_method: list(client_secret_basic|client_secret_post|client_secret_jwt|none)?
 
   # LDAP
   ldap_uri: str?

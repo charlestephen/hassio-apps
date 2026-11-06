@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.6
+
+- One-shot migrate: copy legacy `addon_configs/…_acme-sh` into `/config`, then remove that host directory.
+
 ## 1.0.5
 
 - Prefer Supervisor `app_config` map (replaces deprecated `addon_config`).

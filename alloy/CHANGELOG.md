@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.3-2
+
+- One-shot migrate: copy legacy `addon_configs/…_alloy` into `/config`, then remove that host directory.
+
 ## 1.21.3-1
 
 - Prefer Supervisor `app_config` map (replaces deprecated `addon_config`).

@@ -48,11 +48,31 @@ Set at minimum:
 - **OIDC client ID** / **OIDC client secret**: from the app you register.
 - **OIDC display name**: label on the login button.
 - **OIDC scopes**: e.g. `openid email profile groups` (Pocket ID).
+- **Token endpoint auth method**: leave unset for Homarr’s default
+  (`client_secret_basic`). **Pocket ID requires `client_secret_post`.**
 
 Register Homarr's redirect URL with your IdP:
 `https://<your-homarr-host>/api/auth/callback/oidc`. Group-based access uses
 **OIDC groups attribute**; enable **OIDC auto-login** to skip the login screen.
 During first setup with OIDC, enter the IdP **admin group** name when prompted.
+
+### Pocket ID
+
+In Pocket ID: create an OIDC client with callback
+`https://<homarr-fqdn>/api/auth/callback/oidc`, enable **PKCE**, allow your
+groups. In Homarr set roughly:
+
+| Option | Value |
+| --- | --- |
+| Base URL | `https://<homarr-fqdn>` |
+| Auth providers | `oidc` or `credentials,oidc` |
+| OIDC issuer | `https://<pocket-id-fqdn>` (no trailing slash) |
+| OIDC scopes | `openid email profile groups` |
+| OIDC groups attribute | `groups` |
+| Token endpoint auth method | `client_secret_post` |
+| Logout redirect URL | `https://<pocket-id-fqdn>` |
+
+Setup wizard admin group = Pocket ID group name (e.g. `homarr_admin`).
 
 ### LDAP
 

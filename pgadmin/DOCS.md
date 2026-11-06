@@ -8,7 +8,10 @@ with the **PostgreSQL** app in this repository. This app tracks upstream pgAdmin
 
 It runs in multi-user (server) mode behind gunicorn and stores its
 configuration database and per-user storage in `/data/pgadmin` (persisted by the
-app).
+app). Optional `config_local.py` lives under the app config mount (`/config` →
+host `/app_configs/<slug>_pgadmin`). On upgrade from the old `addon_config`
+layout, any leftover host folder under `/addon_configs/…_pgadmin` is copied into
+`/config` once, then removed.
 
 ## Configuration
 
@@ -17,7 +20,19 @@ app).
 | `email` | email | `admin@example.com` | Login email for the initial administrator account. |
 | `password` | password | `changeme` | Password for the initial administrator. **Change this.** |
 | `log_level` | list | `info` | App log verbosity. |
-| `config` | string | _(empty)_ | A full pgAdmin `config_local.py` to use instead of the default (wholesale replacement — see below). |
+| `config` | string | _(empty)_ | A full pgAdmin `config_local.py` to use instead of the default (wholesale replacement — highest option precedence). |
+| `oauth2_enabled` | bool | `false` | Generate OAuth2 / OIDC settings into `config_local.py`. |
+| `oauth2_name` | string | `oidc` | Internal provider name. |
+| `oauth2_display_name` | string | `Login with SSO` | Button label on the login page. |
+| `oauth2_client_id` | string | _(empty)_ | IdP client ID (required when OAuth2 is on). |
+| `oauth2_client_secret` | password | _(empty)_ | IdP client secret (required when OAuth2 is on). |
+| `oauth2_server_metadata_url` | string | _(empty)_ | OpenID discovery URL (required when OAuth2 is on). |
+| `oauth2_scope` | string | `openid email profile` | OAuth2 scopes. |
+| `oauth2_icon` | string | `fa-openid` | Font Awesome icon class for the button. |
+| `oauth2_button_color` | string | `#3253a8` | Button color. |
+| `oauth2_auto_create_user` | bool | `true` | Create a pgAdmin user on first SSO login. |
+| `authentication_sources` | string | _(empty → `oauth2,internal`)_ | Comma-separated sources when OAuth2 is on. |
+| `config_vars` | list | `[]` | Extra `config_local.py` assignments (`name` / `value` / optional `secret`). |
 
 > The administrator account is created from `email`/`password` only on **first
 > start** (when the config database is created). To change it later, do so from
@@ -33,19 +48,36 @@ log_level: info
 
 ## Custom configuration (OIDC / OAuth2, LDAP, ...)
 
-pgAdmin is configured through a Python `config_local.py`. This app lets you
-**replace it wholesale** so you can enable authentication sources like OIDC.
-
-Precedence (highest first):
+pgAdmin is configured through a Python `config_local.py`. Precedence (highest
+first):
 
 1. **`/config/config_local.py`** — drop a complete file into the app config
-   directory (`/app_configs/<slug>_pgadmin/config_local.py`). Best for large
-   configs. Used verbatim.
+   directory (`/app_configs/<slug>_pgadmin/config_local.py`). Used verbatim.
 2. **`config` option** — paste the same Python config on the Configuration page.
-3. **built-in default** — persisted storage only.
+3. **Generated options** — storage paths plus `oauth2_*` / `config_vars` when set.
+4. **Built-in default** — persisted storage only.
 
-A custom config replaces the *entire* file, so keep the storage settings you
-want. A complete OIDC template:
+### Pocket ID (recommended UI options)
+
+In Pocket ID create a client with redirect
+`https://<pgadmin-fqdn>/oauth2/authorize` (or `http://…` if you are not on TLS).
+Then set:
+
+| Option | Value |
+|--------|--------|
+| `oauth2_enabled` | `true` |
+| `oauth2_client_id` | Pocket ID client id |
+| `oauth2_client_secret` | Pocket ID client secret |
+| `oauth2_server_metadata_url` | `https://<pocket-id-fqdn>/.well-known/openid-configuration` |
+| `oauth2_scope` | `openid email profile` |
+
+The internal admin (from `email`/`password`) remains available when
+`authentication_sources` includes `internal` (the default).
+
+### Wholesale file / `config` template
+
+A custom file or `config` option replaces the *entire* `config_local.py`, so keep
+the storage settings you want:
 
 ```python
 # --- keep these so data stays in /data (persisted) ---
@@ -65,10 +97,6 @@ OAUTH2_CONFIG = [
         'OAUTH2_DISPLAY_NAME': 'Login with SSO',
         'OAUTH2_CLIENT_ID': 'pgadmin',
         'OAUTH2_CLIENT_SECRET': 'your-client-secret',
-        'OAUTH2_TOKEN_URL': 'https://idp.example.com/token',
-        'OAUTH2_AUTHORIZATION_URL': 'https://idp.example.com/authorize',
-        'OAUTH2_API_BASE_URL': 'https://idp.example.com/',
-        'OAUTH2_USERINFO_ENDPOINT': 'userinfo',
         'OAUTH2_SERVER_METADATA_URL': 'https://idp.example.com/.well-known/openid-configuration',
         'OAUTH2_SCOPE': 'openid email profile',
         'OAUTH2_ICON': 'fa-openid',
@@ -76,10 +104,6 @@ OAUTH2_CONFIG = [
     },
 ]
 ```
-
-The internal admin (from `email`/`password`) is still created, so you keep a
-local fallback alongside SSO. The redirect URI to register with your IdP is
-`http://<home-assistant-ip>:5050/oauth2/authorize`.
 
 ## Access
 
@@ -89,7 +113,7 @@ Open the web UI from the **Open Web UI** button, or at:
 http://<home-assistant-ip>:5050/
 ```
 
-Log in with the `email` / `password` configured above.
+Log in with the `email` / `password` configured above (or SSO when enabled).
 
 ## Connecting to the PostgreSQL app
 
@@ -122,3 +146,4 @@ Port `5432`, Username `postgres`, and the PostgreSQL app's password.
 
 The pgAdmin configuration database, session data and user storage live in
 `/data/pgadmin` and are included in Home Assistant snapshots/backups.
+`config_local.py` (if any) lives under `/config` (app config).

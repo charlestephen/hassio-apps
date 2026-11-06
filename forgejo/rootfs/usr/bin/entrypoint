@@ -74,6 +74,11 @@ fi
 groupmod -o -g "${USER_GID}" "${USER}" 2>/dev/null || true
 usermod  -o -u "${USER_UID}" "${USER}" 2>/dev/null || true
 
+# One-shot: legacy addon_configs/<…>_forgejo → /config, then remove legacy dir.
+# shellcheck source=/dev/null
+. /usr/local/share/hassio-apps/migrate-legacy-app-config.sh
+migrate_legacy_app_config "forgejo"
+
 # Ensure required directories exist and are owned correctly
 for DIR in /data/logs /share/forgejo /data/ssh /share/forgejo/repositories \
            /share/forgejo/lfs /share/forgejo/attachments /share/forgejo/repo-avatars \

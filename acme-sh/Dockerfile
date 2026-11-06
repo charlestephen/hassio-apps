@@ -9,6 +9,8 @@ ARG BUILD_FROM=ghcr.io/acmesh-official/acme.sh:latest
 FROM ${BUILD_FROM}
 
 COPY --chmod=755 rootfs/usr/local/bin/acme-run /usr/local/bin/acme-run
+COPY --chmod=755 rootfs/usr/local/share/hassio-apps/migrate-legacy-app-config.sh \
+  /usr/local/share/hassio-apps/migrate-legacy-app-config.sh
 
 ENV LE_WORKING_DIR=/acmebin \
     LE_CONFIG_HOME=/data/acme.sh \

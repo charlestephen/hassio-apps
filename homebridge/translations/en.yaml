@@ -10,6 +10,11 @@ configuration:
       HomeKit discovery should use the host mDNS/Avahi service. Turning this
       on starts a second Avahi and usually logs "another mdns processor on the
       same host".
+  https:
+    name: HTTPS for Open Web UI
+    description: >-
+      Set true when Config UI TLS is enabled so the Open Web UI button uses
+      https://.
   https_cert_file:
     name: HTTPS certificate file
     description: >-

@@ -10,9 +10,8 @@ run on the same Home Assistant instance as Traefik Manager, but can). This app t
 
 1. In Traefik Manager's UI, go to **Settings → Agents** and add a new server.
    Copy the generated **API key** — it is shown once.
-2. Go to **Settings → Add-ons → Add-on Store → ⋮ → Repositories** on the HA
-   instance next to the remote Traefik, add this repository, and install
-   **Traefik Manager Agent**.
+2. Add this repository on the HA instance next to the remote Traefik and
+   install **Traefik Manager Agent**.
 3. Paste the API key into **TMA API key**, point **Traefik API URL** at that
    host's Traefik API (`http://traefik:8080` by default), and start the app.
 4. In Traefik Manager, the server should show as connected on port `8090`.
@@ -23,10 +22,10 @@ run on the same Home Assistant instance as Traefik Manager, but can). This app t
 
 - `backup_dir` → `/data/backups` — `.bak` files written before each change,
   persisted under this app's own `/data` volume.
-- `config_path` → `/config/traefik/dynamic` by default (typical Home Assistant
-  Traefik add-on layout under the shared `/config` mount). Point it at the
-  directory or single file Traefik's file provider actually watches.
-- `static_config_path` → `/config/traefik/traefik.yml` by default.
+- `config_path` → `/homeassistant/traefik/dynamic` by default (same layout as
+  this repo's Traefik app: HA config dir mounted at `/homeassistant`). Point
+  it at the directory or single file Traefik's file provider watches.
+- `static_config_path` → `/homeassistant/traefik/traefik.yml` by default.
 - `acme_json_path` → `/ssl/traefik/acme.json` by default (this app maps
   `/ssl` read-write).
 

@@ -42,7 +42,8 @@ Set both options before start (or restart after):
 | `https_key_file` | `/ssl/privkey.pem` |
 
 The wrapper writes those paths into the UI `ssl` block in `config.json` so
-HTTPS is on for first boot. Open `https://<home-assistant-ip>:8581`.
+HTTPS is on for first boot. Also set **`https: true`** so the Supervisor
+**Open Web UI** button uses `https://` (`[PROTO:https]`).
 
 ## mDNS / Avahi
 
@@ -57,6 +58,7 @@ same host”* and breaks discovery.
 | --- | --- | --- |
 | `tz` | `America/New_York` | `TZ` for the container. |
 | `enable_avahi` | `false` | In-container Avahi. Leave off on host network. |
+| `https` | `false` | Open Web UI protocol (`true` → https). |
 | `https_cert_file` | _(empty)_ | Full-chain PEM under `/ssl`. |
 | `https_key_file` | _(empty)_ | Private key PEM under `/ssl`. |
 | `env_vars` | `[]` | Extra environment variables. |

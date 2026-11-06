@@ -1,11 +1,14 @@
 # Home Assistant App: Acme.sh
 
 Issues and renews certificates with the official acme.sh image, then runs
-the deploy hooks named in the config. Account state stays in the add-on
-data directory. Each certificate is stored in acme.sh's default directory:
+the deploy hooks named in the config. Account state stays in the app data
+directory. Each certificate is stored in acme.sh's default directory:
 `/data/acme.sh/<domain>` is a symlink to `/ssl/acme.sh/<domain>`, which holds
-`<domain>.cer`, `<domain>.key`, `fullchain.cer`, and `ca.cer`. The add-on
-does not create `/ssl/<domain>/`.
+`<domain>.cer`, `<domain>.key`, `fullchain.cer`, and `ca.cer`. The app does
+not create `/ssl/<domain>/`. Custom deploy hooks live under `/config/deploy`
+(app config). On upgrade from the old `addon_config` layout, any leftover
+`/addon_configs/…_acme-sh` folder is copied into `/config` once and then
+removed.
 
 The client runs `acme.sh --upgrade` on every start and before each renewal,
 so it follows upstream without a pinned release. Renewal is about every six
