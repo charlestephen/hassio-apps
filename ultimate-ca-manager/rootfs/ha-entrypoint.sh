@@ -253,13 +253,7 @@ eval "$(
     ' "${OPTIONS}" 2>/dev/null || true
 )"
 
-log "Starting Ultimate CA Manager v${VERSION} ..."
-# Drop to upstream ucm user (UID 1000); entrypoint + gunicorn must not stay root.
-if command -v runuser >/dev/null 2>&1; then
-    exec runuser -u ucm -- /entrypoint.sh "$@"
-fi
-if command -v setpriv >/dev/null 2>&1; then
-    exec setpriv --reuid=1000 --regid=1000 --init-groups /entrypoint.sh "$@"
-fi
-log "WARNING: runuser/setpriv missing; starting as root"
+log "Starting Ultimate CA Manager v${VERSION} as root ..."
+# Stay root: HA /ssl bind-mounts are often not writable by UID 1000, and
+# upstream's entrypoint already supports running as root (it chowns data).
 exec /entrypoint.sh "$@"
