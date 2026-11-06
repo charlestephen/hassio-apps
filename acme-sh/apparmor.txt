@@ -30,7 +30,7 @@ profile acme-sh flags=(attach_disconnected,mediate_deleted) {
   /acmebin/** rwix,
   /root/.acme.sh/** rwix,
 
-  # Persisted state, certs, share, optional addon_config
+  # Persisted state, certs, share, optional app_config
   /data/** rw,
   /ssl/** rw,
   /share/** rw,

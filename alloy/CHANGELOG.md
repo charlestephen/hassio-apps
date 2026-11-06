@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.3-1
+
+- Prefer Supervisor `app_config` map (replaces deprecated `addon_config`).
+
 ## 1.21.3
 
 - Upgrading from upstream version 1.21.2 -> 1.21.3

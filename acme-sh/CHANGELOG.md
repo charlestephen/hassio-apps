@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.5
+
+- Prefer Supervisor `app_config` map (replaces deprecated `addon_config`).
+
 ## 1.0.4
 
 - Add `ca: custom` plus `acme_server` for a custom ACME directory URL
