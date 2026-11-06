@@ -39,7 +39,7 @@ pgAdmin is configured through a Python `config_local.py`. This app lets you
 Precedence (highest first):
 
 1. **`/config/config_local.py`** — drop a complete file into the app config
-   directory (`/addon_configs/<slug>_pgadmin/config_local.py`). Best for large
+   directory (`/app_configs/<slug>_pgadmin/config_local.py`). Best for large
    configs. Used verbatim.
 2. **`config` option** — paste the same Python config on the Configuration page.
 3. **built-in default** — persisted storage only.

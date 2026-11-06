@@ -8,13 +8,13 @@
 set -e
 
 # HA always mounts the app options at /data/options.json, regardless of the
-# `map:` config; the bookmark data lives in the addon_config dir (/config).
+# `map:` config; the bookmark data lives in the app_config dir (/config).
 OPTIONS=/data/options.json
 ENVFILE=/var/run/linkding.env
 DATA=/config
 
 # 1. Persist data: linkding's data dir is fixed at /etc/linkding/data; point it
-#    at the addon_config dir (/config -> host /addon_configs/<slug>_linkding) so
+#    at the app_config dir (/config -> host /app_configs/<slug>_linkding) so
 #    bookmarks survive restarts/updates and are reachable via Samba/SSH.
 mkdir -p "$DATA"
 

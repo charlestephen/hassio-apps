@@ -43,7 +43,7 @@ There are three ways to configure Alloy, in order of precedence:
 ### 1. `/config/config.alloy` (file — highest precedence)
 
 Drop a complete `config.alloy` into this app's config directory
-(`/addon_configs/<slug>_alloy/config.alloy`, reachable as `/config/config.alloy`
+(`/app_configs/<slug>_alloy/config.alloy`, reachable as `/config/config.alloy`
 inside the container, e.g. via the Studio Code Server / Samba apps). If this
 file exists it is used verbatim and all options below are ignored. Best for large
 or version-controlled configs.

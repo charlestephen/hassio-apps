@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Grafana Alloy"
-version: "1.21.3"
+version: "1.21.3-1"
 slug: "alloy"
 description: "Grafana Alloy — ship all container logs (and any other telemetry) to Loki"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/alloy"
@@ -31,7 +31,8 @@ hassio_api: true
 # Maps the app's own config directory to /config inside the container. Drop a
 # config.alloy here to fully override everything (highest precedence).
 map:
-  - addon_config:rw
+  - type: app_config
+    read_only: false
 
 # ---------------------------------------------------------------------------
 # Network

@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.19-1
+
+- Prefer Supervisor `app_config` map (replaces deprecated `addon_config`).
+
 ## 9.19
 
 - Upgrading from upstream version 9.18 -> 9.19
