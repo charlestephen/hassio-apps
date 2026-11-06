@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-11-02-2
+
+- Mount `/ssl` and add **HTTPS certificate/key file** options so Config UI
+  TLS can be set from `/ssl/...` before first boot (written into
+  `config.json`).
+- Fix mDNS: default `enable_avahi` to off and set `host_dbus: true`. With
+  host networking, in-container Avahi collides with the host
+  (“another mdns processor on the same host”); HAP should use host Avahi
+  over D-Bus instead.
+
 ## 2026-11-02-1
 
 - Fix start crash: upstream `VOLUME /homebridge` cannot be `rm`/`symlink`’d
