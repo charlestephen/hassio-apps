@@ -1,0 +1,65 @@
+---
+configuration:
+  log_level:
+    name: Log level
+    description: Traefik log verbosity (TRACE through PANIC). Default ERROR.
+  access_logs:
+    name: Access logs
+    description: Write HTTP access logs to the app Log tab.
+  forwarded_headers_insecure:
+    name: Insecure forwarded headers
+    description: >-
+      Trust incoming X-Forwarded-* headers. Enable only behind a trusted proxy
+      (e.g. Cloudflare).
+  insecure_skip_verify:
+    name: Insecure skip verify
+    description: Skip TLS verification for backend servers (self-signed upstreams).
+  proxy_protocol_trusted_ips:
+    name: PROXY protocol trusted IPs
+    description: IPs/CIDRs allowed to send PROXY protocol to the HTTPS entrypoint.
+  dynamic_configuration_path:
+    name: Dynamic configuration path
+    description: >-
+      Directory for Traefik file provider YAML (default /config/traefik/ under
+      the Home Assistant config share).
+  letsencrypt:
+    name: Let's Encrypt
+    description: ACME certificate resolver settings (resolver name le).
+  enabled:
+    name: Enable Let's Encrypt
+    description: Activate the le certificate resolver and store ACME data under /ssl/traefik/.
+  email:
+    name: ACME email
+    description: Email for the Let's Encrypt / ACME account.
+  challenge_type:
+    name: Challenge type
+    description: tlsChallenge, httpChallenge, or dnsChallenge.
+  provider:
+    name: DNS provider
+    description: Provider code for dnsChallenge (see Traefik ACME docs).
+  delayBeforeCheck:
+    name: Delay before check
+    description: Seconds to wait before verifying DNS TXT records.
+  resolvers:
+    name: DNS resolvers
+    description: DNS servers used for challenge checks (e.g. 1.1.1.1:53).
+  custom_config:
+    name: Custom config
+    description: >-
+      Override all generated static options and run Traefik with your own
+      static configuration file.
+  use_config_file:
+    name: Use custom config file
+    description: When enabled, standard options above are ignored.
+  config_file:
+    name: Config file path
+    description: Absolute path to static Traefik YAML (e.g. /config/traefik/traefik.yaml).
+  env_vars:
+    name: Environment variables
+    description: >-
+      Extra NAME=value entries for Traefik (e.g. CF_DNS_API_TOKEN=… for
+      Cloudflare DNS challenge).
+network:
+  80/tcp: HTTP entrypoint (web)
+  443/tcp: HTTPS entrypoint (websecure)
+  8080/tcp: Traefik dashboard / API
