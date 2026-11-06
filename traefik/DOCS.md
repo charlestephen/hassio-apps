@@ -10,8 +10,10 @@ Upstream docs: <https://doc.traefik.io/traefik/>
 
 This app maps the Home Assistant configuration directory with
 `homeassistant_config`, which appears **inside the container** as
-`/homeassistant` (not `/config` — that name is reserved for an app’s own
-config folder in current Supervisor).
+`/homeassistant`. Do **not** use `/config/...` for Traefik routes — in current
+Supervisor that is the app’s own config folder, not HA’s `configuration.yaml`
+tree (older boomam-style addons used `/config` for HA config; that mapping no
+longer applies here).
 
 | Place | Path |
 | --- | --- |
@@ -25,7 +27,8 @@ Defaults:
 - ACME storage: `/ssl/traefik/acme.json`
 
 Create the `traefik` folder yourself and drop YAML there before or right after
-first start.
+first start. If you previously stored files under `/config/traefik/` from
+`3.7.17`, move them to `homeassistant/traefik/`.
 
 ## Quick start
 
@@ -169,6 +172,8 @@ List of `NAME=value` strings exported into the Traefik process environment
 
 - Ingress serves the dashboard via a small nginx proxy (Traefik API quirk);
   direct access remains on port `8080`.
-- App version matches the bundled Traefik release and is bumped by this
-  repository’s upstream tracker when [traefik/traefik](https://github.com/traefik/traefik)
-  publishes a new stable tag.
+- App version tracks the bundled Traefik release (bumped by this repository’s
+  upstream tracker when [traefik/traefik](https://github.com/traefik/traefik)
+  publishes a new stable tag). Wrapper-only fixes append a suffix (e.g.
+  `3.7.17-1`) so Supervisor downloads a new image — it will not re-pull an
+  unchanged version string.
