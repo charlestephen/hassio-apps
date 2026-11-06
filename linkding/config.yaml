@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Linkding"
-version: "1.47.0"
+version: "1.47.0-1"
 slug: "linkding"
 description: "Linkding bookmark manager (SQLite) with env-var injection via the config UI"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/linkding"
@@ -17,11 +17,12 @@ boot: auto
 # Storage
 # ----------------------------------------------------------------------------
 # Bookmarks + config live in the app's dedicated config dir (mounted at
-# /config inside the app; host path /addon_configs/<slug>_linkding, reachable
+# /config inside the app; host path /app_configs/<slug>_linkding, reachable
 # via the Samba/SSH apps). linkding's fixed /etc/linkding/data is symlinked
 # there (linkding's fixed /etc/linkding/data is symlinked to /config).
 map:
-  - addon_config:rw
+  - type: app_config
+    read_only: false
 
 # ----------------------------------------------------------------------------
 # Web access
@@ -40,7 +41,7 @@ ports_description:
 # ----------------------------------------------------------------------------
 # Options
 # ----------------------------------------------------------------------------
-# SQLite by default (linkding's default; data persisted to the addon_config dir).
+# SQLite by default (linkding's default; data persisted to the app_config dir).
 # `env_vars` injects ANY variable (e.g. LD_CSRF_TRUSTED_ORIGINS, LD_DB_ENGINE,
 # LD_ENABLE_OIDC, ...) straight into linkding at startup, no rebuild needed.
 options:

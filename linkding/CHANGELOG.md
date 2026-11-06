@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.47.0-1
+
+- Prefer Supervisor `app_config` map (replaces deprecated `addon_config`).
+  Host path is `/app_configs/<slug>_linkding` (legacy `/addon_configs/…`
+  still works until Supervisor migrates the folder).
+
 ## 1.47.0
 
 - Update from upstream 1.0.2 -> 1.47.0
