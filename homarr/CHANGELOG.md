@@ -577,14 +577,14 @@ The version tracks the upstream Homarr release it is built from
 > * Docker and Podman support with multiple endpoints, assisted setup and docker labels
 > * Performance: startup work runs in parallel, heavy screens load on demand, duplicate requests share cache And a\*\* very\*\* long list of bug fixes
 >
-> Thank you! To everyone who tested rough builds, found bugs, translated, answered questions or contributed code: this would not exist without you. We are planning free limited-edition swag for our favorite workshop contributions as well as a few randomly picked community members on the way, stay tuned. 
+> Thank you! To everyone who tested rough builds, found bugs, translated, answered questions or contributed code: this would not exist without you. We are planning free limited-edition swag for our favorite workshop contributions as well as a few randomly picked community members on the way, stay tuned.
 >
 > We hope you are as excited about this release as we are to share it with you!
 >
 > Checkout the v2 recap video on the blog : [https://homarr.dev/blog/2026/09/03/homarr-2.0/](https://homarr.dev/blog/2026/09/03/homarr-2.0/)
 >
-> **Try the demo and browse Workshop:**  
-> Demo: [https://demo.homarr.dev/](https://demo.homarr.dev/) 
+> **Try the demo and browse Workshop:**
+> Demo: [https://demo.homarr.dev/](https://demo.homarr.dev/)
 >
 > Workshop:  [https://homarr.dev/workshop](https://homarr.dev/workshop)
 >
