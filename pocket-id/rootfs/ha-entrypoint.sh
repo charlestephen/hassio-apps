@@ -93,7 +93,61 @@ export_true 'analytics_disabled' 'ANALYTICS_DISABLED'
 export_true 'version_check_disabled' 'VERSION_CHECK_DISABLED'
 export_if_set 'db_connection_string' 'DB_CONNECTION_STRING'
 
-# --- Arbitrary env injection (SMTP, LDAP, UI_CONFIG_DISABLED, OTEL, …) --------
+# --- SMTP (app-config; only honored when UI_CONFIG_DISABLED=true) -------------
+SMTP_HOST="$(get 'smtp_host')"
+SMTP_PORT="$(get 'smtp_port')"
+SMTP_FROM="$(get 'smtp_from')"
+SMTP_USER="$(get 'smtp_user')"
+SMTP_PASSWORD="$(get 'smtp_password')"
+SMTP_TLS="$(get 'smtp_tls')"
+SMTP_ANY=0
+[ -n "${SMTP_HOST}${SMTP_PORT}${SMTP_FROM}${SMTP_USER}${SMTP_PASSWORD}" ] && SMTP_ANY=1
+
+if is_true 'ui_config_disabled' || [ "${SMTP_ANY}" = "1" ]; then
+    export UI_CONFIG_DISABLED=true
+    if [ "${SMTP_ANY}" = "1" ] && ! is_true 'ui_config_disabled'; then
+        log "SMTP options set — enabling UI_CONFIG_DISABLED so Pocket ID reads SMTP from env"
+    else
+        log "set UI_CONFIG_DISABLED=true"
+    fi
+fi
+
+if [ -n "${SMTP_HOST}" ]; then
+    export SMTP_HOST
+    log "set SMTP_HOST=${SMTP_HOST}"
+fi
+if [ -n "${SMTP_PORT}" ]; then
+    export SMTP_PORT
+    log "set SMTP_PORT=${SMTP_PORT}"
+fi
+if [ -n "${SMTP_FROM}" ]; then
+    export SMTP_FROM
+    log "set SMTP_FROM=${SMTP_FROM}"
+fi
+if [ -n "${SMTP_USER}" ]; then
+    export SMTP_USER
+    log "set SMTP_USER=${SMTP_USER}"
+fi
+if [ -n "${SMTP_PASSWORD}" ]; then
+    export SMTP_PASSWORD
+    log "set SMTP_PASSWORD (hidden)"
+fi
+if [ -n "${SMTP_TLS}" ]; then
+    export SMTP_TLS
+    log "set SMTP_TLS=${SMTP_TLS}"
+elif [ "${SMTP_ANY}" = "1" ]; then
+    export SMTP_TLS=none
+    log "set SMTP_TLS=none"
+fi
+if is_true 'smtp_skip_cert_verify'; then
+    export SMTP_SKIP_CERT_VERIFY=true
+    log "set SMTP_SKIP_CERT_VERIFY=true"
+elif [ "${SMTP_ANY}" = "1" ]; then
+    export SMTP_SKIP_CERT_VERIFY=false
+    log "set SMTP_SKIP_CERT_VERIFY=false"
+fi
+
+# --- Arbitrary env injection (LDAP, OTEL, more EMAIL_*, …) --------------------
 jq -c '(.env_vars // [])[]?' "${OPTIONS}" 2>/dev/null | while IFS= read -r row; do
     [ -n "${row}" ] || continue
     name="$(printf '%s' "${row}" | jq -r '.name // empty')"

@@ -4,7 +4,7 @@ description: >-
   OpenID Connect Certified™ and OAuth 2.0 provider with passkey-only sign-in.
   Thin wrapper on the official Pocket ID image.
 url: https://github.com/charlestephen/hassio-apps/tree/main/pocket-id
-version: "2.19.2"
+version: "2.19.2-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: pocket_id
@@ -29,8 +29,8 @@ ports_description:
   1411/tcp: Pocket ID web UI and OIDC endpoints
 backup: cold
 
-# Essentials + common ops knobs. Anything else (SMTP, LDAP, UI overrides,
-# OTEL, …) goes through env_vars — see https://pocket-id.org/docs/configuration/environment-variables
+# Essentials + SMTP. LDAP / OTEL / extras → env_vars.
+# https://pocket-id.org/docs/configuration/environment-variables
 options:
   app_url: ""
   encryption_key: ""
@@ -44,6 +44,17 @@ options:
   analytics_disabled: false
   version_check_disabled: false
   db_connection_string: ""
+  # Pocket ID only reads SMTP_* (and other app-config) from the environment when
+  # UI_CONFIG_DISABLED is set. Turning this on (or filling any SMTP field) freezes
+  # Settings in the Pocket ID UI for those values — manage them here / via env_vars.
+  ui_config_disabled: false
+  smtp_host: ""
+  smtp_port: ""
+  smtp_from: ""
+  smtp_user: ""
+  smtp_password: ""
+  smtp_tls: none
+  smtp_skip_cert_verify: false
   env_vars: []
 schema:
   app_url: str?
@@ -58,6 +69,14 @@ schema:
   analytics_disabled: bool
   version_check_disabled: bool
   db_connection_string: str?
+  ui_config_disabled: bool
+  smtp_host: str?
+  smtp_port: str?
+  smtp_from: str?
+  smtp_user: str?
+  smtp_password: password?
+  smtp_tls: list(none|starttls|tls)
+  smtp_skip_cert_verify: bool
   env_vars:
     - name: str
       value: password?
