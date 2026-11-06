@@ -137,6 +137,11 @@ Or add it manually:
   [Dockhand](https://dockhand.pro) can manage this Home Assistant Docker host
   (Edge or Standard mode). Version tracks upstream Hawser releases.
 
+### &#10003; [Homebridge](homebridge/)
+
+- Official `homebridge/homebridge` image with host networking for HomeKit.
+  Config UI on port 8581; version tracks dated docker-homebridge tags.
+
 ### &#10003; [Traefik Manager](traefik-manager/)
 
 - Clean, self-hosted web UI for managing Traefik routes, middlewares,
