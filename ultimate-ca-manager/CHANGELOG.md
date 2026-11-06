@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.249-5
+
+- Fix immediate exit after “Executing command:” with nothing: Supervisor starts
+  the app with an empty command, so upstream `exec "$@"` was a no-op. Default
+  to upstream’s gunicorn CMD (also set in the Dockerfile). Bind-mount fallback
+  + `/data/ucm-addon.log` diagnostics kept; still `SYS_ADMIN` + root.
+
 ## 2.249-4
 
 - Run the upstream entrypoint as root. Dropping to UID 1000 made the process
