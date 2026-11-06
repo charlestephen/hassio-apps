@@ -254,6 +254,7 @@ eval "$(
 )"
 
 log "Starting Ultimate CA Manager v${VERSION} as root ..."
-# Stay root: HA /ssl bind-mounts are often not writable by UID 1000, and
-# upstream's entrypoint already supports running as root (it chowns data).
+# A CA runs as root here: it holds private keys under /ssl/ucm, bind-mounts
+# those paths, and must not be limited to UID 1000. Upstream entrypoint
+# supports root.
 exec /entrypoint.sh "$@"
