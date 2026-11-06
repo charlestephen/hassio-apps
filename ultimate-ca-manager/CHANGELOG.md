@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.249-4
+
+- Run the upstream entrypoint as root. Dropping to UID 1000 made the process
+  exit immediately when `/ssl` bind-mounts were not writable by `ucm`.
+
 ## 2.249-3
 
 - Replace empty/white store icons with Ultimate CA Manager’s real brand mark
