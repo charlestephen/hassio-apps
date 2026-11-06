@@ -47,6 +47,7 @@ profile homebridge flags=(attach_disconnected,mediate_deleted) {
   /data/** rw,
   /homebridge/** rw,
   /var/lib/homebridge/** rw,
+  /ssl/** r,
   /tmp/** mrwk,
   /var/run/{,**} mrwkl,
   /run/{,**} rwk,

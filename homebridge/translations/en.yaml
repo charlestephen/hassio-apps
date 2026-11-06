@@ -4,10 +4,22 @@ configuration:
     name: Timezone
     description: Container timezone (e.g. America/New_York).
   enable_avahi:
-    name: Enable Avahi
+    name: Enable in-container Avahi
     description: >-
-      Run Avahi inside the container (upstream default). Turn off if the host
-      already provides mDNS and you see discovery conflicts.
+      Leave off (default). This app uses host networking and host D-Bus, so
+      HomeKit discovery should use the host mDNS/Avahi service. Turning this
+      on starts a second Avahi and usually logs "another mdns processor on the
+      same host".
+  https_cert_file:
+    name: HTTPS certificate file
+    description: >-
+      Full-chain PEM under /ssl (e.g. /ssl/fullchain.pem). Set together with
+      the key to enable Config UI HTTPS on first boot.
+  https_key_file:
+    name: HTTPS private key file
+    description: >-
+      Private key PEM under /ssl (e.g. /ssl/privkey.pem). Set together with
+      the certificate.
   env_vars:
     name: Extra environment variables
     description: >-
