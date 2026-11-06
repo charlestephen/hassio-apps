@@ -1,7 +1,7 @@
 name: Homarr
 description: Modern, feature-rich, self-hosted dashboard for your homelab with widgets, integrations and SSO/OIDC.
 url: https://homarr.dev
-version: "2.11.1"
+version: "2.11.1-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: homarr
@@ -39,6 +39,10 @@ options:
   log_level: info
   puid: 0
   pgid: 0
+  # Public origin (https://homarr.example.com) — required behind Traefik/TLS.
+  base_url: ""
+  # Comma-separated proxy IPs/CIDRs allowed to set client identity headers.
+  trusted_proxies: ""
   no_external_connection: false
   enable_dns_caching: true
 
@@ -65,6 +69,7 @@ options:
   oidc_groups_local_management: false
   oidc_force_userinfo: false
   oidc_enable_dangerous_account_linking: false
+  oidc_enable_dangerous_credentials_linking: false
   oidc_token_endpoint_auth_method: ""
 
   # --- LDAP ---
@@ -115,6 +120,8 @@ schema:
   log_level: list(debug|info|warn|error)?
   puid: int(0,)
   pgid: int(0,)
+  base_url: str?
+  trusted_proxies: str?
   no_external_connection: bool
   enable_dns_caching: bool
 
@@ -139,6 +146,7 @@ schema:
   oidc_groups_local_management: bool
   oidc_force_userinfo: bool
   oidc_enable_dangerous_account_linking: bool
+  oidc_enable_dangerous_credentials_linking: bool
   oidc_token_endpoint_auth_method: str?
 
   # LDAP
