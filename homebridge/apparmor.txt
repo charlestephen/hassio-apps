@@ -24,6 +24,9 @@ profile homebridge flags=(attach_disconnected,mediate_deleted) {
   capability net_admin,
   capability sys_admin,
 
+  mount,
+  umount,
+
   /ha-entrypoint.sh rix,
   /init rix,
   /bin/** rix,

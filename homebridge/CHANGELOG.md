@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-02-1
+
+- Fix start crash: upstream `VOLUME /homebridge` cannot be `rm`/`symlink`’d
+  (`Device or resource busy`). Persist on HA at `/data/homebridge` and
+  bind-mount that over upstream’s path (`SYS_ADMIN`; turn Protection mode
+  off if Supervisor prompts).
+
 ## 2026-11-02
 
 - First Home Assistant app release wrapping official
