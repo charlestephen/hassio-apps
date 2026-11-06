@@ -9,11 +9,15 @@ CRL/CDP, TSA, SSH CA, and more.
 
 1. Install **Ultimate CA Manager**.
 2. Set **FQDN** to the hostname clients will use (e.g. `ca.example.com`).
-3. Behind Traefik / a reverse proxy: enable **Behind reverse proxy**, set
+3. Optionally set **HTTPS certificate file** and **HTTPS private key file** to
+   paths under `/ssl` (e.g. an Acme.sh fullchain + key) so the UI uses a real
+   cert from first start instead of a self-signed one. Both must be set
+   together; files are copied into UCM data on each start.
+4. Behind Traefik / a reverse proxy: enable **Behind reverse proxy**, set
    **Trusted proxies** (e.g. `172.30.32.0/23`), and add
    **Extra CORS origins** for the public HTTPS origin.
-4. Start the app. Open `https://<ha-host>:8443`.
-5. First login: `admin` / `changeme123` — you **must** set a new password
+5. Start the app. Open `https://<ha-host>:8443`.
+6. First login: `admin` / `changeme123` — you **must** set a new password
    before anything else works.
 
 Leave **Session secret key** and **Key encryption key** blank on first start —
@@ -50,10 +54,10 @@ private keys at rest and does not keep plaintext key files under
 ## Extra settings
 
 SMTP, ACME client CAs, SSO, and most application settings are configured in the
-UCM web UI (stored in the database), not as environment variables. Use
-**Extra environment variables** for anything else upstream documents
-(`UCM_HTTPS_CERT` / `UCM_HTTPS_KEY` PEM blobs, `HSM_PIN`, …). Mark secrets with
-`secret: true`.
+UCM web UI (stored in the database), not as environment variables. Prefer
+**HTTPS certificate/key file** for TLS from `/ssl`; use **Extra environment
+variables** for anything else upstream documents (`HSM_PIN`, …). Mark secrets
+with `secret: true`.
 
 ## Notes
 

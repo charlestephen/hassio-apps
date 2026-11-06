@@ -4,7 +4,7 @@ description: >-
   Self-hosted Certificate Authority with ACME, SCEP, EST, OCSP, CRL, TSA, and
   SSH CA. Thin wrapper on neyslim/ultimate-ca-manager.
 url: https://github.com/charlestephen/hassio-apps/tree/main/ultimate-ca-manager
-version: "2.249"
+version: "2.249-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: ultimate-ca-manager
@@ -39,6 +39,8 @@ backup: cold
 # Extra vars go through env_vars — see upstream docs/installation/docker.md
 options:
   ucm_fqdn: ""
+  https_cert_file: ""
+  https_key_file: ""
   https_port: 8443
   http_port: 8080
   debug: false
@@ -62,6 +64,8 @@ options:
   env_vars: []
 schema:
   ucm_fqdn: str?
+  https_cert_file: str?
+  https_key_file: str?
   https_port: port
   http_port: port
   debug: bool

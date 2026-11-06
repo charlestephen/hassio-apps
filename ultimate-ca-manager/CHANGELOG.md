@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.249-1
+
+- Add **HTTPS certificate file** / **HTTPS private key file** options so the
+  first-time config can point at PEM paths under `/ssl` (copied to UCM’s
+  `https_cert.pem` / `https_key.pem` on each start).
+
 ## 2.249
 
 - First Home Assistant app release wrapping

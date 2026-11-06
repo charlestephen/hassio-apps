@@ -103,6 +103,39 @@ HTTP_PORT="$(get 'http_port')"
 export UCM_HTTP_PORT="${HTTP_PORT:-8080}"
 log "set UCM_HTTPS_PORT=${UCM_HTTPS_PORT} UCM_HTTP_PORT=${UCM_HTTP_PORT}"
 
+# Optional TLS material from the HA /ssl share for the UCM web UI (first-run
+# and renewals). Upstream reads /opt/ucm/data/https_{cert,key}.pem.
+CERT_SRC="$(get 'https_cert_file')"
+KEY_SRC="$(get 'https_key_file')"
+CERT_DST="/opt/ucm/data/https_cert.pem"
+KEY_DST="/opt/ucm/data/https_key.pem"
+if [ -n "${CERT_SRC}" ] || [ -n "${KEY_SRC}" ]; then
+    if [ -z "${CERT_SRC}" ] || [ -z "${KEY_SRC}" ]; then
+        log "ERROR: set both https_cert_file and https_key_file (under /ssl/...)"
+        exit 1
+    fi
+    case "${CERT_SRC}" in
+        /ssl/*) ;;
+        *) log "ERROR: https_cert_file must be under /ssl/ (got ${CERT_SRC})"; exit 1 ;;
+    esac
+    case "${KEY_SRC}" in
+        /ssl/*) ;;
+        *) log "ERROR: https_key_file must be under /ssl/ (got ${KEY_SRC})"; exit 1 ;;
+    esac
+    if [ ! -f "${CERT_SRC}" ] || [ ! -f "${KEY_SRC}" ]; then
+        log "ERROR: cert/key not found: ${CERT_SRC} / ${KEY_SRC}"
+        exit 1
+    fi
+    # Copy so UID 1000 can read even when source files are root-owned, and so
+    # a renewed cert on /ssl is picked up on the next start.
+    cp -f "${CERT_SRC}" "${CERT_DST}"
+    cp -f "${KEY_SRC}" "${KEY_DST}"
+    chown 1000:1000 "${CERT_DST}" "${KEY_DST}"
+    chmod 644 "${CERT_DST}"
+    chmod 600 "${KEY_DST}"
+    log "installed UI TLS from ${CERT_SRC} + ${KEY_SRC}"
+fi
+
 export_bool 'debug' 'UCM_DEBUG'
 export_if_set 'log_level' 'UCM_LOG_LEVEL'
 
