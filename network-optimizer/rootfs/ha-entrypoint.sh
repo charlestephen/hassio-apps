@@ -60,6 +60,19 @@ for name in data ssh-keys logs; do
     fi
 done
 
+# Upstream entrypoint runs `chown -R app:app /app/data …`, but GNU chown -R
+# defaults to -P (do not traverse symlink dirs). Our /app/{data,ssh-keys,logs}
+# are symlinks into HA's /data volume, so that chown never reaches the real
+# dirs — they stay root-owned and the app user fails on /app/data/keys.
+APP_UID="$(id -u app 2>/dev/null || true)"
+APP_GID="$(id -g app 2>/dev/null || true)"
+if [ -n "${APP_UID}" ] && [ -n "${APP_GID}" ]; then
+    chown -R "${APP_UID}:${APP_GID}" /data/data /data/ssh-keys /data/logs
+    log "chown /data/{data,ssh-keys,logs} → ${APP_UID}:${APP_GID} (app)"
+else
+    log "WARNING: user 'app' missing; leaving /data volume ownership unchanged"
+fi
+
 if [ ! -f "${OPTIONS}" ]; then
     log "WARNING: ${OPTIONS} missing; starting with image defaults"
 fi

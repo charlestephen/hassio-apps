@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.10.7-1
+
+- Fix `UnauthorizedAccessException` on `/app/data/keys`: chown the real HA
+  `/data/{data,ssh-keys,logs}` dirs for upstream’s `app` user. Upstream’s
+  `chown -R /app/data` does not follow our persistence symlinks.
+
 ## 2.10.7
 
 - First Home Assistant app release wrapping upstream Network Optimizer
