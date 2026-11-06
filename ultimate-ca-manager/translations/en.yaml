@@ -5,6 +5,19 @@ configuration:
     description: >-
       Public hostname for UCM (used in certificates and links). Example:
       ca.example.com. Defaults to ucm.local when empty.
+  https_cert_file:
+    name: HTTPS certificate file
+    description: >-
+      Absolute path under /ssl to a PEM certificate (or full chain) for the UCM
+      web UI — e.g. /ssl/acme.sh/ca.example.com/fullchain.cer. Leave empty to
+      let UCM generate a self-signed cert. Must be set together with HTTPS
+      private key file.
+  https_key_file:
+    name: HTTPS private key file
+    description: >-
+      Absolute path under /ssl to the matching PEM private key — e.g.
+      /ssl/acme.sh/ca.example.com/ca.example.com.key. Copied into UCM data on
+      each start so renewals apply after a restart.
   https_port:
     name: HTTPS port
     description: Container listen port for the web UI and management API (default 8443).
@@ -91,8 +104,9 @@ configuration:
   env_vars:
     name: Extra environment variables
     description: >-
-      Arbitrary UCM variables (UCM_HTTPS_CERT, UCM_HTTPS_KEY, HSM_PIN, …). Mark
-      secrets with secret: true so values stay out of logs.
+      Arbitrary UCM variables (HSM_PIN, …). Prefer HTTPS certificate/key file
+      for TLS from /ssl. Mark secrets with secret: true so values stay out of
+      logs.
 network:
   8443/tcp: HTTPS web UI and management API
   8080/tcp: HTTP protocol endpoints (CRL/CDP, OCSP, ACME HTTP-01)
