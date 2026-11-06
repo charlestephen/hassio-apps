@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.11.1-2
+
+- Document Pocket ID OIDC (requires `client_secret_post`, `BASE_URL`, scopes).
+- Constrain `oidc_token_endpoint_auth_method` to Homarr’s supported values.
+
 ## 2.11.1-1
 
 - Expose `BASE_URL` and `HOMARR_TRUSTED_PROXIES` for Traefik / TLS-terminated

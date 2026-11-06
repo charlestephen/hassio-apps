@@ -1,5 +1,5 @@
 name: Forgejo
-version: "17.0.1"
+version: "17.0.1-1"
 slug: forgejo
 image: ghcr.io/charlestephen/hassio-addons-forgejo-{arch}
 description: Forgejo is a Git hosting, code review, team collaboration, package registry, and CI/CD
@@ -11,7 +11,10 @@ arch:
   - amd64
 init: true
 map:
-  - type: addon_config
+  - type: app_config
+    read_only: false
+  # Legacy host dir for one-shot migrate → /config then delete.
+  - type: all_addon_configs
     read_only: false
   - type: data
     read_only: false

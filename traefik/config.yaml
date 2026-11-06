@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: Traefik
-version: "3.7.17-1"
+version: "3.7.17-2"
 slug: traefik
 description: >-
   Modern HTTP reverse proxy and load balancer with file-based dynamic config
@@ -24,6 +24,11 @@ ingress: true
 ingress_entry: dashboard/
 map:
   - type: homeassistant_config
+    read_only: false
+  # Temporary: see leftover /config/traefik from 3.7.17 and migrate it.
+  - type: app_config
+    read_only: false
+  - type: all_addon_configs
     read_only: false
   - type: share
     read_only: false

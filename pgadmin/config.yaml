@@ -1,7 +1,7 @@
 name: pgAdmin
 description: pgAdmin 4 — web-based management UI for PostgreSQL.
 url: https://github.com/charlestephen/hassio-apps/tree/main/pgadmin
-version: "9.19-1"
+version: "9.19-2"
 stage: stable
 homeassistant: "2026.6.0"
 slug: pgadmin
@@ -20,6 +20,9 @@ map:
     read_only: false
   - type: app_config
     read_only: false
+  # Legacy host dir for one-shot migrate → /config then delete.
+  - type: all_addon_configs
+    read_only: false
 ports:
   5050/tcp: 5050
 ports_description:
@@ -29,6 +32,20 @@ options:
   password: changeme
   log_level: info
   config: ""
+  # --- OAuth2 / OIDC (written into generated config_local.py) ---
+  oauth2_enabled: false
+  oauth2_name: oidc
+  oauth2_display_name: "Login with SSO"
+  oauth2_client_id: ""
+  oauth2_client_secret: ""
+  oauth2_server_metadata_url: ""
+  oauth2_scope: "openid email profile"
+  oauth2_icon: "fa-openid"
+  oauth2_button_color: "#3253a8"
+  oauth2_auto_create_user: true
+  authentication_sources: ""
+  # Extra config_local.py assignments (name = Python identifier).
+  config_vars: []
   register_postgres: true
   postgres_host: ""
   postgres_port: 5432
@@ -40,6 +57,21 @@ schema:
   password: password
   log_level: list(trace|debug|info|warning|error|fatal)
   config: str?
+  oauth2_enabled: bool
+  oauth2_name: str?
+  oauth2_display_name: str?
+  oauth2_client_id: str?
+  oauth2_client_secret: password?
+  oauth2_server_metadata_url: str?
+  oauth2_scope: str?
+  oauth2_icon: str?
+  oauth2_button_color: str?
+  oauth2_auto_create_user: bool
+  authentication_sources: str?
+  config_vars:
+    - name: str
+      value: password?
+      secret: bool?
   register_postgres: bool
   postgres_host: str?
   postgres_port: port?

@@ -1,5 +1,10 @@
 # Changelog
 
+## 17.0.1-1
+
+- Prefer Supervisor `app_config` map (replaces deprecated `addon_config`).
+- One-shot migrate: copy legacy `addon_configs/…_forgejo` into `/config`, then remove that host directory.
+
 ## 17.0.1
 
 - Upgrading from upstream version 17.0.0 -> 17.0.1

@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.7.17-2
+
+- One-shot migrate: copy leftover `/config/traefik` (and legacy `addon_configs/…_traefik`) into `/homeassistant/traefik`, then remove the legacy trees.
+
 ## 3.7.17-1
 
 - Fix wrong default config directory. `3.7.17` mapped dynamic/custom paths to

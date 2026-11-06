@@ -4,7 +4,7 @@ description: >-
   OpenID Connect Certified™ and OAuth 2.0 provider with passkey-only sign-in.
   Thin wrapper on the official Pocket ID image.
 url: https://github.com/charlestephen/hassio-apps/tree/main/pocket-id
-version: "2.19.2-1"
+version: "2.19.2-2"
 stage: stable
 homeassistant: "2026.6.0"
 slug: pocket_id

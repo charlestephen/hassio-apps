@@ -504,6 +504,11 @@ case "${CA_OPT:-}" in
     ;;
 esac
 
+# One-shot: legacy addon_configs/<…>_acme-sh → /config, then remove legacy dir.
+# shellcheck source=/dev/null
+. /usr/local/share/hassio-apps/migrate-legacy-app-config.sh
+migrate_legacy_app_config "acme-sh"
+
 load_env
 upgrade_client
 link_custom_hooks

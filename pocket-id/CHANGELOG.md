@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.19.2-2
+
+- Document Homarr and pgAdmin as OIDC clients (Homarr needs
+  `client_secret_post`).
+
 ## 2.19.2-1
 
 - Add SMTP options (`smtp_host` / `port` / `from` / `user` / `password` /

@@ -1,5 +1,14 @@
 # Changelog
 
+## 9.19-2
+
+- Homarr-style OIDC options (`oauth2_*`, `authentication_sources`,
+  `config_vars`) generate `config_local.py` when no file/wholesale `config`
+  override is present. File and wholesale `config` still win.
+- One-shot migrate: copy legacy `addon_configs/…_pgadmin` into `/config`, then
+  remove that legacy host directory.
+
+
 ## 9.19-1
 
 - Prefer Supervisor `app_config` map (replaces deprecated `addon_config`).

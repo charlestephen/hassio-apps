@@ -86,7 +86,10 @@ configuration:
       verified email instead of creating a second account.
   oidc_token_endpoint_auth_method:
     name: Token endpoint auth method
-    description: Auth method for the token endpoint (e.g. client_secret_post).
+    description: >-
+      Homarr default is client_secret_basic when unset. Pocket ID requires
+      client_secret_post.
+
   ldap_uri:
     name: LDAP URI
     description: Connection address of your LDAP server (e.g. ldaps://ldap.example.com).
