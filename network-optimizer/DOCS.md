@@ -58,7 +58,9 @@ openspeedtest_https: false
 
 1. Options from `/data/options.json` become Network Optimizer env vars.
 2. `/data/{data,ssh-keys,logs}` are symlinked to `/app/{data,ssh-keys,logs}`
-   so SQLite, license, and keys survive updates.
+   so SQLite, license, and keys survive updates. The wrapper also `chown`s
+   those real volume dirs to upstream’s `app` user (symlink targets are not
+   covered by upstream’s `chown -R /app/data`).
 3. Control returns to upstream `/entrypoint.sh` → `gosu app dotnet NetworkOptimizer.Web.dll`.
 4. **Host networking** matches upstream compose so traceroute / path analysis /
    LAN probes see the real host network namespace.
