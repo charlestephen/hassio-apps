@@ -1,0 +1,9 @@
+---
+# Traefik binary is downloaded from GitHub Releases onto the HA base image.
+build_from:
+  aarch64: ghcr.io/hassio-addons/base:stable
+  amd64: ghcr.io/hassio-addons/base:stable
+upstream_repo: "traefik/traefik"
+upstream_version_arg: TRAEFIK_VERSION
+args:
+  TRAEFIK_VERSION: "3.7.17"
