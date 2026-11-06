@@ -44,7 +44,9 @@ options:
   access_logs: false
   forwarded_headers_insecure: false
   insecure_skip_verify: false
-  dynamic_configuration_path: "/config/traefik/"
+  # homeassistant_config is mounted at /homeassistant (HA config dir).
+  # On disk that is the folder next to configuration.yaml, e.g. …/homeassistant/traefik/.
+  dynamic_configuration_path: "/homeassistant/traefik/"
   letsencrypt:
     enabled: false
     resolvers:
@@ -55,7 +57,7 @@ options:
     delayBeforeCheck: 10
   custom_config:
     use_config_file: false
-    config_file: "/config/traefik/traefik.yaml"
+    config_file: "/homeassistant/traefik/traefik.yaml"
   env_vars: []
 schema:
   log_level: list(TRACE|DEBUG|INFO|WARN|ERROR|FATAL|PANIC)

@@ -10,7 +10,8 @@ _[Traefik](https://traefik.io/) reverse proxy and load balancer for Home Assista
 This app installs the official [Traefik](https://github.com/traefik/traefik)
 binary (checksum-verified from GitHub Releases) on the Home Assistant base
 image. Static config is generated from the Configuration tab (or a custom
-file); dynamic routes live under `/config/traefik/` by default.
+file); dynamic routes live under `/homeassistant/traefik/` by default
+(HA config directory — `traefik/` next to `configuration.yaml` on disk).
 
 The app version tracks upstream Traefik releases via this repository's
 upstream updater.

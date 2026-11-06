@@ -52,6 +52,7 @@ profile traefik flags=(attach_disconnected,mediate_deleted) {
 
   # Mapped HA paths
   /data/** rw,
+  /homeassistant/** rw,
   /config/** rw,
   /share/** rw,
   /ssl/** rw,

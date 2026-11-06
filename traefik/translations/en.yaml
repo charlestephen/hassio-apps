@@ -20,8 +20,9 @@ configuration:
   dynamic_configuration_path:
     name: Dynamic configuration path
     description: >-
-      Directory for Traefik file provider YAML (default /config/traefik/ under
-      the Home Assistant config share).
+      Directory for Traefik file provider YAML (default /homeassistant/traefik/
+      — the HA config folder inside the container; on disk, traefik/ next to
+      configuration.yaml).
   letsencrypt:
     name: Let's Encrypt
     description: ACME certificate resolver settings (resolver name le).
@@ -53,7 +54,7 @@ configuration:
     description: When enabled, standard options above are ignored.
   config_file:
     name: Config file path
-    description: Absolute path to static Traefik YAML (e.g. /config/traefik/traefik.yaml).
+    description: Absolute path to static Traefik YAML (e.g. /homeassistant/traefik/traefik.yaml).
   env_vars:
     name: Environment variables
     description: >-
