@@ -1,51 +1,61 @@
-#!/usr/bin/env sh
-# shellcheck shell=sh
+#!/usr/bin/env bash
+# shellcheck shell=bash
 # ==============================================================================
 # Home Assistant wrapper for Homebridge (homebridge/homebridge Docker image).
 #
-# Point /homebridge at the Supervisor /data volume, export a few options as
-# env vars, then exec upstream /init (s6-overlay + Homebridge + Config UI).
+# HA state lives at /data/homebridge (Supervisor /data). Upstream hard-codes
+# /homebridge and declares it as a Docker VOLUME, so we bind-mount our dir over
+# that path (SYS_ADMIN) instead of rm/symlink. Then exec upstream /init.
 #   Upstream: https://github.com/homebridge/docker-homebridge
-#   Guide:    https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Docker
 # ==============================================================================
-set -eu
+set -euo pipefail
 
 OPTIONS="/data/options.json"
 VERSION="${HOMEBRIDGE_DOCKER_VERSION:-unknown}"
+STORE="/data/homebridge"
+UPSTREAM="/homebridge"
 
 log() { echo "[homebridge-addon] $*"; }
 
 get() { jq -r --arg k "$1" '.[$k] // empty' "${OPTIONS}" 2>/dev/null || true; }
 is_true() { [ "$(jq -r --arg k "$1" '.[$k] // false' "${OPTIONS}" 2>/dev/null)" = "true" ]; }
 
+dir_has_entries() {
+    local d="$1" f
+    [[ -d "$d" ]] || return 1
+    for f in "$d"/* "$d"/.[!.]* "$d"/..?*; do
+        [[ -e "$f" ]] || continue
+        return 0
+    done
+    return 1
+}
+
 if [ ! -f "${OPTIONS}" ]; then
     log "WARNING: ${OPTIONS} missing; starting with image defaults"
 fi
 
-# Persist upstream /homebridge on the Supervisor /data volume.
-mkdir -p /data
-if [ -L /homebridge ]; then
-    :
-elif [ -d /homebridge ]; then
-    if [ -n "$(find /homebridge -mindepth 1 -maxdepth 1 2>/dev/null | head -1)" ]; then
-        cp -a /homebridge/. /data/ 2>/dev/null || true
-    fi
-    rm -rf /homebridge
-    ln -s /data /homebridge
-else
-    ln -s /data /homebridge
+mkdir -p "${STORE}"
+
+# One-time: pull anything left on the anonymous VOLUME into our store.
+if ! dir_has_entries "${STORE}" && dir_has_entries "${UPSTREAM}"; then
+    log "migrating ${UPSTREAM} -> ${STORE}"
+    cp -a "${UPSTREAM}/." "${STORE}/" || true
 fi
-log "persisting Homebridge data at /data (-> /homebridge)"
 
-export_if_set() {
-    _v="$(get "$1")"
-    if [ -n "${_v}" ]; then
-        export "$2=${_v}"
-        log "set $2=${_v}"
-    fi
-}
+if mountpoint -q "${UPSTREAM}" 2>/dev/null; then
+    log "${UPSTREAM} already mounted"
+elif mount --bind "${STORE}" "${UPSTREAM}"; then
+    log "bind-mounted ${STORE} over ${UPSTREAM}"
+else
+    log "ERROR: bind-mount ${STORE} -> ${UPSTREAM} failed (need SYS_ADMIN; turn Protection mode off)"
+    exit 1
+fi
 
-export_if_set 'tz' 'TZ'
+_v="$(get tz)"
+if [ -n "${_v}" ]; then
+    export TZ="${_v}"
+    log "set TZ=${TZ}"
+fi
 
 if is_true enable_avahi; then
     export ENABLE_AVAHI=1
@@ -54,7 +64,6 @@ else
 fi
 log "set ENABLE_AVAHI=${ENABLE_AVAHI}"
 
-# Extra env (advanced).
 eval "$(
     jq -r '
       (.env_vars // [])[]
@@ -82,5 +91,5 @@ jq -c '(.env_vars // [])[]?' "${OPTIONS}" 2>/dev/null | while IFS= read -r row; 
     fi
 done
 
-log "Starting Homebridge Docker ${VERSION} (upstream /init) ..."
+log "Starting Homebridge Docker ${VERSION}; store=${STORE} ..."
 exec /init
