@@ -4,7 +4,7 @@ description: >-
   Self-hosted Certificate Authority with ACME, SCEP, EST, OCSP, CRL, TSA, and
   SSH CA. Thin wrapper on neyslim/ultimate-ca-manager.
 url: https://github.com/charlestephen/hassio-apps/tree/main/ultimate-ca-manager
-version: "2.249-4"
+version: "2.249-5"
 stage: stable
 homeassistant: "2026.6.0"
 slug: ultimate-ca-manager

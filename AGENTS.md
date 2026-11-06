@@ -6,6 +6,7 @@
 - When wrapping an upstream container as a Home Assistant app, prefer the upstream image's own `ENTRYPOINT`/`CMD` (export options as env, then `exec` that entrypoint). Only replace it when HA rules require something the upstream entrypoint cannot do (e.g. grafting s6 onto a scratch/static binary, or a custom wrapper that still ends in `exec` of upstream).
 - Always ship an `apparmor.txt` with every Home Assistant app; never leave a new app without one.
 - Always bump Home Assistant add-on `version` semantically when shipping wrapper-only fixes (e.g. `3.7.17-1`) so Supervisor re-pulls the image; Home Assistant does not redownload an unchanged version and does not purge quickly.
+- When testing new or changed Home Assistant apps, run them on the Supervised instance at `http://10.0.3.6:81` before treating a fix as verified. Do not assume GHCR/CI alone is enough.
 
 ## Learned Workspace Facts
 
