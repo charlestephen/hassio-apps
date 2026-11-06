@@ -3,9 +3,10 @@
 # ==============================================================================
 # Home Assistant wrapper for Ultimate CA Manager (neyslim/ultimate-ca-manager).
 #
-# Persists PKI under /ssl/ucm (data + /etc/ucm master.key), symlinks that tree
-# into /data/ucm for addon backups, maps options → env, then execs upstream
-# /entrypoint.sh as user ucm (UID 1000).
+# Persists PKI under /ssl/ucm. Upstream declares Docker VOLUMEs at
+# /opt/ucm/data and /etc/ucm — those mount points cannot be rm'd/replaced with
+# symlinks ("Device or resource busy"). Bind-mount /ssl/ucm over them instead
+# (needs SYS_ADMIN). /data/ucm → /ssl/ucm for addon backups.
 #   Docs: https://github.com/NeySlim/ultimate-ca-manager/blob/main/docs/installation/docker.md
 #   Security: https://github.com/NeySlim/ultimate-ca-manager/blob/main/docs/SECURITY.md
 # ==============================================================================
@@ -20,6 +21,27 @@ log() { echo "[ultimate-ca-manager-addon] $*"; }
 
 get() { jq -r --arg k "$1" '.[$k] // empty' "${OPTIONS}" 2>/dev/null || true; }
 is_true() { [ "$(jq -r --arg k "$1" '.[$k] // false' "${OPTIONS}" 2>/dev/null)" = "true" ]; }
+
+dir_has_entries() {
+    [ -n "$(find "$1" -mindepth 1 -maxdepth 1 2>/dev/null | head -1)" ]
+}
+
+# Overlay canonical /ssl path onto an upstream VOLUME mount point.
+bind_ssl_over_volume() {
+    local src="$1" dest="$2"
+    mkdir -p "$src" "$dest"
+    # One-time migrate: anonymous volume already has data, ssl empty.
+    if ! dir_has_entries "$src" && dir_has_entries "$dest"; then
+        log "migrating existing ${dest} -> ${src}"
+        cp -a "${dest}/." "${src}/"
+    fi
+    if mount --bind "$src" "$dest"; then
+        log "bind-mounted ${src} over ${dest}"
+        return 0
+    fi
+    log "ERROR: bind-mount ${src} over ${dest} failed (need SYS_ADMIN / Protection mode off)"
+    return 1
+}
 
 export_if_set() {
     local _v
@@ -48,8 +70,6 @@ if [ ! -f "${OPTIONS}" ]; then
 fi
 
 # --- PKI layout ---------------------------------------------------------------
-# Canonical store under /ssl (locked-down HA cert area). Symlink into /data so
-# addon backups see the same tree. Container paths match upstream volumes.
 mkdir -p "${SSL_ROOT}/data" "${SSL_ROOT}/etc"
 chmod 700 "${SSL_ROOT}" "${SSL_ROOT}/data" "${SSL_ROOT}/etc"
 
@@ -60,34 +80,11 @@ else
     log "addon-backup symlink ${DATA_LINK} -> ${SSL_ROOT}"
 fi
 
-# /opt/ucm/data → /ssl/ucm/data
-if [ -L /opt/ucm/data ]; then
-    :
-elif [ -d /opt/ucm/data ]; then
-    if [ -n "$(find /opt/ucm/data -mindepth 1 -maxdepth 1 2>/dev/null | head -1)" ]; then
-        cp -a /opt/ucm/data/. "${SSL_ROOT}/data/" 2>/dev/null || true
-    fi
-    rm -rf /opt/ucm/data
-    ln -s "${SSL_ROOT}/data" /opt/ucm/data
-else
-    ln -s "${SSL_ROOT}/data" /opt/ucm/data
-fi
-
-# /etc/ucm → /ssl/ucm/etc  (master.key lives here — never drop this volume)
-if [ -L /etc/ucm ]; then
-    :
-elif [ -d /etc/ucm ]; then
-    if [ -n "$(find /etc/ucm -mindepth 1 -maxdepth 1 2>/dev/null | head -1)" ]; then
-        cp -a /etc/ucm/. "${SSL_ROOT}/etc/" 2>/dev/null || true
-    fi
-    rm -rf /etc/ucm
-    ln -s "${SSL_ROOT}/etc" /etc/ucm
-else
-    ln -s "${SSL_ROOT}/etc" /etc/ucm
-fi
+bind_ssl_over_volume "${SSL_ROOT}/data" /opt/ucm/data
+bind_ssl_over_volume "${SSL_ROOT}/etc" /etc/ucm
 
 chown -R 1000:1000 "${SSL_ROOT}"
-log "PKI at ${SSL_ROOT}/data + ${SSL_ROOT}/etc (-> /opt/ucm/data, /etc/ucm)"
+log "PKI live at ${SSL_ROOT}/data + ${SSL_ROOT}/etc (bound over upstream volumes)"
 
 # --- Core options -------------------------------------------------------------
 FQDN="$(get 'ucm_fqdn')"
