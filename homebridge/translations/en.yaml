@@ -1,0 +1,17 @@
+---
+configuration:
+  tz:
+    name: Timezone
+    description: Container timezone (e.g. America/New_York).
+  enable_avahi:
+    name: Enable Avahi
+    description: >-
+      Run Avahi inside the container (upstream default). Turn off if the host
+      already provides mDNS and you see discovery conflicts.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Optional extra variables for the Homebridge container. Mark secrets with
+      secret: true.
+network:
+  8581/tcp: Homebridge Config UI (host networking — published on the HA host).
