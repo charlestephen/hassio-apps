@@ -34,7 +34,10 @@ Assistant SSL share (writable):
 | `master.key` / encryption material | `/etc/ucm` | `/ssl/ucm/etc/` |
 
 `/data/ucm` is a **symlink** to `/ssl/ucm` so addon backups see the same tree.
-Always take a **full** Home Assistant backup (includes `/ssl`) before upgrades;
+Upstream’s image declares Docker VOLUMEs at `/opt/ucm/data` and `/etc/ucm`;
+this app **bind-mounts** `/ssl/ucm/...` over those paths (needs `SYS_ADMIN` —
+turn **Protection mode** off for this app if the Supervisor prompts). Always
+take a **full** Home Assistant backup (includes `/ssl`) before upgrades;
 losing `/ssl/ucm/etc/key_encryption_key` (or `master.key` after UI encryption)
 makes encrypted private keys unrecoverable.
 
