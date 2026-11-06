@@ -148,6 +148,12 @@ Or add it manually:
   optional Let's Encrypt, and dashboard Ingress. Version tracks upstream
   Traefik releases.
 
+### &#10003; [Ultimate CA Manager](ultimate-ca-manager/)
+
+- Self-hosted Certificate Authority (ACME, SCEP, EST, OCSP, CRL, TSA, SSH CA).
+  Thin wrapper on `neyslim/ultimate-ca-manager`; PKI under `/ssl/ucm/`. Version
+  tracks upstream releases.
+
 ### &#10003; [Traefik Manager](traefik-manager/)
 
 - Clean, self-hosted web UI for managing Traefik routes, middlewares,

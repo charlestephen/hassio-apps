@@ -1,0 +1,100 @@
+---
+configuration:
+  ucm_fqdn:
+    name: FQDN
+    description: >-
+      Public hostname for UCM (used in certificates and links). Example:
+      ca.example.com. Defaults to ucm.local when empty.
+  https_port:
+    name: HTTPS port
+    description: Container listen port for the web UI and management API (default 8443).
+  http_port:
+    name: HTTP port
+    description: >-
+      Container listen port for public PKI HTTP endpoints — CRL/CDP, OCSP,
+      ACME HTTP-01 (default 8080).
+  debug:
+    name: Debug
+    description: Enable UCM debug mode (verbose; avoid in production).
+  log_level:
+    name: Log level
+    description: "Application log level: DEBUG, INFO, WARNING, or ERROR."
+  log_max_bytes:
+    name: Log max bytes
+    description: Rotate ucm.log when it reaches this size (bytes). Default 10 MiB.
+  log_backups:
+    name: Log backups
+    description: Number of rotated ucm.log generations to keep.
+  secret_key:
+    name: Session secret key
+    description: >-
+      Flask session signing key. Leave blank to auto-generate and persist under
+      /ssl/ucm/etc/secret_key.
+  key_encryption_key:
+    name: Key encryption key
+    description: >-
+      Master key for encrypting CA/certificate private keys at rest
+      (KEY_ENCRYPTION_KEY). Leave blank to auto-generate and persist under
+      /ssl/ucm/etc/key_encryption_key. Losing this file makes encrypted keys
+      unrecoverable — back up /ssl/ucm/.
+  database_url:
+    name: Database URL
+    description: >-
+      Leave empty for SQLite at /ssl/ucm/data/ucm.db. Or a SQLAlchemy URL such as
+      postgresql://user:pass@host:5432/ucm.
+  backup_enabled:
+    name: Startup DB backup
+    description: Copy the SQLite database into data/backups on each start.
+  backup_retention_days:
+    name: Backup retention (days)
+    description: Delete startup DB backups older than this many days.
+  behind_proxy:
+    name: Behind reverse proxy
+    description: >-
+      Set when Traefik/nginx sits in front (UCM_BEHIND_PROXY=1). Pair with
+      Trusted proxies.
+  trusted_proxies:
+    name: Trusted proxies
+    description: >-
+      Comma-separated IPs/CIDRs allowed to send X-Forwarded-* (e.g.
+      172.30.32.0/23 for the Supervisor network).
+  admin_allowed_networks:
+    name: Admin allowed networks
+    description: >-
+      Comma-separated IPs/CIDRs allowed to reach the web UI and management API.
+      PKI protocol endpoints stay open. Leave empty for no allowlist.
+  admin_allowlist_disable:
+    name: Disable admin allowlist
+    description: >-
+      Recovery switch (UCM_ADMIN_ALLOWLIST_DISABLE=1) if you locked yourself out.
+      Turn off after fixing the list.
+  cors_extra_origins:
+    name: Extra CORS origins
+    description: >-
+      Comma-separated origins for the reverse-proxy hostname (needed for
+      WebSocket). Example: https://ca.example.com
+  dns_update_port:
+    name: DNS UPDATE port
+    description: >-
+      ACME proxy DNS UPDATE (RFC 2136) listen port inside the container. 0 =
+      disabled. Use 1024–65535 only (image runs as non-root). Map host 53→8053
+      if needed; keep this on an internal network.
+  dns_update_host:
+    name: DNS UPDATE bind address
+    description: Optional bind address for the DNS UPDATE listener (default HOST).
+  disable_canonical_redirect:
+    name: Disable canonical redirect
+    description: Recovery switch when the configured base URL host stops resolving.
+  hsm_auto_init:
+    name: SoftHSM auto-init
+    description: Create the default SoftHSM token on first start when missing.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Arbitrary UCM variables (UCM_HTTPS_CERT, UCM_HTTPS_KEY, HSM_PIN, …). Mark
+      secrets with secret: true so values stay out of logs.
+network:
+  8443/tcp: HTTPS web UI and management API
+  8080/tcp: HTTP protocol endpoints (CRL/CDP, OCSP, ACME HTTP-01)
+  8053/tcp: Optional ACME DNS UPDATE (RFC 2136) TCP
+  8053/udp: Optional ACME DNS UPDATE (RFC 2136) UDP
