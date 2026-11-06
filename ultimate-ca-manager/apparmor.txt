@@ -20,6 +20,9 @@ profile ultimate-ca-manager flags=(attach_disconnected,mediate_deleted) {
   capability dac_override,
   capability dac_read_search,
   capability net_bind_service,
+  capability sys_admin,
+  mount,
+  umount,
 
   /ha-entrypoint.sh rix,
   /entrypoint.sh rix,

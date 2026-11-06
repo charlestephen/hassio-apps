@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.249-2
+
+- Fix start crash: upstream Docker VOLUMEs at `/opt/ucm/data` and `/etc/ucm`
+  cannot be replaced with symlinks (`Device or resource busy`). Bind-mount
+  `/ssl/ucm/{data,etc}` over them instead (`SYS_ADMIN`).
+
 ## 2.249-1
 
 - Add **HTTPS certificate file** / **HTTPS private key file** options so the
