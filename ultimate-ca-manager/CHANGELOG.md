@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.249-3
+
+- Replace empty/white store icons with Ultimate CA Manager’s real brand mark
+  (upstream `favicon.svg` / in-app Logo — orange U-shield).
+- Refresh `apparmor.txt` (profile `ultimate-ca-manager` matching slug) so
+  Supervisor loads the custom AppArmor profile.
+
 ## 2.249-2
 
 - Fix start crash: upstream Docker VOLUMEs at `/opt/ucm/data` and `/etc/ucm`
