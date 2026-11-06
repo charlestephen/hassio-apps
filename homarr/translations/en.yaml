@@ -9,6 +9,17 @@ configuration:
   pgid:
     name: PGID
     description: Group ID Homarr drops to. Keep 0 unless you know your /data group.
+  base_url:
+    name: Base URL
+    description: >-
+      Public Homarr origin with no path (e.g. https://homarr.example.com).
+      Set this when Homarr is behind Traefik or another TLS-terminating proxy
+      so OIDC cookies and origin checks work.
+  trusted_proxies:
+    name: Trusted proxies
+    description: >-
+      Comma-separated IPs/CIDRs allowed to send client-identity headers
+      (e.g. Traefik on the hassio network). Leave blank if unused.
   no_external_connection:
     name: No external connection
     description: Disable all internet-dependent requests (fully offline mode).
@@ -67,7 +78,12 @@ configuration:
     description: Always fetch user data from the userinfo endpoint.
   oidc_enable_dangerous_account_linking:
     name: Enable account linking (dangerous)
-    description: Link accounts by email address. Only enable with trusted IdPs.
+    description: Link OIDC accounts by email. Only enable with trusted IdPs.
+  oidc_enable_dangerous_credentials_linking:
+    name: Link OIDC to credentials user (dangerous)
+    description: >-
+      On first OIDC sign-in, link to an existing local user with the same
+      verified email instead of creating a second account.
   oidc_token_endpoint_auth_method:
     name: Token endpoint auth method
     description: Auth method for the token endpoint (e.g. client_secret_post).

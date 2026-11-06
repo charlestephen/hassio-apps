@@ -54,6 +54,9 @@ export_if_set 'log_level' 'LOG_LEVEL'
 PUID_VAL="$(get 'puid')"; export PUID="${PUID_VAL:-0}"
 PGID_VAL="$(get 'pgid')"; export PGID="${PGID_VAL:-0}"
 log "run as PUID=${PUID} PGID=${PGID}"
+# Public HTTPS origin (no path). Required behind TLS-terminating proxies.
+export_if_set 'base_url' 'BASE_URL'
+export_if_set 'trusted_proxies' 'HOMARR_TRUSTED_PROXIES'
 export_true 'no_external_connection' 'NO_EXTERNAL_CONNECTION'
 if [ "$(jq -r '.enable_dns_caching // true' "${OPTIONS}" 2>/dev/null)" = "false" ]; then
     export ENABLE_DNS_CACHING="false"; log "set ENABLE_DNS_CACHING=false"
@@ -112,6 +115,7 @@ export_true   'oidc_auto_login'                'AUTH_OIDC_AUTO_LOGIN'
 export_true   'oidc_groups_local_management'   'AUTH_OIDC_GROUPS_LOCAL_MANAGEMENT'
 export_true   'oidc_force_userinfo'            'AUTH_OIDC_FORCE_USERINFO'
 export_true   'oidc_enable_dangerous_account_linking' 'AUTH_OIDC_ENABLE_DANGEROUS_ACCOUNT_LINKING'
+export_true   'oidc_enable_dangerous_credentials_linking' 'AUTH_OIDC_ENABLE_DANGEROUS_CREDENTIALS_LINKING'
 
 # --- LDAP ---------------------------------------------------------------------
 export_if_set 'ldap_uri'                       'AUTH_LDAP_URI'

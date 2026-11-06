@@ -20,6 +20,13 @@ and single sign-on. This app is a thin wrapper around the official
   previously encrypted secrets unreadable. Never change it after first use.
 - Homarr's internal `/appdata` (redis/nginx scratch) is ephemeral by design.
 
+## Public URL (behind Traefik)
+
+Set **Base URL** to Homarr’s public origin with no path, e.g.
+`https://homarr.example.com`. Homarr needs this for secure cookies, origin
+checks, and OIDC when TLS terminates at a reverse proxy. Optionally set
+**Trusted proxies** to the proxy’s IP/CIDR on the hassio network.
+
 ## Authentication
 
 `auth_providers` selects the enabled login methods (comma-separated):
@@ -34,14 +41,18 @@ Combine them, e.g. `credentials,oidc`.
 
 Set at minimum:
 
-- **Auth providers**: include `oidc`.
-- **OIDC issuer URL**: your provider's issuer URI (no trailing slash).
+- **Base URL**: public `https://…` origin (see above).
+- **Auth providers**: include `oidc` (use `credentials,oidc` while debugging).
+- **OIDC issuer URL**: your provider's issuer URI (no trailing slash for
+  Pocket ID; Authentik often keeps a trailing slash).
 - **OIDC client ID** / **OIDC client secret**: from the app you register.
 - **OIDC display name**: label on the login button.
+- **OIDC scopes**: e.g. `openid email profile groups` (Pocket ID).
 
 Register Homarr's redirect URL with your IdP:
 `https://<your-homarr-host>/api/auth/callback/oidc`. Group-based access uses
 **OIDC groups attribute**; enable **OIDC auto-login** to skip the login screen.
+During first setup with OIDC, enter the IdP **admin group** name when prompted.
 
 ### LDAP
 
