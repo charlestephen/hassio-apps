@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.11.1-1
+
+- Expose `BASE_URL` and `HOMARR_TRUSTED_PROXIES` for Traefik / TLS-terminated
+  OIDC (public origin + trusted proxy CIDRs).
+- Expose `AUTH_OIDC_ENABLE_DANGEROUS_CREDENTIALS_LINKING` for linking OIDC to
+  an existing local credentials user by verified email.
+
 ## 2.11.1
 
 - Fix build: install `jq` with `apt-get` — Homarr 2.11+ is Debian Trixie, not Alpine
