@@ -11,10 +11,11 @@ This app installs the official [Traefik](https://github.com/traefik/traefik)
 binary (checksum-verified from GitHub Releases) on the Home Assistant base
 image. Static config is generated from the Configuration tab (or a custom
 file); dynamic routes live under `/homeassistant/traefik/` by default
-(HA config directory — `traefik/` next to `configuration.yaml` on disk).
+(`homeassistant_config` — `traefik/` next to `configuration.yaml` on disk,
+not the app `/config` mount).
 
 The app version tracks upstream Traefik releases via this repository's
-upstream updater.
+upstream updater; wrapper-only fixes use a suffix (e.g. `3.7.17-1`).
 
 See [DOCS.md](DOCS.md) for setup, options, and a starter dynamic config.
 
