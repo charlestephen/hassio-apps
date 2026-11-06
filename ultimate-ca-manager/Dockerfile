@@ -50,4 +50,7 @@ LABEL \
     org.opencontainers.image.revision=${BUILD_REF} \
     org.opencontainers.image.version=${BUILD_VERSION}
 
+# Preserve upstream's gunicorn CMD. Supervisor may still start with an empty
+# command; ha-entrypoint.sh falls back to the same argv when $# is 0.
 ENTRYPOINT ["/ha-entrypoint.sh"]
+CMD ["sh", "-c", "cd /opt/ucm/backend && gunicorn -c gunicorn_config.py wsgi:app"]

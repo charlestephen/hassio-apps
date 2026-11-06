@@ -36,11 +36,12 @@ Assistant SSL share (writable):
 `/data/ucm` is a **symlink** to `/ssl/ucm` so addon backups see the same tree.
 Upstream’s image declares Docker VOLUMEs at `/opt/ucm/data` and `/etc/ucm`;
 this app **bind-mounts** `/ssl/ucm/...` over those paths (needs `SYS_ADMIN` —
-turn **Protection mode** off for this app if the Supervisor prompts) and runs
-the process as **root** (a CA holding keys under `/ssl` should not drop to
-UID 1000). Always take a **full** Home Assistant backup (includes `/ssl`)
-before upgrades; losing `/ssl/ucm/etc/key_encryption_key` (or `master.key`
-after UI encryption) makes encrypted private keys unrecoverable.
+turn **Protection mode** off for this app if Supervisor prompts) and runs as
+**root**. If a bind is denied, it seeds the upstream volumes from `/ssl` and
+syncs back. Start diagnostics also go to `/data/ucm-addon.log`. Always take a
+**full** Home Assistant backup (includes `/ssl`) before upgrades; losing
+`/ssl/ucm/etc/key_encryption_key` (or `master.key` after UI encryption) makes
+encrypted private keys unrecoverable.
 
 With `KEY_ENCRYPTION_KEY` set (default here), UCM encrypts CA and certificate
 private keys at rest and does not keep plaintext key files under

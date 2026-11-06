@@ -3,12 +3,10 @@
 # ==============================================================================
 # Home Assistant wrapper for Ultimate CA Manager (neyslim/ultimate-ca-manager).
 #
-# Persists PKI under /ssl/ucm. Upstream declares Docker VOLUMEs at
-# /opt/ucm/data and /etc/ucm — those mount points cannot be rm'd/replaced with
-# symlinks ("Device or resource busy"). Bind-mount /ssl/ucm over them instead
-# (needs SYS_ADMIN). /data/ucm → /ssl/ucm for addon backups.
-#   Docs: https://github.com/NeySlim/ultimate-ca-manager/blob/main/docs/installation/docker.md
-#   Security: https://github.com/NeySlim/ultimate-ca-manager/blob/main/docs/SECURITY.md
+# Persists PKI under /ssl/ucm. Upstream Docker VOLUMEs at /opt/ucm/data and
+# /etc/ucm cannot be replaced with symlinks — bind-mount /ssl/ucm over them
+# (preferred). If bind is denied, seed the volumes from /ssl and keep syncing.
+# Runs as root (CA holding keys). /data/ucm → /ssl/ucm for addon backups.
 # ==============================================================================
 set -euo pipefail
 
@@ -16,30 +14,55 @@ OPTIONS="/data/options.json"
 VERSION="${UCM_VERSION:-unknown}"
 SSL_ROOT="/ssl/ucm"
 DATA_LINK="/data/ucm"
+VOL_DATA="/opt/ucm/data"
+VOL_ETC="/etc/ucm"
+DIAG="/data/ucm-addon.log"
 
-log() { echo "[ultimate-ca-manager-addon] $*"; }
+log() {
+    local msg="[ultimate-ca-manager-addon] $*"
+    echo "$msg"
+    # Durable copy — HA log UI often misses a fast-exit stdout buffer.
+    echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) $msg" >> "${DIAG}" 2>/dev/null || true
+}
 
 get() { jq -r --arg k "$1" '.[$k] // empty' "${OPTIONS}" 2>/dev/null || true; }
 is_true() { [ "$(jq -r --arg k "$1" '.[$k] // false' "${OPTIONS}" 2>/dev/null)" = "true" ]; }
 
 dir_has_entries() {
-    [ -n "$(find "$1" -mindepth 1 -maxdepth 1 2>/dev/null | head -1)" ]
+    local d="$1"
+    [[ -d "$d" ]] || return 1
+    local f
+    # Avoid find|head + pipefail/SIGPIPE under set -e.
+    for f in "$d"/* "$d"/.[!.]* "$d"/..?*; do
+        [[ -e "$f" ]] || continue
+        return 0
+    done
+    return 1
 }
 
-# Overlay canonical /ssl path onto an upstream VOLUME mount point.
+sync_tree() {
+    local src="$1" dest="$2"
+    mkdir -p "$src" "$dest"
+    if dir_has_entries "$src"; then
+        cp -a "${src}/." "${dest}/"
+    fi
+}
+
+# Prefer bind-mount so live writes hit /ssl. On failure, seed the volume and
+# return 1 so the caller can start a background sync.
 bind_ssl_over_volume() {
     local src="$1" dest="$2"
     mkdir -p "$src" "$dest"
-    # One-time migrate: anonymous volume already has data, ssl empty.
     if ! dir_has_entries "$src" && dir_has_entries "$dest"; then
         log "migrating existing ${dest} -> ${src}"
-        cp -a "${dest}/." "${src}/"
+        cp -a "${dest}/." "${src}/" || true
     fi
-    if mount --bind "$src" "$dest"; then
+    if mount --bind "$src" "$dest" 2>>"${DIAG}"; then
         log "bind-mounted ${src} over ${dest}"
         return 0
     fi
-    log "ERROR: bind-mount ${src} over ${dest} failed (need SYS_ADMIN / Protection mode off)"
+    log "WARN: bind-mount ${src} over ${dest} failed; seeding volume from /ssl"
+    sync_tree "$src" "$dest"
     return 1
 }
 
@@ -65,13 +88,17 @@ export_bool() {
     fi
 }
 
+mkdir -p /data
+: >> "${DIAG}" 2>/dev/null || DIAG="/dev/null"
+log "boot v${VERSION} uid=$(id -u) argv=$*"
+
 if [ ! -f "${OPTIONS}" ]; then
     log "WARNING: ${OPTIONS} missing; starting UCM with image defaults"
 fi
 
 # --- PKI layout ---------------------------------------------------------------
 mkdir -p "${SSL_ROOT}/data" "${SSL_ROOT}/etc"
-chmod 700 "${SSL_ROOT}" "${SSL_ROOT}/data" "${SSL_ROOT}/etc"
+chmod 700 "${SSL_ROOT}" "${SSL_ROOT}/data" "${SSL_ROOT}/etc" 2>/dev/null || true
 
 if [ -e "${DATA_LINK}" ] && [ ! -L "${DATA_LINK}" ]; then
     log "WARNING: ${DATA_LINK} exists and is not a symlink; leaving it alone"
@@ -80,11 +107,18 @@ else
     log "addon-backup symlink ${DATA_LINK} -> ${SSL_ROOT}"
 fi
 
-bind_ssl_over_volume "${SSL_ROOT}/data" /opt/ucm/data
-bind_ssl_over_volume "${SSL_ROOT}/etc" /etc/ucm
+NEED_SYNC=0
+if ! bind_ssl_over_volume "${SSL_ROOT}/data" "${VOL_DATA}"; then
+    NEED_SYNC=1
+fi
+if ! bind_ssl_over_volume "${SSL_ROOT}/etc" "${VOL_ETC}"; then
+    NEED_SYNC=1
+fi
 
-chown -R 1000:1000 "${SSL_ROOT}"
-log "PKI live at ${SSL_ROOT}/data + ${SSL_ROOT}/etc (bound over upstream volumes)"
+# Best-effort ownership; /ssl on HAOS often rejects chown — never abort.
+chown -R 1000:1000 "${SSL_ROOT}" 2>/dev/null || true
+chown -R 1000:1000 "${VOL_DATA}" "${VOL_ETC}" 2>/dev/null || true
+log "PKI: ssl=${SSL_ROOT} vol_data=${VOL_DATA} vol_etc=${VOL_ETC} need_sync=${NEED_SYNC}"
 
 # --- Core options -------------------------------------------------------------
 FQDN="$(get 'ucm_fqdn')"
@@ -100,12 +134,10 @@ HTTP_PORT="$(get 'http_port')"
 export UCM_HTTP_PORT="${HTTP_PORT:-8080}"
 log "set UCM_HTTPS_PORT=${UCM_HTTPS_PORT} UCM_HTTP_PORT=${UCM_HTTP_PORT}"
 
-# Optional TLS material from the HA /ssl share for the UCM web UI (first-run
-# and renewals). Upstream reads /opt/ucm/data/https_{cert,key}.pem.
 CERT_SRC="$(get 'https_cert_file')"
 KEY_SRC="$(get 'https_key_file')"
-CERT_DST="/opt/ucm/data/https_cert.pem"
-KEY_DST="/opt/ucm/data/https_key.pem"
+CERT_DST="${VOL_DATA}/https_cert.pem"
+KEY_DST="${VOL_DATA}/https_key.pem"
 if [ -n "${CERT_SRC}" ] || [ -n "${KEY_SRC}" ]; then
     if [ -z "${CERT_SRC}" ] || [ -z "${KEY_SRC}" ]; then
         log "ERROR: set both https_cert_file and https_key_file (under /ssl/...)"
@@ -123,13 +155,11 @@ if [ -n "${CERT_SRC}" ] || [ -n "${KEY_SRC}" ]; then
         log "ERROR: cert/key not found: ${CERT_SRC} / ${KEY_SRC}"
         exit 1
     fi
-    # Copy so UID 1000 can read even when source files are root-owned, and so
-    # a renewed cert on /ssl is picked up on the next start.
     cp -f "${CERT_SRC}" "${CERT_DST}"
     cp -f "${KEY_SRC}" "${KEY_DST}"
-    chown 1000:1000 "${CERT_DST}" "${KEY_DST}"
-    chmod 644 "${CERT_DST}"
-    chmod 600 "${KEY_DST}"
+    chown 1000:1000 "${CERT_DST}" "${KEY_DST}" 2>/dev/null || true
+    chmod 644 "${CERT_DST}" 2>/dev/null || true
+    chmod 600 "${KEY_DST}" 2>/dev/null || true
     log "installed UI TLS from ${CERT_SRC} + ${KEY_SRC}"
 fi
 
@@ -147,37 +177,40 @@ if [ -n "${BACKUPS}" ]; then
     log "set UCM_LOG_BACKUPS=${UCM_LOG_BACKUPS}"
 fi
 
-# Session secret — persist under /ssl/ucm/etc when not supplied.
 SECRET="$(get 'secret_key')"
 SECRET_FILE="${SSL_ROOT}/etc/secret_key"
 if [ -z "${SECRET}" ]; then
     if [ ! -s "${SECRET_FILE}" ]; then
         umask 077
         openssl rand -hex 32 > "${SECRET_FILE}"
-        chown 1000:1000 "${SECRET_FILE}"
-        chmod 600 "${SECRET_FILE}"
+        chown 1000:1000 "${SECRET_FILE}" 2>/dev/null || true
+        chmod 600 "${SECRET_FILE}" 2>/dev/null || true
         log "generated UCM_SECRET_KEY (persisted to ${SECRET_FILE})"
     fi
     SECRET="$(tr -d '\n' < "${SECRET_FILE}")"
 fi
+# Also mirror into volume etc when not bind-mounted
+if [ ! -s "${VOL_ETC}/secret_key" ]; then
+    cp -f "${SECRET_FILE}" "${VOL_ETC}/secret_key" 2>/dev/null || true
+fi
 export UCM_SECRET_KEY="${SECRET}"
 log "set UCM_SECRET_KEY (hidden)"
 
-# Private-key encryption at rest — Fernet master key. Blank option → generate
-# once and persist. Losing this file makes encrypted keys unrecoverable.
 KEK="$(get 'key_encryption_key')"
 KEK_FILE="${SSL_ROOT}/etc/key_encryption_key"
 if [ -z "${KEK}" ]; then
     if [ ! -s "${KEK_FILE}" ]; then
         umask 077
-        # Fernet key: 32 url-safe base64-encoded bytes (same as Fernet.generate_key).
         python3 -c 'import base64,os; print(base64.urlsafe_b64encode(os.urandom(32)).decode(), end="")' \
             > "${KEK_FILE}"
-        chown 1000:1000 "${KEK_FILE}"
-        chmod 600 "${KEK_FILE}"
+        chown 1000:1000 "${KEK_FILE}" 2>/dev/null || true
+        chmod 600 "${KEK_FILE}" 2>/dev/null || true
         log "generated KEY_ENCRYPTION_KEY (persisted to ${KEK_FILE})"
     fi
     KEK="$(tr -d '\n' < "${KEK_FILE}")"
+fi
+if [ ! -s "${VOL_ETC}/key_encryption_key" ]; then
+    cp -f "${KEK_FILE}" "${VOL_ETC}/key_encryption_key" 2>/dev/null || true
 fi
 export KEY_ENCRYPTION_KEY="${KEK}"
 log "set KEY_ENCRYPTION_KEY (hidden)"
@@ -221,7 +254,6 @@ else
 fi
 log "set HSM_AUTO_INIT=${HSM_AUTO_INIT}"
 
-# --- Arbitrary env injection --------------------------------------------------
 jq -c '(.env_vars // [])[]?' "${OPTIONS}" 2>/dev/null | while IFS= read -r row; do
     [ -n "${row}" ] || continue
     name="$(printf '%s' "${row}" | jq -r '.name // empty')"
@@ -253,8 +285,29 @@ eval "$(
     ' "${OPTIONS}" 2>/dev/null || true
 )"
 
-log "Starting Ultimate CA Manager v${VERSION} as root ..."
-# A CA runs as root here: it holds private keys under /ssl/ucm, bind-mounts
-# those paths, and must not be limited to UID 1000. Upstream entrypoint
-# supports root.
-exec /entrypoint.sh "$@"
+if [ "${NEED_SYNC}" = "1" ]; then
+    log "starting background sync vol -> /ssl every 30s"
+    (
+        while true; do
+            sleep 30
+            sync_tree "${VOL_DATA}" "${SSL_ROOT}/data" 2>/dev/null || true
+            sync_tree "${VOL_ETC}" "${SSL_ROOT}/etc" 2>/dev/null || true
+        done
+    ) &
+    SYNC_PID=$!
+    trap 'log "stopping; final sync"; kill "${SYNC_PID}" 2>/dev/null || true; sync_tree "${VOL_DATA}" "${SSL_ROOT}/data" 2>/dev/null || true; sync_tree "${VOL_ETC}" "${SSL_ROOT}/etc" 2>/dev/null || true' EXIT
+fi
+
+# Upstream image CMD is gunicorn; Supervisor often starts addons with an empty
+# command, so "$@" is blank and entrypoint.sh's `exec "$@"` exits immediately.
+if [ "$#" -eq 0 ]; then
+    set -- sh -c 'cd /opt/ucm/backend && gunicorn -c gunicorn_config.py wsgi:app'
+    log "using upstream default CMD (gunicorn)"
+fi
+
+log "Starting Ultimate CA Manager v${VERSION} as root: $*"
+# Do not exec — keep this shell so EXIT trap can flush /ssl when bind failed.
+/entrypoint.sh "$@"
+rc=$?
+log "upstream entrypoint exited rc=${rc}"
+exit "${rc}"
