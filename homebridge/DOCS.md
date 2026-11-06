@@ -2,9 +2,9 @@
 
 Thin Home Assistant wrapper around the official
 [`homebridge/homebridge`](https://github.com/homebridge/docker-homebridge)
-Docker image (`2026-11-02`). Follows upstream’s Docker guide: **host
-networking**, then the image’s own `/init`. Config/plugins persist on the
-HA data volume (not upstream’s `/homebridge` mount path).
+Docker image (`2026-11-02`). Same layout as upstream Docker: persistent
+data is mounted at **`/homebridge`**, then the image’s own `/init` runs.
+Host networking is required for HomeKit / mDNS.
 
 ## Why host networking
 
@@ -18,15 +18,16 @@ Do **not** put this behind Home Assistant Ingress — use the Config UI on port
 
 1. Install **Homebridge**.
 2. Start the app (host network is already set).
-3. Open `http://<home-assistant-ip>:8581` and finish the UI setup.
+3. Open `http://<home-assistant-ip>:8581` (or `https://` if you set cert options)
+   and finish the UI setup.
 4. Install plugins and pair with the Apple Home app from the UI.
 
 ## Data
 
-State lives at **`/data/homebridge`** on the Supervisor data volume (config,
-plugins, persist). At start it is bind-mounted over upstream’s `/homebridge`
-path so their `/init` keeps working. Needs `SYS_ADMIN` — turn **Protection
-mode** off for this app if Supervisor prompts. App backups include `/data`.
+Supervisor mounts this app’s data volume at **`/homebridge`** inside the
+container — the same path the upstream image expects. Config, plugins, and
+persist files live there (alongside Supervisor’s `options.json`). App
+backups include that volume.
 
 HA **`/ssl`** is mounted read-only so you can point the UI at existing
 certificates (Let’s Encrypt / Acme.sh / etc.).

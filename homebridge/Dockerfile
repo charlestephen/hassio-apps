@@ -1,8 +1,8 @@
 ARG BUILD_FROM=docker.io/homebridge/homebridge:2026-11-02
 
 # Thin Home Assistant wrapper on the official Homebridge Docker image.
-# Persist under /data/homebridge (bind-mounted over upstream /homebridge),
-# map a few options to env, then exec upstream /init (s6-overlay).
+# Supervisor mounts app data at /homebridge (upstream path); map options →
+# env, optional UI TLS from /ssl, then exec upstream /init (s6-overlay).
 FROM ${BUILD_FROM}
 
 # hadolint ignore=DL3002

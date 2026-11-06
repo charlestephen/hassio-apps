@@ -4,7 +4,7 @@ description: >-
   HomeKit bridge for non-HomeKit devices. Thin wrapper on the official
   homebridge/homebridge image (host networking required for discovery).
 url: https://github.com/charlestephen/hassio-apps/tree/main/homebridge
-version: "2026-11-02-2"
+version: "2026-11-02-3"
 stage: stable
 homeassistant: "2026.6.0"
 slug: homebridge
@@ -14,9 +14,6 @@ init: false
 startup: application
 boot: auto
 apparmor: true
-# Bind-mount /data/homebridge over upstream Docker VOLUME at /homebridge.
-privileged:
-  - SYS_ADMIN
 # Host Avahi/mDNS via D-Bus (do not run a second Avahi in the container).
 host_dbus: true
 panel_icon: mdi:home-automation
@@ -28,8 +25,9 @@ arch:
 # Upstream Docker guide requires host networking for HomeKit / mDNS.
 host_network: true
 map:
+  # Same mount point as upstream Docker (-v …:/homebridge). No bind-mount.
   - type: data
-    read_only: false
+    path: /homebridge
   - type: ssl
     read_only: true
 # With host_network these document the UI port; the host listens directly.
@@ -38,6 +36,9 @@ ports:
 ports_description:
   8581/tcp: Homebridge Config UI
 backup: cold
+# Keep Supervisor options out of Homebridge UI backup noise if copied.
+backup_exclude:
+  - options.json
 
 options:
   tz: "America/New_York"
