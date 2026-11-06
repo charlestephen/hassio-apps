@@ -90,8 +90,9 @@ configuration:
     name: DNS UPDATE port
     description: >-
       ACME proxy DNS UPDATE (RFC 2136) listen port inside the container. 0 =
-      disabled. Use 1024–65535 only (image runs as non-root). Map host 53→8053
-      if needed; keep this on an internal network.
+      disabled. Upstream refuses ports below 1024 in its entrypoint check; use
+      1024–65535 and map host 53→8053 if needed. Keep this on an internal
+      network.
   dns_update_host:
     name: DNS UPDATE bind address
     description: Optional bind address for the DNS UPDATE listener (default HOST).

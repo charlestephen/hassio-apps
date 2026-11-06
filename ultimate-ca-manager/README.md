@@ -12,7 +12,7 @@ SSH CA. Thin wrapper on the official Docker image._
 This app maps Home Assistant options to UCM environment variables, persists
 all PKI material under `/ssl/ucm/` (bind-mounted over upstream data volumes;
 `/data/ucm` symlink for addon backups), auto-generates and persists
-`KEY_ENCRYPTION_KEY`, then `exec`s the upstream entrypoint as user `ucm`.
+`KEY_ENCRYPTION_KEY`, then `exec`s the upstream entrypoint as **root**.
 
 The app version tracks upstream releases via `upstream_repo`.
 
