@@ -46,10 +46,37 @@ configuration:
     name: Database connection string
     description: >-
       Leave empty for SQLite under /data. Or a postgres:// URL for PostgreSQL.
+  ui_config_disabled:
+    name: Disable UI configuration
+    description: >-
+      When on, Pocket ID reads application settings (including SMTP) from the
+      environment instead of Settings in the web UI. Automatically enabled if
+      any SMTP field below is set.
+  smtp_host:
+    name: SMTP host
+    description: Mail server hostname (SMTP_HOST).
+  smtp_port:
+    name: SMTP port
+    description: Mail server port as a string, e.g. 587 or 465 (SMTP_PORT).
+  smtp_from:
+    name: SMTP from address
+    description: Envelope/from address (SMTP_FROM).
+  smtp_user:
+    name: SMTP username
+    description: SMTP auth user (SMTP_USER). Leave empty if the server needs none.
+  smtp_password:
+    name: SMTP password
+    description: SMTP auth password (SMTP_PASSWORD).
+  smtp_tls:
+    name: SMTP TLS mode
+    description: "none, starttls, or tls (SMTP_TLS). Use starttls for port 587."
+  smtp_skip_cert_verify:
+    name: SMTP skip certificate verify
+    description: Skip TLS certificate verification for the mail server (insecure).
   env_vars:
     name: Extra environment variables
     description: >-
-      Arbitrary Pocket ID variables (SMTP_*, LDAP_*, UI_CONFIG_DISABLED, OTEL_*,
-      …). Mark secrets with secret: true so values stay out of logs.
+      Arbitrary Pocket ID variables (LDAP_*, EMAIL_*, UI overrides, OTEL_*, …).
+      Mark secrets with secret: true so values stay out of logs.
 network:
   1411/tcp: Pocket ID web UI and OIDC endpoints.

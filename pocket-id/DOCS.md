@@ -26,11 +26,28 @@ volume (SQLite DB, uploads, GeoLite DB, encryption key file).
 To use PostgreSQL instead of SQLite, set **Database connection string** to a
 `postgres://…` URL.
 
+## SMTP
+
+Set **SMTP host**, **port**, **from**, and optionally user/password/TLS in the
+app options. Upstream only loads those from the environment when
+`UI_CONFIG_DISABLED` is true — filling any SMTP field (or enabling **Disable UI
+configuration**) turns that on. Remaining app settings then use env defaults or
+**Extra environment variables** (`EMAIL_*`, `LDAP_*`, …).
+
+| Option | Env |
+| --- | --- |
+| `smtp_host` | `SMTP_HOST` |
+| `smtp_port` | `SMTP_PORT` |
+| `smtp_from` | `SMTP_FROM` |
+| `smtp_user` | `SMTP_USER` |
+| `smtp_password` | `SMTP_PASSWORD` |
+| `smtp_tls` | `SMTP_TLS` (`none` / `starttls` / `tls`) |
+| `smtp_skip_cert_verify` | `SMTP_SKIP_CERT_VERIFY` |
+
 ## Extra settings
 
-SMTP, LDAP, UI-config overrides, OpenTelemetry, and other knobs are not
-duplicated in the form. Add them under **Extra environment variables** using
-the names from the
+LDAP, UI overrides, OpenTelemetry, and other knobs go under **Extra environment
+variables** using names from the
 [Pocket ID env reference](https://pocket-id.org/docs/configuration/environment-variables).
 Mark tokens/passwords with `secret: true`.
 
