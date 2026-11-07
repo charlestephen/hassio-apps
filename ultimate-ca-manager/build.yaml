@@ -3,8 +3,8 @@
 # (Docker Hub: neyslim/ultimate-ca-manager; also ghcr.io/neyslim/ultimate-ca-manager).
 # Hub tags are unprefixed (2.249); GitHub releases use v2.249.
 build_from:
-  aarch64: docker.io/neyslim/ultimate-ca-manager:2.249
-  amd64: docker.io/neyslim/ultimate-ca-manager:2.249
+  aarch64: docker.io/neyslim/ultimate-ca-manager:2.251
+  amd64: docker.io/neyslim/ultimate-ca-manager:2.251
 upstream_repo: "NeySlim/ultimate-ca-manager"
 upstream_build_from: true
 upstream_docker_image: "neyslim/ultimate-ca-manager"
