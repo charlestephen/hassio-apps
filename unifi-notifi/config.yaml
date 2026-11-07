@@ -1,0 +1,51 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "UniFi Notifi"
+version: "1.0.0"
+slug: "unifi_notifi"
+description: "Enrich UniFi Alarm Manager threat webhooks into detailed Slack Block Kit messages"
+url: "https://github.com/charlestephen/hassio-apps/tree/main/unifi-notifi"
+image: "ghcr.io/charlestephen/hassio-addons-unifi-notifi-{arch}"
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+boot: auto
+stage: stable
+panel_icon: mdi:shield-alert
+
+map:
+  - type: data
+    read_only: false
+
+ports:
+  8099/tcp: 8099
+ports_description:
+  8099/tcp: "Alarm Manager webhook receiver (/webhook/<token>)"
+
+options:
+  gateway_url: "https://192.168.1.1"
+  site: "default"
+  unifi_username: ""
+  unifi_password: ""
+  unifi_api_key: ""
+  slack_webhook_url: ""
+  webhook_token: ""
+  settle_seconds: 45
+  lookback_minutes: 15
+  verify_tls: false
+  alarm_name_fallback: "Threat Detected"
+  log_level: info
+schema:
+  gateway_url: url
+  site: str
+  unifi_username: str?
+  unifi_password: password?
+  unifi_api_key: password?
+  slack_webhook_url: password
+  webhook_token: password
+  settle_seconds: int(5,300)
+  lookback_minutes: int(1,120)
+  verify_tls: bool
+  alarm_name_fallback: str
+  log_level: list(debug|info|warn|error)

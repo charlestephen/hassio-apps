@@ -1,0 +1,37 @@
+configuration:
+  gateway_url:
+    name: UniFi gateway URL
+    description: Base URL of the UniFi OS / Network console (e.g. https://192.168.1.1).
+  site:
+    name: Site
+    description: UniFi Network site name (usually default).
+  unifi_username:
+    name: UniFi username
+    description: Local UniFi account used when no API key is set. Needs permission to read threat logs.
+  unifi_password:
+    name: UniFi password
+    description: Password for the local UniFi account. Treated as a secret.
+  unifi_api_key:
+    name: UniFi API key
+    description: Preferred auth on UniFi OS (Integrations → API). When set, username/password are ignored.
+  slack_webhook_url:
+    name: Slack webhook URL
+    description: Incoming webhook URL for the Slack channel. Treated as a secret.
+  webhook_token:
+    name: Webhook token
+    description: Path/query secret Alarm Manager must include (POST /webhook/<token>). Treated as a secret.
+  settle_seconds:
+    name: Settle seconds
+    description: Wait after each Alarm Manager ping so a threat burst can finish landing before enrichment.
+  lookback_minutes:
+    name: Lookback minutes
+    description: How far back to read the UniFi threat log when enriching.
+  verify_tls:
+    name: Verify UniFi TLS
+    description: Verify the gateway certificate. Leave off for the usual self-signed console cert.
+  alarm_name_fallback:
+    name: Alarm name fallback
+    description: Label used in Slack when the webhook body has no alarm name.
+  log_level:
+    name: Log level
+    description: App log verbosity.
