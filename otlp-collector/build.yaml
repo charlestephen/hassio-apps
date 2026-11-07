@@ -7,4 +7,4 @@ upstream_repo: "open-telemetry/opentelemetry-collector-contrib"
 upstream_docker_image: "otel/opentelemetry-collector-contrib"
 upstream_version_arg: OTELCOL_VERSION
 args:
-  OTELCOL_VERSION: "0.164.0"
+  OTELCOL_VERSION: "0.165.0"
