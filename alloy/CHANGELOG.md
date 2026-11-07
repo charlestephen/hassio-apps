@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.21.3-3
+
+- Fix start failure when `/config` already has files: make legacy
+  `addon_configs` migration idempotent (no failing copy/rm under `set -e`).
+
 ## 1.21.3-2
 
 - One-shot migrate: copy legacy `addon_configs/…_alloy` into `/config`, then remove that host directory.

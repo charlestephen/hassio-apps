@@ -14,12 +14,36 @@ SRC="/config/traefik"
 DEST="/homeassistant/traefik"
 MARKER="/homeassistant/.migrated-traefik-from-config"
 
+# Avoid find|head — SIGPIPE under set -e / pipefail can abort when dest is populated.
+dir_has_entries() {
+  local d="$1" f
+  [[ -d "${d}" ]] || return 1
+  for f in "${d}"/*; do
+    [[ -e "${f}" || -L "${f}" ]] || return 1
+    return 0
+  done
+  return 1
+}
+
+rm_tree() {
+  local t="$1" f
+  [[ -e "${t}" || -L "${t}" ]] || return 0
+  rm -rf "${t}" 2>/dev/null || true
+  if [[ -d "${t}" ]]; then
+    for f in "${t}"/* "${t}"/.[!.]* "${t}"/..?*; do
+      [[ -e "${f}" || -L "${f}" ]] || continue
+      rm -rf "${f}" 2>/dev/null || true
+    done
+    rmdir "${t}" 2>/dev/null || true
+  fi
+  return 0
+}
+
 if [[ ! -d "${SRC}" ]]; then
   exit 0
 fi
 
-# Anything under /config/traefik counts as legacy content.
-if [[ -z "$(find "${SRC}" -mindepth 1 -maxdepth 1 2>/dev/null | head -1)" ]]; then
+if ! dir_has_entries "${SRC}"; then
   rmdir "${SRC}" 2>/dev/null || true
   exit 0
 fi
@@ -28,20 +52,30 @@ mkdir -p "${DEST}"
 
 if [[ -f "${MARKER}" ]]; then
   bashio::log.info "Traefik already migrated once; removing leftover ${SRC}"
-  rm -rf "${SRC}"
+  rm_tree "${SRC}"
   exit 0
 fi
 
-dest_has="$(find "${DEST}" -mindepth 1 -maxdepth 1 ! -name '.*' 2>/dev/null | head -1 || true)"
-if [[ -n "${dest_has}" ]]; then
-  bashio::log.info "${DEST} already has data; merging missing files from ${SRC}"
-  # -n: do not overwrite files already present under /homeassistant/traefik.
-  cp -an "${SRC}/." "${DEST}/" || bashio::exit.nok "Failed merging ${SRC} → ${DEST}"
-else
-  bashio::log.info "Copying ${SRC} → ${DEST}"
-  cp -a "${SRC}/." "${DEST}/" || bashio::exit.nok "Failed copying ${SRC} → ${DEST}"
+src_real="$(cd "${SRC}" 2>/dev/null && pwd -P)" || src_real=""
+dest_real="$(cd "${DEST}" 2>/dev/null && pwd -P)" || dest_real=""
+if [[ -n "${src_real}" && "${src_real}" == "${dest_real}" ]]; then
+  bashio::log.info "${SRC} and ${DEST} are the same path; marking migrated"
+  date -u +"%Y-%m-%dT%H:%M:%SZ same-path" > "${MARKER}"
+  exit 0
 fi
+
+# Dest already populated (e.g. operator already uses /homeassistant/traefik):
+# never fail the add-on — cp -an returns non-zero when files already exist.
+if dir_has_entries "${DEST}"; then
+  bashio::log.info "${DEST} already has data; removing leftover ${SRC}"
+  date -u +"%Y-%m-%dT%H:%M:%SZ dest-kept from=${SRC}" > "${MARKER}"
+  rm_tree "${SRC}"
+  exit 0
+fi
+
+bashio::log.info "Copying ${SRC} → ${DEST}"
+cp -a "${SRC}/." "${DEST}/" || bashio::exit.nok "Failed copying ${SRC} → ${DEST}"
 
 date -u +"%Y-%m-%dT%H:%M:%SZ from=${SRC}" > "${MARKER}"
 bashio::log.info "Removing legacy ${SRC}"
-rm -rf "${SRC}"
+rm_tree "${SRC}"
