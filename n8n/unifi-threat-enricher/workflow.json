@@ -1,0 +1,367 @@
+{
+  "name": "UniFi threat enricher",
+  "nodes": [
+    {
+      "id": "a1000001-0000-4000-8000-000000000001",
+      "name": "UniFi alarm",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "unifi-threat-enricher-v1",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "unifi-threat/CHANGE-ME",
+        "responseMode": "onReceived",
+        "options": {}
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000002",
+      "name": "Config",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? $input.first().json;\nconst alarm = body?.alarm && typeof body.alarm === 'object' ? body.alarm : {};\nconst events = Array.isArray(body?.events) ? body.events : [];\nconst first = events[0] && typeof events[0] === 'object' ? events[0] : {};\nconst scope = first.scope && typeof first.scope === 'object' ? first.scope : {};\n\nconst config = {\n  // Edit these for your site. Broader parameterization is deferred (NNR-7).\n  gatewayUrl: 'https://192.168.1.1',\n  site: 'default',\n  // Preferred: UniFi OS API key (X-API-KEY). Leave empty to use UniFi login credential.\n  apiKey: '',\n  // Incoming Slack webhook URL (same delivery path as unifi-notifi).\n  slackWebhookUrl: 'https://hooks.slack.com/services/CHANGE/ME/HERE',\n  lookbackMinutes: 15,\n  // Lets the rest of a burst land in the threat log before it is read.\n  settleSeconds: 45,\n  // When false, UniFi HTTPS calls skip certificate verification (self-signed gateways).\n  verifyTls: false,\n  alarmNameFallback: 'Threat Detected',\n};\n\nconst alarmName = body?.name || alarm.name || body?.alarm_name || config.alarmNameFallback;\nconst alarmTs = body?.timestamp || body?.['@timestamp'] || null;\n\nreturn [{\n  json: {\n    ...config,\n    alarmName,\n    alarmTs,\n    alertKey: first.alert_key || null,\n    siteId: scope.site_id || null,\n    request: $input.first().json,\n  },\n}];\n"
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000003",
+      "name": "Settle",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        300
+      ],
+      "webhookId": "unifi-threat-enricher-settle",
+      "parameters": {
+        "amount": "={{ $('Config').first().json.settleSeconds }}"
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000004",
+      "name": "Use API key?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        700,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "api-key-set",
+              "leftValue": "={{ $('Config').first().json.apiKey }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000005",
+      "name": "UniFi login",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        420
+      ],
+      "parameters": {
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        },
+        "method": "POST",
+        "url": "={{ $('Config').first().json.gatewayUrl }}/api/auth/login",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{ \"rememberMe\": false }"
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000006",
+      "name": "Session cookie",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1160,
+        420
+      ],
+      "parameters": {
+        "jsCode": "const res = $input.first().json;\nconst cookie = [].concat(res.headers?.['set-cookie'] ?? []).map((c) => c.split(';')[0]).join('; ');\nif (!cookie) throw new Error('UniFi login did not return a session cookie');\nreturn [{\n  json: {\n    cookie,\n    csrf: res.headers?.['x-csrf-token'] ?? '',\n    apiKey: '',\n  },\n}];\n"
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000007",
+      "name": "Session API key",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        940,
+        180
+      ],
+      "parameters": {
+        "jsCode": "const cfg = $('Config').first().json;\nif (!cfg.apiKey) throw new Error('apiKey is empty; set Config.apiKey or use UniFi login credentials');\nreturn [{ json: { cookie: '', csrf: '', apiKey: cfg.apiKey } }];\n"
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-00000000000d",
+      "name": "Session",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1380,
+        300
+      ],
+      "parameters": {
+        "jsCode": "return [$input.first()];"
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000008",
+      "name": "Recent threats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const cfg = $('Config').first().json;\nconst session = $('Session').first().json;\nconst headers = { Accept: 'application/json', 'Content-Type': 'application/json' };\nif (session.apiKey) headers['X-API-KEY'] = session.apiKey;\nif (session.cookie) {\n  headers.Cookie = session.cookie;\n  if (session.csrf) headers['X-CSRF-Token'] = session.csrf;\n}\nconst now = Date.now();\nconst body = {\n  timestampFrom: now - cfg.lookbackMinutes * 60000,\n  timestampTo: now,\n  pageSize: 100,\n  pageNumber: 0,\n  threatTypes: ['THREAT', 'HONEYPOT'],\n};\nconst url = cfg.gatewayUrl + '/proxy/network/v2/api/site/' + cfg.site + '/system-log/threat-alert';\nconst payload = await this.helpers.httpRequest({\n  method: 'POST',\n  url,\n  headers,\n  body,\n  json: true,\n  skipSslCertificateValidation: !cfg.verifyTls,\n});\nreturn [{ json: payload ?? {} }];\n"
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-000000000009",
+      "name": "New threats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1820,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const state = $getWorkflowStaticData('global');\nconst now = Date.now();\nstate.seen = Object.fromEntries(Object.entries(state.seen ?? {}).filter(([, at]) => now - at < 86400000));\n\nconst entries = $input.all().flatMap(({ json }) => json.data ?? json.items ?? (json.id ? [json] : []));\nconst ids = [...new Set(entries.map((e) => e.parameters?.THREAT_LOG_ID?.id ?? e.id).filter(Boolean))]\n  .filter((id) => !state.seen[id]);\nfor (const id of ids) state.seen[id] = now;\nreturn ids.map((id) => ({ json: { id } }));\n"
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-00000000000a",
+      "name": "Threat details",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2040,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const cfg = $('Config').first().json;\nconst session = $('Session').first().json;\nconst threatId = $json.id;\nconst headers = { Accept: 'application/json' };\nif (session.apiKey) headers['X-API-KEY'] = session.apiKey;\nif (session.cookie) {\n  headers.Cookie = session.cookie;\n  if (session.csrf) headers['X-CSRF-Token'] = session.csrf;\n}\nconst url = cfg.gatewayUrl + '/proxy/network/v2/api/site/' + cfg.site + '/inspection-logs/threats/' + threatId;\nconst payload = await this.helpers.httpRequest({\n  method: 'GET',\n  url,\n  headers,\n  json: true,\n  skipSslCertificateValidation: !cfg.verifyTls,\n});\nreturn [{ json: payload ?? {} }];\n"
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-00000000000b",
+      "name": "Build Slack message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2260,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const cfg = $('Config').first().json;\nconst state = $getWorkflowStaticData('global');\nconst now = Date.now();\n// Muted signatures (expiry timestamps). v1 has no Slack mute UI; filter still honors static data.\nstate.muted = Object.fromEntries(Object.entries(state.muted ?? {}).filter(([, until]) => until > now));\n\nconst threats = $input.all()\n  .map(({ json }) => (Array.isArray(json.data) ? json.data[0] : json.data) ?? json)\n  .filter((t) => t?.signature && !state.muted[t.signature]);\nif (!threats.length) return [];\n\nconst tally = (key) => {\n  const groups = new Map();\n  for (const t of threats) {\n    const k = key(t);\n    if (!k) continue;\n    const g = groups.get(k) ?? { key: k, count: 0, t };\n    g.count += 1;\n    groups.set(k, g);\n  }\n  return [...groups.values()].sort((a, b) => b.count - a.count);\n};\nconst tick = '\\x60';\nconst esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst top = (groups, line) => {\n  const lines = groups.slice(0, 5).map(line);\n  if (groups.length > 5) lines.push('_+' + (groups.length - 5) + ' more_');\n  return lines.length ? lines.join('\\n') : '_none_';\n};\nconst fmtTs = (ms) => {\n  if (ms == null || ms === '') return '\u2014';\n  let value = Number(ms);\n  if (!Number.isFinite(value)) return '\u2014';\n  if (value > 1e12) value /= 1000;\n  try {\n    return new Date(value * 1000).toISOString().replace('T', ' ').replace(/\\.\\d+Z$/, ' UTC');\n  } catch {\n    return '\u2014';\n  }\n};\n\nconst signatures = tally((t) => t.signature);\nconst sources = tally((t) => t.server_ip);\nconst clients = tally((t) => t.client_mac);\nconst risks = ['high', 'medium', 'low'];\nconst highest = risks.find((r) => threats.some((t) => t.risk === r)) ?? 'unknown';\nconst dot = { high: ':red_circle:', medium: ':large_orange_circle:', low: ':large_yellow_circle:' }[highest] ?? ':white_circle:';\nconst blocked = threats.filter((t) => t.action === 'blocked').length;\nconst plural = threats.length === 1 ? '' : 's';\nconst text = threats.length + ' threat' + plural + ' in the last ' + cfg.lookbackMinutes + ' min (highest risk: ' + highest + ')';\nconst gatewayLink = '<' + cfg.gatewayUrl + '|Open UniFi>';\nconst siteLine = 'site ' + tick + esc(cfg.site) + tick;\nconst when = fmtTs(cfg.alarmTs);\n\nconst blocks = [\n  {\n    type: 'header',\n    text: { type: 'plain_text', text: threats.length + ' threat' + plural + ' in the last ' + cfg.lookbackMinutes + ' min' },\n  },\n  {\n    type: 'context',\n    elements: [{\n      type: 'mrkdwn',\n      text: (\n        dot + ' Highest risk *' + esc(highest) + '*  |  '\n        + 'Blocked ' + blocked + '/' + threats.length + '  |  '\n        + esc(cfg.alarmName) + '  |  ' + siteLine + '  |  ' + when + '  |  ' + gatewayLink\n      ),\n    }],\n  },\n  {\n    type: 'section',\n    text: {\n      type: 'mrkdwn',\n      text: '*Signatures*\\n' + top(signatures, (g) => (\n        '\u2022 *' + g.count + '\u00d7* ' + esc(g.t.signature)\n        + ' _(' + esc(g.t.risk) + ', ' + esc(g.t.signature_type || g.t.category || 'threat') + ')_'\n      )),\n    },\n  },\n  {\n    type: 'section',\n    text: {\n      type: 'mrkdwn',\n      text: '*Sources*\\n' + top(sources, (g) => (\n        '\u2022 *' + g.count + '\u00d7* ' + tick + esc(g.key) + tick + ' '\n        + esc(g.t.counterpart_location || g.t.counterpart_country_code || '')\n        + ' \u00b7 ' + esc(g.t.threat_direction || g.t.direction || '')\n        + ' \u00b7 ' + esc(g.t.action || '')\n      )),\n    },\n  },\n];\n\nif (clients.length) {\n  blocks.push({\n    type: 'section',\n    text: {\n      type: 'mrkdwn',\n      text: '*Clients*\\n' + top(clients, (g) => (\n        '\u2022 *' + g.count + '\u00d7* ' + esc(g.t.client_name || 'unknown') + ' ' + tick + esc(g.key) + tick\n      )),\n    },\n  });\n}\n\nconst sample = threats[0];\nconst extras = [];\nconst proto = sample.protocol || sample.app_proto;\nif (proto) extras.push('*Protocol:* ' + esc(proto));\nconst dst = sample.dest_port || sample.dst_port;\nif (dst) extras.push('*Port:* ' + tick + esc(dst) + tick);\nconst host = sample.host || sample.hostname;\nif (host) extras.push('*Host:* ' + tick + esc(host) + tick);\nif (extras.length) {\n  blocks.push({ type: 'section', text: { type: 'mrkdwn', text: extras.join(' \u00b7 ') } });\n}\n\nreturn [{\n  json: {\n    text,\n    blocks,\n    unfurl_links: false,\n    slackWebhookUrl: cfg.slackWebhookUrl,\n  },\n}];\n"
+      }
+    },
+    {
+      "id": "a1000001-0000-4000-8000-00000000000c",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2480,
+        300
+      ],
+      "parameters": {
+        "options": {},
+        "method": "POST",
+        "url": "={{ $json.slackWebhookUrl }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: $json.text, blocks: $json.blocks, unfurl_links: false }) }}"
+      }
+    }
+  ],
+  "connections": {
+    "UniFi alarm": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Settle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Settle": {
+      "main": [
+        [
+          {
+            "node": "Use API key?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use API key?": {
+      "main": [
+        [
+          {
+            "node": "Session API key",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "UniFi login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UniFi login": {
+      "main": [
+        [
+          {
+            "node": "Session cookie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session cookie": {
+      "main": [
+        [
+          {
+            "node": "Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session API key": {
+      "main": [
+        [
+          {
+            "node": "Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Session": {
+      "main": [
+        [
+          {
+            "node": "Recent threats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recent threats": {
+      "main": [
+        [
+          {
+            "node": "New threats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New threats": {
+      "main": [
+        [
+          {
+            "node": "Threat details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threat details": {
+      "main": [
+        [
+          {
+            "node": "Build Slack message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Slack message": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "hassio-apps-unifi-threat-enricher-v1"
+  }
+}
