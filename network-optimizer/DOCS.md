@@ -48,7 +48,7 @@ for the speed-test app (or their published host ports).
 
 ```yaml
 host_name: homeassistant.local
-# or: host_ip: 10.0.40.3
+# or: host_ip: 203.0.113.10
 openspeedtest_port: "3005"
 openspeedtest_host: homeassistant.local
 openspeedtest_https: false
