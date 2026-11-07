@@ -4,8 +4,8 @@ configuration:
     name: App URL
     description: >-
       Public URL browsers open Pocket ID at (e.g. https://id.example.com), with
-      no path. Passkeys are bound to this domain. Leave empty only for local
-      bring-up (defaults to http://localhost:1411).
+      no path and no trailing slash. Passkeys are bound to this domain. Leave
+      empty only for local bring-up (defaults to http://localhost:1411).
   encryption_key:
     name: Encryption key
     description: >-
@@ -21,15 +21,23 @@ configuration:
     description: >-
       Optional client-IP header from a CDN (e.g. CF-Connecting-IP). Prefer this
       over listing CDN ranges in Trust proxy.
+  internal_app_url:
+    name: Internal App URL
+    description: >-
+      Optional base URL other containers use for token / PAR / JWKS discovery
+      when they cannot reach App URL (e.g. http://pocket-id:1411). Leave empty
+      to use App URL. No trailing slash.
   maxmind_license_key:
     name: MaxMind license key
     description: Free MaxMind key so Pocket ID can download GeoLite2 for audit locations.
   puid:
     name: PUID
-    description: Unix UID Pocket ID runs as (upstream entrypoint). 0 = root.
+    description: >-
+      Unix UID Pocket ID runs as. 0 = root (skips upstream addgroup; recommended
+      default on HA). Non-zero uses upstream entrypoint user setup.
   pgid:
     name: PGID
-    description: Unix GID Pocket ID runs as. 0 = root.
+    description: Unix GID Pocket ID runs as. 0 = root (pair with PUID 0).
   port:
     name: Listen port
     description: TCP port inside the container (default 1411). Match the Network mapping.

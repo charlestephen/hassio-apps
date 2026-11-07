@@ -4,7 +4,7 @@ description: >-
   OpenID Connect Certified™ and OAuth 2.0 provider with passkey-only sign-in.
   Thin wrapper on the official Pocket ID image.
 url: https://github.com/charlestephen/hassio-apps/tree/main/pocket-id
-version: "2.19.2-2"
+version: "2.19.2-3"
 stage: stable
 homeassistant: "2026.6.0"
 slug: pocket_id
@@ -36,6 +36,7 @@ options:
   encryption_key: ""
   trust_proxy: "false"
   trusted_platform: ""
+  internal_app_url: ""
   maxmind_license_key: ""
   puid: 0
   pgid: 0
@@ -45,7 +46,7 @@ options:
   version_check_disabled: false
   db_connection_string: ""
   # Pocket ID only reads SMTP_* (and other app-config) from the environment when
-  # UI_CONFIG_DISABLED is set. Turning this on (or filling any SMTP field) freezes
+  # UI_CONFIG_DISABLED is set. Turning this on (or filling any SMTP field) locks
   # Settings in the Pocket ID UI for those values — manage them here / via env_vars.
   ui_config_disabled: false
   smtp_host: ""
@@ -61,6 +62,7 @@ schema:
   encryption_key: password?
   trust_proxy: str
   trusted_platform: str?
+  internal_app_url: str?
   maxmind_license_key: password?
   puid: int(0,)
   pgid: int(0,)
