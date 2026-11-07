@@ -4,14 +4,14 @@
 #
 # ARGs used in FROM must be declared before the first FROM (BuildKit).
 ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
-ARG OTELCOL_VERSION=0.164.0
+ARG OTELCOL_VERSION=0.165.0
 
 FROM docker.io/otel/opentelemetry-collector-contrib:${OTELCOL_VERSION} AS otelcol
 
 FROM ${BUILD_FROM}
 
 # Re-declare for use inside this stage.
-ARG OTELCOL_VERSION=0.164.0
+ARG OTELCOL_VERSION=0.165.0
 ENV OTELCOL_VERSION=${OTELCOL_VERSION}
 
 RUN apk upgrade --no-cache \

@@ -1,4 +1,4 @@
-ARG BUILD_FROM=docker.io/neyslim/ultimate-ca-manager:2.249
+ARG BUILD_FROM=docker.io/neyslim/ultimate-ca-manager:2.251
 
 # Thin Home Assistant wrapper on Ultimate CA Manager. Map HA options to UCM
 # environment variables, persist PKI under /ssl/ucm (symlinked into /data for
@@ -15,7 +15,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends jq \
     && rm -rf /var/lib/apt/lists/*
 
-ARG UCM_VERSION=2.249
+ARG UCM_VERSION=2.251
 ENV UCM_VERSION=${UCM_VERSION}
 
 COPY rootfs/ /

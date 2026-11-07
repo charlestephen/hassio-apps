@@ -17,6 +17,6 @@ traces path. See [DOCS.md](DOCS.md).
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[release-shield]: https://img.shields.io/badge/version-v0.164.0-blue.svg
+[release-shield]: https://img.shields.io/badge/version-v0.165.0-blue.svg
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/otlp-collector
 [image]: https://hub.docker.com/r/otel/opentelemetry-collector-contrib

@@ -2,7 +2,7 @@
 
 OpenTelemetry Collector Contrib as a Home Assistant app. It wraps the official
 [`otel/opentelemetry-collector-contrib`](https://hub.docker.com/r/otel/opentelemetry-collector-contrib)
-image `0.164.0`: the upstream binary is copied onto the HA base image, options
+image `0.165.0`: the upstream binary is copied onto the HA base image, options
 become a collector YAML, then the wrapper **`exec`s**
 `/usr/bin/otelcol-contrib --config …`.
 
