@@ -1,5 +1,0 @@
----
-# https://github.com/hassio-addons/addon-base
-build_from:
-  aarch64: ghcr.io/hassio-addons/base:stable
-  amd64: ghcr.io/hassio-addons/base:stable
