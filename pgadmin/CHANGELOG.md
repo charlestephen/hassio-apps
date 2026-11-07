@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.19-5
+
+- Skip legacy migration when `/addon_configs/<slug>` is the same inode as `/config`.
+
 ## 9.19-4
 
 - Refresh idempotent legacy migration helpers (comment trim).

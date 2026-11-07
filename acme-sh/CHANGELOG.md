@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.9
+
+- Skip legacy migration when `/addon_configs/<slug>` is the same inode as `/config`.
+
 ## 1.0.8
 
 - Refresh idempotent legacy migration helpers (comment trim).

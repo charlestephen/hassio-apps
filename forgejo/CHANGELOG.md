@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.0.1-4
+
+- Skip legacy migration when `/addon_configs/<slug>` is the same inode as `/config`.
+
 ## 17.0.1-3
 
 - Refresh idempotent legacy migration helpers (comment trim).
