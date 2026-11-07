@@ -56,7 +56,13 @@ fi
 log "persisting Pocket ID data at /data (-> /app/data)"
 
 # --- Essentials ---------------------------------------------------------------
-export_if_set 'app_url' 'APP_URL'
+# Trailing slash breaks issuer comparison and OIDC discovery for some clients.
+APP_URL_VAL="$(get 'app_url')"
+if [ -n "${APP_URL_VAL}" ]; then
+    APP_URL_VAL="${APP_URL_VAL%/}"
+    export APP_URL="${APP_URL_VAL}"
+    log "set APP_URL=${APP_URL}"
+fi
 
 KEY="$(get 'encryption_key')"
 if [ -z "${KEY}" ]; then
@@ -76,6 +82,12 @@ fi
 
 export_if_set 'trust_proxy' 'TRUST_PROXY'
 export_if_set 'trusted_platform' 'TRUSTED_PLATFORM'
+INTERNAL_APP_URL_VAL="$(get 'internal_app_url')"
+if [ -n "${INTERNAL_APP_URL_VAL}" ]; then
+    INTERNAL_APP_URL_VAL="${INTERNAL_APP_URL_VAL%/}"
+    export INTERNAL_APP_URL="${INTERNAL_APP_URL_VAL}"
+    log "set INTERNAL_APP_URL=${INTERNAL_APP_URL}"
+fi
 export_if_set 'maxmind_license_key' 'MAXMIND_LICENSE_KEY'
 
 PUID_VAL="$(get 'puid')"; export PUID="${PUID_VAL:-0}"
@@ -94,6 +106,8 @@ export_true 'version_check_disabled' 'VERSION_CHECK_DISABLED'
 export_if_set 'db_connection_string' 'DB_CONNECTION_STRING'
 
 # --- SMTP (app-config; only honored when UI_CONFIG_DISABLED=true) -------------
+# Do not export SMTP_* (including the form default smtp_tls=none) unless SMTP is
+# actually configured — empty/"default" env values still count as set upstream.
 SMTP_HOST="$(get 'smtp_host')"
 SMTP_PORT="$(get 'smtp_port')"
 SMTP_FROM="$(get 'smtp_from')"
@@ -112,39 +126,36 @@ if is_true 'ui_config_disabled' || [ "${SMTP_ANY}" = "1" ]; then
     fi
 fi
 
-if [ -n "${SMTP_HOST}" ]; then
-    export SMTP_HOST
-    log "set SMTP_HOST=${SMTP_HOST}"
-fi
-if [ -n "${SMTP_PORT}" ]; then
-    export SMTP_PORT
-    log "set SMTP_PORT=${SMTP_PORT}"
-fi
-if [ -n "${SMTP_FROM}" ]; then
-    export SMTP_FROM
-    log "set SMTP_FROM=${SMTP_FROM}"
-fi
-if [ -n "${SMTP_USER}" ]; then
-    export SMTP_USER
-    log "set SMTP_USER=${SMTP_USER}"
-fi
-if [ -n "${SMTP_PASSWORD}" ]; then
-    export SMTP_PASSWORD
-    log "set SMTP_PASSWORD (hidden)"
-fi
-if [ -n "${SMTP_TLS}" ]; then
-    export SMTP_TLS
+if [ "${SMTP_ANY}" = "1" ]; then
+    if [ -n "${SMTP_HOST}" ]; then
+        export SMTP_HOST
+        log "set SMTP_HOST=${SMTP_HOST}"
+    fi
+    if [ -n "${SMTP_PORT}" ]; then
+        export SMTP_PORT
+        log "set SMTP_PORT=${SMTP_PORT}"
+    fi
+    if [ -n "${SMTP_FROM}" ]; then
+        export SMTP_FROM
+        log "set SMTP_FROM=${SMTP_FROM}"
+    fi
+    if [ -n "${SMTP_USER}" ]; then
+        export SMTP_USER
+        log "set SMTP_USER=${SMTP_USER}"
+    fi
+    if [ -n "${SMTP_PASSWORD}" ]; then
+        export SMTP_PASSWORD
+        log "set SMTP_PASSWORD (hidden)"
+    fi
+    export SMTP_TLS="${SMTP_TLS:-none}"
     log "set SMTP_TLS=${SMTP_TLS}"
-elif [ "${SMTP_ANY}" = "1" ]; then
-    export SMTP_TLS=none
-    log "set SMTP_TLS=none"
-fi
-if is_true 'smtp_skip_cert_verify'; then
-    export SMTP_SKIP_CERT_VERIFY=true
-    log "set SMTP_SKIP_CERT_VERIFY=true"
-elif [ "${SMTP_ANY}" = "1" ]; then
-    export SMTP_SKIP_CERT_VERIFY=false
-    log "set SMTP_SKIP_CERT_VERIFY=false"
+    if is_true 'smtp_skip_cert_verify'; then
+        export SMTP_SKIP_CERT_VERIFY=true
+        log "set SMTP_SKIP_CERT_VERIFY=true"
+    else
+        export SMTP_SKIP_CERT_VERIFY=false
+        log "set SMTP_SKIP_CERT_VERIFY=false"
+    fi
 fi
 
 # --- Arbitrary env injection (LDAP, OTEL, more EMAIL_*, …) --------------------
@@ -180,4 +191,9 @@ eval "$(
 )"
 
 log "Starting Pocket ID v${VERSION} ..."
+# Upstream entrypoint runs `addgroup -g "$PGID"` which fails with
+# "gid '0' in use" when PGID is 0. Skip that path and exec as root.
+if [ "${PUID}" = "0" ] && [ "${PGID}" = "0" ]; then
+    exec /app/pocket-id
+fi
 exec /app/docker/entrypoint.sh /app/pocket-id
