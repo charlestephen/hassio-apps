@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.7.17-5
+
+- Treat `/addon_configs/<slug>` and `/config` as the same bind mount when
+  they share an inode; skip copy/rm so start no longer fails.
+
 ## 3.7.17-4
 
 - Refresh idempotent legacy migration helpers (comment trim).
