@@ -1,0 +1,23 @@
+#!/usr/bin/with-contenv bashio
+# =============================================================================
+# UniFi Notifi — Alarm Manager webhook → enriched Slack Block Kit
+# =============================================================================
+set -euo pipefail
+
+export LISTEN_PORT=8099
+export WEBHOOK_TOKEN="$(bashio::config 'webhook_token')"
+export GATEWAY_URL="$(bashio::config 'gateway_url')"
+export SITE="$(bashio::config 'site')"
+export UNIFI_USERNAME="$(bashio::config 'unifi_username')"
+export UNIFI_PASSWORD="$(bashio::config 'unifi_password')"
+export UNIFI_API_KEY="$(bashio::config 'unifi_api_key')"
+export SLACK_WEBHOOK_URL="$(bashio::config 'slack_webhook_url')"
+export SETTLE_SECONDS="$(bashio::config 'settle_seconds')"
+export LOOKBACK_MINUTES="$(bashio::config 'lookback_minutes')"
+export VERIFY_TLS="$(bashio::config 'verify_tls')"
+export ALARM_NAME_FALLBACK="$(bashio::config 'alarm_name_fallback')"
+export LOG_LEVEL="$(bashio::config 'log_level')"
+export UNIFI_NOTIFI_STATE="/data/state.json"
+
+bashio::log.info "Starting UniFi Notifi (gateway=${GATEWAY_URL}, site=${SITE})"
+exec python3 /usr/local/bin/unifi-notifi.py
