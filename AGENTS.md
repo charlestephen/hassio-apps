@@ -7,7 +7,7 @@
 - Always ship an `apparmor.txt` with every Home Assistant app; never leave a new app without one.
 - Always bump Home Assistant add-on `version` semantically when shipping wrapper-only fixes (e.g. `3.7.17-1`) so Supervisor re-pulls the image; Home Assistant does not redownload an unchanged version and does not purge quickly.
 - Do not rewrite existing CHANGELOG history; changelogs are append-only. Leave a blank line and add new upgrade entries only.
-- When testing new or changed Home Assistant apps, run them on the Supervised instance at `http://10.0.3.2:81` (`homez`; was `10.0.3.6`) before treating a fix as verified. Do not assume GHCR/CI alone is enough. Add-ons that need custom bind mounts or `SYS_ADMIN` require Protection mode off.
+- When testing new or changed Home Assistant apps, run them on a Supervised Home Assistant instance (e.g. `http://ha.example.com:8123`) before treating a fix as verified. Do not assume GHCR/CI alone is enough. Add-ons that need custom bind mounts or `SYS_ADMIN` require Protection mode off.
 - On public GitHub repos, add the Buy Me a Coffee sponsorship link `buymeacoffee.com/charlestephen` via the standard GitHub Sponsors/funding metadata.
 - Keep image CI path-filtered so only apps whose own paths change rebuild; a new or changed app must not force rebuilds of unrelated images.
 - Prefer sparse comments in code; skip lengthy explanatory comments unless something is genuinely non-obvious.
