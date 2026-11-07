@@ -1,11 +1,8 @@
 #!/usr/bin/with-contenv bashio
 # shellcheck shell=bash
-# Migrate Traefik YAML left under the old app /config mount into
-# /homeassistant/traefik (HA config dir), then remove the legacy tree.
+# Migrate leftover /config/traefik → /homeassistant/traefik, then remove legacy tree.
 set -e
 
-# If Supervisor still has a leftover addon_configs/<…>_traefik folder, pull it
-# into /config first (requires app_config + all_addon_configs maps).
 # shellcheck source=/dev/null
 . /usr/local/share/hassio-apps/migrate-legacy-app-config.sh
 migrate_legacy_app_config "traefik"
@@ -14,7 +11,6 @@ SRC="/config/traefik"
 DEST="/homeassistant/traefik"
 MARKER="/homeassistant/.migrated-traefik-from-config"
 
-# Avoid find|head — SIGPIPE under set -e / pipefail can abort when dest is populated.
 dir_has_entries() {
   local d="$1" f
   [[ -d "${d}" ]] || return 1
@@ -64,8 +60,6 @@ if [[ -n "${src_real}" && "${src_real}" == "${dest_real}" ]]; then
   exit 0
 fi
 
-# Dest already populated (e.g. operator already uses /homeassistant/traefik):
-# never fail the add-on — cp -an returns non-zero when files already exist.
 if dir_has_entries "${DEST}"; then
   bashio::log.info "${DEST} already has data; removing leftover ${SRC}"
   date -u +"%Y-%m-%dT%H:%M:%SZ dest-kept from=${SRC}" > "${MARKER}"

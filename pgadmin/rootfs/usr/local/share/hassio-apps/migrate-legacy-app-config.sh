@@ -1,41 +1,23 @@
 #!/command/with-contenv sh
 # shellcheck shell=sh
-# One-shot: copy Supervisor legacy addon_configs/<…>_<slug>/ into /config,
-# then remove that legacy directory so it does not leave zombie files.
-#
-# Requires map:
-#   - type: app_config (rw) → /config
-#   - type: all_addon_configs (rw) → /addon_configs
-#
-# Vendored into each app image at:
-#   /usr/local/share/hassio-apps/migrate-legacy-app-config.sh
-# (repo copy lives in common/; docker build context is per-app.)
-#
-# Usage (from cont-init / entrypoint):
-#   . /usr/local/share/hassio-apps/migrate-legacy-app-config.sh
-#   migrate_legacy_app_config "linkding"
-#   migrate_legacy_app_config "acme-sh"
-#
+# One-shot: legacy addon_configs/<…>_<slug>/ → /config, then remove legacy dir.
+# Needs map: app_config → /config, all_addon_configs → /addon_configs
+# Repo copy: common/; vendored per-app at /usr/local/share/hassio-apps/
 
-# True if directory has any non-dot entries. Do not use find|head — SIGPIPE
-# from head closing early can abort callers that run under set -e / pipefail.
 _migrate_dir_has_entries() {
     _d="$1"
     [ -d "${_d}" ] || return 1
     for _f in "${_d}"/*; do
-        # Unmatched glob stays literal when nullglob is off.
         [ -e "${_f}" ] || [ -L "${_f}" ] || return 1
         return 0
     done
     return 1
 }
 
-# Drop a legacy tree. Bind mounts cannot be rmdir'd — never fail the add-on.
 _migrate_rm_tree() {
     _t="$1"
     [ -e "${_t}" ] || [ -L "${_t}" ] || return 0
     rm -rf "${_t}" 2>/dev/null || true
-    # If it was a mount point, clear contents and leave the empty dir.
     if [ -d "${_t}" ]; then
         for _f in "${_t}"/* "${_t}"/.[!.]* "${_t}"/..?*; do
             [ -e "${_f}" ] || [ -L "${_f}" ] || continue
@@ -74,7 +56,6 @@ migrate_legacy_app_config() {
     fi
 
     if [ -f "${_marker}" ]; then
-        # Already migrated once; still drop leftover legacy if present.
         echo "[migrate-legacy-app-config] removing leftover ${_src}"
         _migrate_rm_tree "${_src}"
         return 0
@@ -82,7 +63,6 @@ migrate_legacy_app_config() {
 
     mkdir -p "${_dest}"
 
-    # Same path (bind/symlink): never copy a directory onto itself.
     _src_real="$(cd "${_src}" 2>/dev/null && pwd -P)" || _src_real=""
     _dest_real="$(cd "${_dest}" 2>/dev/null && pwd -P)" || _dest_real=""
     if [ -n "${_src_real}" ] && [ "${_src_real}" = "${_dest_real}" ]; then

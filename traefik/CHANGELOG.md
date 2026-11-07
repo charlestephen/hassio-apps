@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.7.17-4
+
+- Refresh idempotent legacy migration helpers (comment trim).
+
 ## 3.7.17-3
 
 - Fix start failure when `/homeassistant/traefik` already has files: merge used

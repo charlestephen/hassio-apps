@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.3-4
+
+- Refresh idempotent legacy migration helpers (comment trim).
+
 ## 1.21.3-3
 
 - Fix start failure when `/config` already has files: make legacy

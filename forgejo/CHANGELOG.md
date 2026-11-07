@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.0.1-3
+
+- Refresh idempotent legacy migration helpers (comment trim).
+
 ## 17.0.1-2
 
 - Fix start failure when `/config` already has files: make legacy
