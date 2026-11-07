@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Replace private-IP placeholder in default `gateway_url` / translations with `https://unifi.example.com`.
+
 ## 1.0.0
 
 - Initial release: first-party replacement for the deleted `n8n/unifi-threat-enricher` workflow.
