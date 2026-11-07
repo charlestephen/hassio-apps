@@ -131,6 +131,12 @@ Or add it manually:
   chunks. Config UI for list URLs and exclusions; `/manage` UI for on-the-fly
   removals behind a reverse proxy.
 
+### &#10003; [UniFi Notifi](unifi-notifi/)
+
+- Enrich UniFi Alarm Manager threat webhooks into Slack Block Kit (signature,
+  source, client, severity, site, timestamp). First-party replacement for the
+  old n8n threat enricher.
+
 ### &#10003; [Hawser Agent for Dockhand](dockhand-hawser/)
 
 - Runs the [Hawser](https://github.com/Finsys/hawser) agent so
