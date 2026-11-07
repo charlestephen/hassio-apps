@@ -8,9 +8,12 @@ only.
 ## Quick start
 
 1. Install **Pocket ID**.
-2. Set **App URL** to the public HTTPS URL users (and passkeys) will use, e.g.
-   `https://id.example.com` — no path and **no trailing slash**. Passkeys are
-   bound to that domain. The wrapper strips a trailing `/` if present.
+2. **App URL is required** before start. Set it to the public HTTPS URL users
+   (and passkeys) will use, e.g. `https://id.example.com` — no path and **no
+   trailing slash**. Passkeys are bound to that domain. The wrapper strips a
+   trailing `/` if present; if App URL is empty the add-on exits immediately
+   with an error (empty used to default issuer to `http://localhost:1411` and
+   look “frozen” when opened by hostname/IP).
 3. Behind Traefik / a reverse proxy, set **Trust proxy** to `true` (or your
    proxy CIDRs), or set **Trusted platform header** (e.g. `CF-Connecting-IP`).
 4. Start the app. Open the Web UI on port `1411` and create the first admin.
