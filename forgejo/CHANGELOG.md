@@ -1,5 +1,10 @@
 # Changelog
 
+## 17.0.1-2
+
+- Fix start failure when `/config` already has files: make legacy
+  `addon_configs` migration idempotent (no failing copy/rm under `set -e`).
+
 ## 17.0.1-1
 
 - Prefer Supervisor `app_config` map (replaces deprecated `addon_config`).

@@ -1,5 +1,10 @@
 # Changelog
 
+## 9.19-3
+
+- Fix start failure when `/config` already has files: make legacy
+  `addon_configs` migration idempotent (no failing copy/rm under `set -e`).
+
 ## 9.19-2
 
 - Homarr-style OIDC options (`oauth2_*`, `authentication_sources`,

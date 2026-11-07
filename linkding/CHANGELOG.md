@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.47.0-3
+
+- Fix start failure when `/config` already has files: make legacy
+  `addon_configs` migration idempotent (no failing copy/rm under `set -e`).
+
 ## 1.47.0-2
 
 - One-shot migrate: copy legacy `addon_configs/…_linkding` into `/config`, then remove that host directory.
