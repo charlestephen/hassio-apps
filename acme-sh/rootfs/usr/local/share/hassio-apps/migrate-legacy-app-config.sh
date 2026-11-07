@@ -16,6 +16,36 @@
 #   migrate_legacy_app_config "linkding"
 #   migrate_legacy_app_config "acme-sh"
 #
+
+# True if directory has any non-dot entries. Do not use find|head — SIGPIPE
+# from head closing early can abort callers that run under set -e / pipefail.
+_migrate_dir_has_entries() {
+    _d="$1"
+    [ -d "${_d}" ] || return 1
+    for _f in "${_d}"/*; do
+        # Unmatched glob stays literal when nullglob is off.
+        [ -e "${_f}" ] || [ -L "${_f}" ] || return 1
+        return 0
+    done
+    return 1
+}
+
+# Drop a legacy tree. Bind mounts cannot be rmdir'd — never fail the add-on.
+_migrate_rm_tree() {
+    _t="$1"
+    [ -e "${_t}" ] || [ -L "${_t}" ] || return 0
+    rm -rf "${_t}" 2>/dev/null || true
+    # If it was a mount point, clear contents and leave the empty dir.
+    if [ -d "${_t}" ]; then
+        for _f in "${_t}"/* "${_t}"/.[!.]* "${_t}"/..?*; do
+            [ -e "${_f}" ] || [ -L "${_f}" ] || continue
+            rm -rf "${_f}" 2>/dev/null || true
+        done
+        rmdir "${_t}" 2>/dev/null || true
+    fi
+    return 0
+}
+
 migrate_legacy_app_config() {
     _slug="$1"
     _dest="${2:-/config}"
@@ -46,20 +76,24 @@ migrate_legacy_app_config() {
     if [ -f "${_marker}" ]; then
         # Already migrated once; still drop leftover legacy if present.
         echo "[migrate-legacy-app-config] removing leftover ${_src}"
-        rm -rf "${_src}"
+        _migrate_rm_tree "${_src}"
         return 0
-    fi
-
-    _dest_has=""
-    if [ -d "${_dest}" ]; then
-        _dest_has="$(find "${_dest}" -mindepth 1 -maxdepth 1 ! -name '.*' 2>/dev/null | head -1)"
     fi
 
     mkdir -p "${_dest}"
 
-    if [ -n "${_dest_has}" ]; then
+    # Same path (bind/symlink): never copy a directory onto itself.
+    _src_real="$(cd "${_src}" 2>/dev/null && pwd -P)" || _src_real=""
+    _dest_real="$(cd "${_dest}" 2>/dev/null && pwd -P)" || _dest_real=""
+    if [ -n "${_src_real}" ] && [ "${_src_real}" = "${_dest_real}" ]; then
+        echo "[migrate-legacy-app-config] ${_src} and ${_dest} are the same path; marking done"
+        date -u +"%Y-%m-%dT%H:%M:%SZ same-path" > "${_marker}"
+        return 0
+    fi
+
+    if _migrate_dir_has_entries "${_dest}"; then
         echo "[migrate-legacy-app-config] ${_dest} already has data; removing legacy ${_src}"
-        rm -rf "${_src}"
+        _migrate_rm_tree "${_src}"
         date -u +"%Y-%m-%dT%H:%M:%SZ dest-kept" > "${_marker}"
         return 0
     fi
@@ -72,6 +106,6 @@ migrate_legacy_app_config() {
 
     date -u +"%Y-%m-%dT%H:%M:%SZ from=${_src}" > "${_marker}"
     echo "[migrate-legacy-app-config] removing legacy ${_src}"
-    rm -rf "${_src}"
+    _migrate_rm_tree "${_src}"
     return 0
 }

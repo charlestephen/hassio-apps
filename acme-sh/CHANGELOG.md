@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.7
+
+- Fix start failure when `/config` already has files: make legacy
+  `addon_configs` migration idempotent (no failing copy/rm under `set -e`).
+
 ## 1.0.6
 
 - One-shot migrate: copy legacy `addon_configs/…_acme-sh` into `/config`, then remove that host directory.

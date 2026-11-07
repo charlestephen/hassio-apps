@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.7.17-3
+
+- Fix start failure when `/homeassistant/traefik` already has files: merge used
+  `cp -an`, which exits non-zero on existing paths under `set -e`. Migration is
+  now idempotent (drop leftover `/config/traefik`, keep dest).
+
 ## 3.7.17-2
 
 - One-shot migrate: copy leftover `/config/traefik` (and legacy `addon_configs/…_traefik`) into `/homeassistant/traefik`, then remove the legacy trees.
