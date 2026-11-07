@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.19.2-4
+
+- Require **App URL**: the wrapper exits with a clear error if it is empty
+  (or not `http(s)://…`). Empty previously left issuer as
+  `http://localhost:1411`, which made OIDC / passkey login look frozen when
+  the UI was opened on any other host.
+
 ## 2.19.2-3
 
 - Fix OIDC PAR `invalid_request` / `MatchRedirectURIWithClientRedirectURIs`

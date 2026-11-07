@@ -3,9 +3,10 @@ configuration:
   app_url:
     name: App URL
     description: >-
-      Public URL browsers open Pocket ID at (e.g. https://id.example.com), with
-      no path and no trailing slash. Passkeys are bound to this domain. Leave
-      empty only for local bring-up (defaults to http://localhost:1411).
+      Required. Public URL browsers open Pocket ID at (e.g.
+      https://id.example.com), with no path and no trailing slash. Passkeys are
+      bound to this domain. Empty App URL stops the add-on (issuer would
+      otherwise be http://localhost:1411 and OIDC/passkeys break).
   encryption_key:
     name: Encryption key
     description: >-

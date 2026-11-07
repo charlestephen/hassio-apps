@@ -56,13 +56,33 @@ fi
 log "persisting Pocket ID data at /data (-> /app/data)"
 
 # --- Essentials ---------------------------------------------------------------
+# Empty APP_URL makes Pocket ID advertise issuer http://localhost:1411 — OIDC
+# clients and passkeys then look "frozen". Require a real public base URL.
 # Trailing slash breaks issuer comparison and OIDC discovery for some clients.
 APP_URL_VAL="$(get 'app_url')"
-if [ -n "${APP_URL_VAL}" ]; then
-    APP_URL_VAL="${APP_URL_VAL%/}"
-    export APP_URL="${APP_URL_VAL}"
-    log "set APP_URL=${APP_URL}"
+APP_URL_VAL="${APP_URL_VAL%/}"
+if [ -z "${APP_URL_VAL}" ]; then
+    log "ERROR: App URL is required. Set it to the public URL browsers use"
+    log "ERROR: (e.g. https://id.example.com) with no path and no trailing slash."
+    log "ERROR: Leaving it empty defaults issuer to http://localhost:1411 and"
+    log "ERROR: breaks OIDC / passkeys when the app is reached by any other host."
+    exit 1
 fi
+case "${APP_URL_VAL}" in
+    http://*|https://*) ;;
+    *)
+        log "ERROR: App URL must start with http:// or https:// (got: ${APP_URL_VAL})"
+        exit 1
+        ;;
+esac
+export APP_URL="${APP_URL_VAL}"
+log "set APP_URL=${APP_URL}"
+case "${APP_URL}" in
+    http://localhost*|http://127.0.0.1*|https://localhost*|https://127.0.0.1*)
+        log "WARNING: App URL is loopback — fine for local bring-up; passkeys and"
+        log "WARNING: remote OIDC clients need the real public hostname instead."
+        ;;
+esac
 
 KEY="$(get 'encryption_key')"
 if [ -z "${KEY}" ]; then
