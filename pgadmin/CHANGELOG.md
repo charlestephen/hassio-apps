@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.19-4
+
+- Refresh idempotent legacy migration helpers (comment trim).
+
 ## 9.19-3
 
 - Fix start failure when `/config` already has files: make legacy
