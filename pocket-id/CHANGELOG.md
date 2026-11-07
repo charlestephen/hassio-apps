@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.19.2-3
+
+- Fix OIDC PAR `invalid_request` / `MatchRedirectURIWithClientRedirectURIs`
+  guidance: document exact Callback URL registration, Homarr **Base URL**, and
+  strip a trailing slash from **App URL**.
+- Add **Internal App URL** (`INTERNAL_APP_URL`) for split-DNS token/PAR
+  discovery.
+- When **PUID**/**PGID** are `0`, exec `/app/pocket-id` directly to avoid
+  upstream `addgroup: gid '0' in use`.
+- Export `SMTP_*` only when SMTP fields are actually set (ignore default
+  `smtp_tls: none` alone).
+
 ## 2.19.2-2
 
 - Document Homarr and pgAdmin as OIDC clients (Homarr needs
