@@ -65,4 +65,4 @@ old n8n workflow and can return later if needed.
 - Threat and inspection-log endpoints are the undocumented UniFi Network v2
   APIs the console UI uses; they can change with Network updates.
 - Prefer an API key over a password when your console supports Integrations.
-- Do not also run [`n8n/unifi-threat-enricher`](../n8n/unifi-threat-enricher/) against the same alarm.
+- Do not also run a copy of the deleted n8n enricher against the same alarm.

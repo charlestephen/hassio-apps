@@ -8,10 +8,9 @@ posts one enriched Slack Block Kit message per burst.
 
 ## Why
 
-UniFi’s built-in Slack Post action is a one-liner. This app enriches inside
-hassio-apps; the matching n8n workflow is
-[`n8n/unifi-threat-enricher`](../n8n/unifi-threat-enricher/) (do not run both
-against the same alarm).
+UniFi’s built-in Slack Post action is a one-liner. The previous
+`n8n/unifi-threat-enricher` workflow fixed that; this app replaces it inside
+hassio-apps so enrichment lives with the rest of the stack.
 
 ## Quick start
 
