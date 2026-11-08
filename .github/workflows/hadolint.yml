@@ -13,34 +13,66 @@ on:
 permissions:
   contents: read
 
+# One job (not a per-Dockerfile matrix) so GitHub opens a single check context
+# and Actions notification per run instead of one per app Dockerfile.
 jobs:
-  discover:
-    runs-on: ubuntu-latest
-    outputs:
-      dockerfiles: ${{ steps.set.outputs.dockerfiles }}
-    steps:
-      - uses: actions/checkout@v7
-      - id: set
-        run: |
-          list=$(find . -maxdepth 2 -name Dockerfile | sed 's#^\./##' | jq -R . | jq -sc .)
-          echo "dockerfiles=${list}" >> "$GITHUB_OUTPUT"
-
   lint:
-    needs: discover
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        dockerfile: ${{ fromJson(needs.discover.outputs.dockerfiles) }}
     steps:
       - uses: actions/checkout@v7
-      - name: Hadolint ${{ matrix.dockerfile }}
-        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
         with:
-          dockerfile: ${{ matrix.dockerfile }}
-          # DL3006/DL3018 (pin base image / apk versions) are noisy here:
-          # most of these Dockerfiles pin via ARG build args instead of a
-          # literal FROM tag, and Alpine apk packages are intentionally
-          # unpinned to track the base image's own security patches.
-          ignore: DL3006,DL3018
-          failure-threshold: warning
+          fetch-depth: 2
+      - name: Collect Dockerfiles
+        id: set
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            mapfile -t files < <(find . -maxdepth 2 -name Dockerfile | sed 's#^\./##' | sort)
+          elif [ "$EVENT_NAME" = "pull_request" ]; then
+            mapfile -t files < <(
+              git diff --name-only "${BASE_SHA}...${SHA}" -- '*/Dockerfile' 'Dockerfile' \
+                | sort -u
+            )
+          else
+            if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              range="HEAD~1..HEAD"
+            else
+              range="${BEFORE}..${SHA}"
+            fi
+            mapfile -t files < <(
+              git diff --name-only "$range" -- '*/Dockerfile' 'Dockerfile' 2>/dev/null \
+                | sort -u
+            )
+          fi
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "files=" >> "$GITHUB_OUTPUT"
+            echo "No Dockerfiles to lint"
+            exit 0
+          fi
+          printf '%s\n' "${files[@]}" | tee /tmp/dockerfiles.txt
+          {
+            echo "files<<EOF"
+            cat /tmp/dockerfiles.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+      - name: Hadolint
+        if: steps.set.outputs.files != ''
+        env:
+          FILES: ${{ steps.set.outputs.files }}
+        run: |
+          set -euo pipefail
+          # Same image pin family as hadolint/hadolint-action v3.5.0; one job
+          # over the list instead of a per-Dockerfile matrix.
+          mapfile -t files <<< "$FILES"
+          docker run --rm -v "$PWD:/work:ro" -w /work \
+            ghcr.io/hadolint/hadolint:v2.12.0-alpine \
+            hadolint \
+              --ignore DL3006 \
+              --ignore DL3018 \
+              --failure-threshold warning \
+              "${files[@]}"

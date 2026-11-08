@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       addon:
-        description: 'Single app slug to build (blank = all)'
+        description: 'App slug(s) to build: one slug, comma-separated list, or blank = all'
         required: false
 
 # Job-level packages:write is not always enough for first-time GHCR package
@@ -45,12 +45,24 @@ jobs:
           }
 
           if [ -n "${ADDON_INPUT:-}" ]; then
-            if [[ ! "$ADDON_INPUT" =~ ^[a-z0-9_-]+$ ]] || ! is_app "$ADDON_INPUT"; then
-              echo "Unknown app slug: $ADDON_INPUT" >&2
+            # One slug or comma-separated list (track-upstream dispatches once).
+            apps=()
+            IFS=',' read -ra raw <<< "$ADDON_INPUT"
+            for a in "${raw[@]}"; do
+              a="${a//[[:space:]]/}"
+              [ -z "$a" ] && continue
+              if [[ ! "$a" =~ ^[a-z0-9_-]+$ ]] || ! is_app "$a"; then
+                echo "Unknown app slug: $a" >&2
+                exit 1
+              fi
+              apps+=("$a")
+            done
+            if [ "${#apps[@]}" -eq 0 ]; then
+              echo "No valid app slugs in addon input: $ADDON_INPUT" >&2
               exit 1
             fi
-            list=$(jq -cn --arg a "$ADDON_INPUT" '[$a]')
-            echo "Building single app from workflow_dispatch: $list"
+            list=$(printf '%s\n' "${apps[@]}" | jq -R . | jq -sc .)
+            echo "Building dispatched app(s): $list"
           elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             # Blank dispatch = intentional full rebuild of every app.
             list=$(for d in */; do is_app "${d%/}" && echo "${d%/}"; done | jq -R . | jq -sc .)
