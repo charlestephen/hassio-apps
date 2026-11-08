@@ -2,8 +2,8 @@
 
 OpenTelemetry Collector Contrib as a Home Assistant app. It wraps the official
 [`otel/opentelemetry-collector-contrib`](https://hub.docker.com/r/otel/opentelemetry-collector-contrib)
-image `0.165.0`: the upstream binary is copied onto the HA base image, options
-become a collector YAML, then the wrapper **`exec`s**
+image `0.165.0`: the upstream binary is copied onto Alpine, options become a
+collector YAML, then the wrapper **`exec`s**
 `/usr/bin/otelcol-contrib --config …`.
 
 ## Default pipeline (no custom YAML)
@@ -15,6 +15,9 @@ With **OTLP endpoint** set (and Protection mode off for Docker):
 | Metrics | OTLP receive, Docker stats, Home Assistant `/api/prometheus`, optional extra scrapes | OTLP/HTTP (+ optional Prometheus remote_write) |
 | Traces | OTLP receive (`:4317` / `:4318`) | OTLP/HTTP |
 | Logs | OTLP receive | OTLP/HTTP |
+
+Leave **Full collector YAML** empty to use this generated default. Paste a
+complete YAML into that option to replace it entirely on every start.
 
 Optional auto-enable when paths exist in the container:
 
@@ -31,16 +34,16 @@ mounts or use [Grafana Alloy](../alloy/) for container log tailing.
 1. Install **OTLP Collector**.
 2. Turn **Protection mode → OFF** (required for Docker stats).
 3. Set **OTLP endpoint** to your backend base URL, e.g.
-   `http://24c4882f-victoria-logs:9428/insert/opentelemetry` or
-   `http://tempo:4318`.
+   `http://otel-backend.example.com:4318` or
+   `http://logs.example.com:9428/insert/opentelemetry`.
 4. (Recommended) Create a long-lived HA token and paste it into **Home Assistant
    access token**; keep **Scrape Home Assistant Prometheus** on.
-5. Start. Point instrumented apps at `http://<ha-host>:4318`.
+5. Start. Point instrumented apps at `http://ha-host.example.com:4318`.
 
 ### Example app → collector
 
 ```text
-OTEL_EXPORTER_OTLP_ENDPOINT=http://homeassistant.local:4318
+OTEL_EXPORTER_OTLP_ENDPOINT=http://ha-host.example.com:4318
 OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
 ```
 

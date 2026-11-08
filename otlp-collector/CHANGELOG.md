@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.165.0-2
+
+- Fix generated default config for Collector Contrib `0.165.0`: replace removed
+  `service.telemetry.metrics.address` with a Prometheus pull reader on `:8888`
+  so the add-on starts again.
+- Docs: placeholder-only OTLP endpoint examples (no private hostnames).
+
 ## 0.165.0-1
 
 - Slim image: drop `hassio-addons/base` (s6/bashio unused) for Alpine 3.24 +
