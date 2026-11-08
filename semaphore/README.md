@@ -1,5 +1,7 @@
 # Home Assistant App: Semaphore
 
+[![Build][build-shield]][build]
+
 Modern web UI for Ansible, Terraform, OpenTofu, PowerShell, and other DevOps automation tools — running directly inside Home Assistant.
 
 ## About
@@ -18,3 +20,6 @@ Modern web UI for Ansible, Terraform, OpenTofu, PowerShell, and other DevOps aut
 ## Documentation
 
 See [DOCS.md](DOCS.md) for full configuration reference.
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush

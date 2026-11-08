@@ -1,5 +1,8 @@
 # charlestephen's Hassio Apps
 
+[![Build][build-shield]][build]
+[![Dockerfile lint][hadolint-shield]][hadolint]
+
 ## About
 
 My Home Assistant Apps repository.
@@ -174,3 +177,8 @@ Or add it manually:
 [//]: # "ADDONLIST_END"
 
 [instructions]: https://home-assistant.io/hassio/installing_third_party_addons
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush
+[hadolint-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/hadolint.yml/badge.svg?branch=main
+[hadolint]: https://github.com/charlestephen/hassio-apps/actions/workflows/hadolint.yml?query=branch%3Amain

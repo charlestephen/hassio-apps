@@ -1,5 +1,6 @@
 # Home Assistant App: Network Optimizer
 
+[![Build][build-shield]][build]
 [![Release][release-shield]][release]
 
 ![Supports aarch64 Architecture][aarch64-shield]
@@ -24,3 +25,6 @@ Initial admin password is printed once in the app **Log** tab.
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/network-optimizer
 [upstream]: https://github.com/Ozark-Connect/NetworkOptimizer
 [image]: https://ghcr.io/ozark-connect/network-optimizer
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush

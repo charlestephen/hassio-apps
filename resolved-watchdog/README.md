@@ -1,5 +1,7 @@
 # Home Assistant App: Resolved Watchdog
 
+[![Build][build-shield]][build]
+
 Auto-restarts the host's `systemd-resolved` when it hangs, so a node that
 resolves through its **own on-node DNS** self-heals instead of wedging.
 
@@ -10,3 +12,6 @@ resolves through its **own on-node DNS** self-heals instead of wedging.
 
 Built for the circular-dependency hang documented in the host-network DNS
 runbook. See [DOCS.md](DOCS.md).
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush
