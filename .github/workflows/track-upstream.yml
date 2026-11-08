@@ -36,18 +36,28 @@ jobs:
       # The signed commit above is pushed with GITHUB_TOKEN, so it does not
       # trigger build.yml. Without a build, the bumped config version has no
       # matching image tag and Home Assistant cannot install the app.
-      # Dispatch a build for each app the updater changed.
+      # One dispatch for every changed app (comma-separated) so Build + Trivy
+      # + Slack fire once per updater run, not once per app.
       - name: Build updated apps
         if: steps.update.outcome == 'success' || steps.update.outcome == 'failure'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git status --porcelain=v1 -uno | cut -c4- | cut -d/ -f1 | sort -u | while read -r app; do
+          set -euo pipefail
+          apps=()
+          while read -r app; do
+            [ -z "$app" ] && continue
             if [ -f "$app/config.yaml" ] && [ -f "$app/build.yaml" ]; then
-              echo "Dispatching build for $app"
-              gh workflow run build.yml --ref "$GITHUB_REF_NAME" -f addon="$app"
+              apps+=("$app")
             fi
-          done
+          done < <(git status --porcelain=v1 -uno | cut -c4- | cut -d/ -f1 | sort -u)
+          if [ "${#apps[@]}" -eq 0 ]; then
+            echo "No app trees changed; not dispatching a build"
+            exit 0
+          fi
+          joined=$(IFS=,; echo "${apps[*]}")
+          echo "Dispatching one build for: $joined"
+          gh workflow run build.yml --ref "$GITHUB_REF_NAME" -f "addon=$joined"
 
       - name: Report unresolved apps
         if: steps.update.outcome == 'failure'
