@@ -23,19 +23,21 @@ configuration:
     description: Allow /version (VERSION). On by default upstream.
   containers:
     name: Containers
-    description: Allow /containers (CONTAINERS). Needed for docker ps/inspect/logs.
+    description: >-
+      Allow /containers (CONTAINERS). Off by default — inspect can expose
+      container env (tokens/secrets). Enable only if a consumer needs it.
   images:
     name: Images
-    description: Allow /images (IMAGES).
+    description: Allow /images (IMAGES). Off by default.
   info:
     name: Info
-    description: Allow /info (INFO).
+    description: Allow /info (INFO). Off by default.
   networks:
     name: Networks
-    description: Allow /networks (NETWORKS).
+    description: Allow /networks (NETWORKS). Off by default.
   volumes:
     name: Volumes
-    description: Allow /volumes (VOLUMES).
+    description: Allow /volumes (VOLUMES). Off by default.
   post:
     name: Allow POST/PUT/DELETE
     description: >-

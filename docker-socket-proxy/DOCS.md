@@ -2,9 +2,10 @@
 
 Thin Home Assistant wrapper around
 [Tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy)
-(`0.5.0`). It mounts the host Docker socket once and exposes a **filtered**
-TCP Docker API on port `2375`, so other apps can talk to Docker without a
-raw `/var/run/docker.sock` mount.
+(`0.5.0`). It mounts the host Docker socket once and serves a **filtered**
+TCP Docker API on port `2375` **only on the hassio Docker network** (host port
+mapping defaults to `null`). Other apps talk to Docker without a raw
+`/var/run/docker.sock` mount.
 
 ## Protection mode
 
@@ -15,47 +16,52 @@ fail to reach Docker.
 
 ## Point other apps at this proxy
 
-On the Home Assistant Docker network, set:
+Use Supervisor DNS only (same host, hassio network):
 
 ```text
 DOCKER_HOST=tcp://docker-socket-proxy:2375
 ```
 
-`docker-socket-proxy` is this app's `slug` (Supervisor DNS name). Remap the
-published host port in **Network** if you need a different host-side port;
-the container still listens on `2375`.
+`docker-socket-proxy` is this app's `slug`. Do not publish `2375` on the host
+or LAN — the proxy has no TLS or authentication. Access control is the
+allow-list below plus hassio-network reachability.
 
 Examples:
 
 | Consumer | How to wire |
 | --- | --- |
 | Traefik Manager / Agent | Set **Docker host** / `docker_host` to `tcp://docker-socket-proxy:2375` (proxy restart method). |
-| Homarr | Prefer this proxy over mounting the socket; use the same `DOCKER_HOST` value (or Homarr's Docker hostname/port fields). |
-| Any container with a Docker client | `export DOCKER_HOST=tcp://docker-socket-proxy:2375` |
+| Homarr | Prefer this proxy over mounting the socket; same `DOCKER_HOST` (or Homarr's Docker hostname/port fields pointing at this slug). |
+| Any container on hassio | `export DOCKER_HOST=tcp://docker-socket-proxy:2375` |
 
-Do **not** publish `2375` on an untrusted or public network. The proxy has no
-TLS or authentication — access control is the allow-list below plus network
-reachability.
+Enable only the API toggles each consumer needs. In particular, leave
+`containers` off unless required — `GET /containers/{id}/json` can expose
+container env (including tokens/secrets).
 
 ## Options
 
 Boolean options map 1:1 to Tecnativa environment variables (`true` → `1`,
-`false` → `0`). Enable only what each consumer needs.
+`false` → `0`).
 
-### Always-on / usually safe
+### Safe defaults (on)
 
 | Option | Env | Default | Notes |
 | --- | --- | --- | --- |
 | `events` | `EVENTS` | `true` | Event stream |
 | `ping` | `PING` | `true` | `/_ping` |
 | `version` | `VERSION` | `true` | `/version` |
-| `containers` | `CONTAINERS` | `true` | List/inspect containers |
-| `images` | `IMAGES` | `true` | List/inspect images |
-| `info` | `INFO` | `true` | `/info` |
-| `networks` | `NETWORKS` | `true` | Networks |
-| `volumes` | `VOLUMES` | `true` | Volumes |
 
-### Write / dangerous (off by default)
+### Opt-in read APIs (off)
+
+| Option | Env | Default | Notes |
+| --- | --- | --- | --- |
+| `containers` | `CONTAINERS` | `false` | List/inspect — can leak env secrets |
+| `images` | `IMAGES` | `false` | List/inspect images |
+| `info` | `INFO` | `false` | `/info` |
+| `networks` | `NETWORKS` | `false` | Networks |
+| `volumes` | `VOLUMES` | `false` | Volumes |
+
+### Write / dangerous (off)
 
 | Option | Env | Default | Notes |
 | --- | --- | --- | --- |
