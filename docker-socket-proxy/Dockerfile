@@ -2,8 +2,9 @@ ARG BUILD_FROM=docker.io/tecnativa/docker-socket-proxy:v0.5.0@sha256:1f5038b54f0
 
 # Thin Home Assistant wrapper on Tecnativa/docker-socket-proxy. Map HA options
 # to the upstream 0/1 API toggles, then exec its docker-entrypoint + haproxy.
-# BUILD_FROM default is the multi-arch index digest for v0.5.0; CI overrides
-# per-arch digests from build.yaml.
+# rootfs overlays haproxy.cfg.template (HAProxy 3.4 warning fixes) and
+# ha-entrypoint.sh. BUILD_FROM default is the multi-arch index digest for
+# v0.5.0; CI overrides per-arch digests from build.yaml.
 FROM ${BUILD_FROM}
 
 # HA entrypoint must start as root to read /data/options.json.
