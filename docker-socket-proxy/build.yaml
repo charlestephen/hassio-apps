@@ -1,0 +1,14 @@
+---
+# Thin wrapper on Tecnativa/docker-socket-proxy (Alpine HAProxy). Renovate must
+# not bump this pin — track-upstream owns version + CHANGELOG. Digests pin the
+# linux/amd64 and linux/arm64 manifests for v0.5.0 (immutable).
+build_from:
+  aarch64: docker.io/tecnativa/docker-socket-proxy:v0.5.0@sha256:c50ae24d0d3ec88b8cf07fbd9e7e262eba91caf846e632e1a01ad5bbfaa9f47d
+  amd64: docker.io/tecnativa/docker-socket-proxy:v0.5.0@sha256:753044cb0851ce53ab44c2504872ff02ae37be9c294fa8abea3754074e61eab4
+upstream_repo: "Tecnativa/docker-socket-proxy"
+upstream_build_from: true
+upstream_build_from_prefix: v
+upstream_docker_image: "tecnativa/docker-socket-proxy"
+upstream_version_arg: PROXY_VERSION
+args:
+  PROXY_VERSION: "0.5.0"
