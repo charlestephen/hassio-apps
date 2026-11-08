@@ -21,35 +21,20 @@ profile resolved_watchdog flags=(attach_disconnected,mediate_deleted) {
   capability dac_read_search,
   capability sys_admin,
 
-  # S6-Overlay
-  /init rix,
+  /ha-entrypoint.sh rix,
   /bin/** rix,
   /usr/bin/** rix,
   /usr/local/bin/** rix,
-  /run/{s6,s6-rc*,service}/** rix,
-  /package/** rix,
-  /command/** rix,
-  /etc/s6/** rix,
-  /run/s6/** rix,
-  /etc/s6-overlay/{,**} rix,
-  /etc/services.d/** rwix,
-  /etc/cont-init.d/** rwix,
-  /etc/cont-finish.d/** rwix,
-  /var/run/{,**} mrwkl,
-  /run/{,**} rwk,
-  /dev/tty rw,
-
-  # Bashio
-  /usr/lib/bashio/** rix,
-  /tmp/** mrwk,
-
-  # Probe + restart helpers used by the s6 service loop
   /usr/bin/nslookup rix,
   /usr/bin/timeout rix,
   /usr/bin/dbus-send rix,
-  /usr/bin/bash rix,
-  /bin/bash rix,
+  /usr/bin/jq rix,
+
   /data/** rw,
+  /tmp/** mrwk,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
 
   # Host D-Bus (system bus) for RestartUnit on systemd-resolved
   /run/dbus/system_bus_socket rw,
@@ -60,6 +45,9 @@ profile resolved_watchdog flags=(attach_disconnected,mediate_deleted) {
   /etc/hosts r,
   /etc/resolv.conf r,
   /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
   /usr/share/zoneinfo/** r,
   /proc/sys/net/** r,
+  /proc/self/** r,
 }

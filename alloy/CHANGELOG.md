@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.21.3-6
+
+- Slim image: install `unzip` only as a build dep and remove it after Alloy is
+  unpacked (same layer), so it is not left in the runtime image.
+
 ## 1.21.3-5
 
 - Skip legacy migration when `/addon_configs/<slug>` is the same inode as `/config`.
