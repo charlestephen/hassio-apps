@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0-2
+
+- Silence HAProxy 3.4 startup noise from the Tecnativa template: explicit
+  `uid 0` / `chroot /`, non-zero `docker-events` timeouts (`connect 10s`,
+  `server 24h`), drop unused empty `server-state-file`, and
+  `hard-stop-after 5s` so an open `/events` stream cannot hang soft-stop.
+- Overlay keeps upstream `docker-entrypoint.sh` (template → `/tmp/haproxy.cfg`).
+
 ## 0.5.0-1
 
 - Do not publish `2375` on the host by default (`2375/tcp: null` — hassio

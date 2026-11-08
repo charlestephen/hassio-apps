@@ -4,7 +4,7 @@ description: >-
   Filtered TCP proxy for the host Docker socket (Tecnativa/docker-socket-proxy).
   Expose only the Docker API capabilities other apps need.
 url: https://github.com/charlestephen/hassio-apps/tree/main/docker-socket-proxy
-version: "0.5.0-1"
+version: "0.5.0-2"
 stage: stable
 homeassistant: "2026.6.0"
 slug: docker-socket-proxy

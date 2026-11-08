@@ -82,5 +82,19 @@ Boolean options map 1:1 to Tecnativa environment variables (`true` → `1`,
 | `disable_ipv6` | `DISABLE_IPV6` | `false` |
 | `socket_path` | `SOCKET_PATH` | `/var/run/docker.sock` |
 
+## HAProxy overlay
+
+This app ships a small `haproxy.cfg.template` overlay on top of Tecnativa
+`v0.5.0`. The allow-list ACLs match upstream; the overlay only:
+
+- Declares intentional root (`uid 0`, `chroot /`) so HAProxy 3.4 does not
+  warn about implicit root / missing chroot.
+- Sets non-zero `docker-events` timeouts (`connect 10s`, `server 24h`)
+  instead of `timeout server 0` (which warns and can hang soft-stop).
+- Omits the unused empty global server-state file.
+- Sets `hard-stop-after 5s` so SIGTERM finishes even with `/events` open.
+
+Startup still ends in `exec docker-entrypoint.sh haproxy -f /tmp/haproxy.cfg`.
+
 Full upstream reference:
 [Tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy).
