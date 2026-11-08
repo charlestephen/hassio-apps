@@ -1,4 +1,6 @@
 # Home Assistant app: Forgejo by Charles Stephen Thompson
+
+[![Build][build-shield]][build]
 ![Addon Stage][stable-badge]
 ![Supports aarch64 Architecture][aarch64-badge]
 ![Supports amd64 Architecture][amd64-badge]
@@ -13,7 +15,6 @@
 [i386-badge]: https://img.shields.io/badge/i386-no-red.svg?style=for-the-badge
 [stable-badge]: https://img.shields.io/badge/Addon%20stage-stable-green.svg?style=for-the-badge
 
-
 [Forgejo](https://codeberg.org/forgejo) is a painless, self-hosted, all-in-one software development service. It includes Git hosting, code review, team collaboration, package registry, and CI/CD. It is similar to GitHub, Bitbucket, Gitea and GitLab.
 
 ## 🌟 Key Features
@@ -21,3 +22,6 @@
 - **Simplified Configuration**: Minimal setup required
 - **Lightweight**: Optimized for Home Assistant performance
 - **Secure**: Runs with non-root privileges by default
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush

@@ -1,5 +1,6 @@
 # Home Assistant App: Docker Socket Proxy
 
+[![Build][build-shield]][build]
 ![Supports aarch64 Architecture][aarch64-shield]
 ![Supports amd64 Architecture][amd64-shield]
 
@@ -32,3 +33,6 @@ See [DOCS.md](DOCS.md) for API toggles and consumer wiring.
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
 [upstream]: https://github.com/Tecnativa/docker-socket-proxy
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush
