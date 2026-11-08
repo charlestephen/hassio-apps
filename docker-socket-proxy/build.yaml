@@ -1,0 +1,13 @@
+---
+# Thin wrapper on Tecnativa/docker-socket-proxy (Alpine HAProxy). Renovate must
+# not bump this pin — track-upstream owns version + CHANGELOG.
+build_from:
+  aarch64: docker.io/tecnativa/docker-socket-proxy:v0.5.0
+  amd64: docker.io/tecnativa/docker-socket-proxy:v0.5.0
+upstream_repo: "Tecnativa/docker-socket-proxy"
+upstream_build_from: true
+upstream_build_from_prefix: v
+upstream_docker_image: "tecnativa/docker-socket-proxy"
+upstream_version_arg: PROXY_VERSION
+args:
+  PROXY_VERSION: "0.5.0"

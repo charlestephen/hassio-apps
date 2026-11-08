@@ -1,0 +1,105 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: Docker Socket Proxy
+description: >-
+  Filtered TCP proxy for the host Docker socket (Tecnativa/docker-socket-proxy).
+  Expose only the Docker API capabilities other apps need.
+url: https://github.com/charlestephen/hassio-apps/tree/main/docker-socket-proxy
+version: "0.5.0"
+stage: stable
+homeassistant: "2026.6.0"
+slug: docker-socket-proxy
+image: ghcr.io/charlestephen/hassio-addons-docker-socket-proxy-{arch}
+init: false
+startup: services
+boot: auto
+apparmor: true
+panel_icon: mdi:docker
+arch:
+  - aarch64
+  - amd64
+# docker_api mounts the host Docker socket; Supervisor only honors this when
+# Protection mode is off — see DOCS.md.
+docker_api: true
+# Needed so AppArmor/SELinux contexts can talk to the Docker socket (same
+# pattern as other docker_api apps in this repository).
+privileged:
+  - SYS_ADMIN
+ports:
+  2375/tcp: 2375
+ports_description:
+  2375/tcp: Filtered Docker Engine API (no TLS — keep off public networks)
+backup: cold
+
+# Tecnativa/docker-socket-proxy env toggles (0/1). Defaults match a common HA
+# monitoring profile: read APIs on, write/dangerous APIs off.
+# https://github.com/Tecnativa/docker-socket-proxy
+options:
+  log_level: info
+  disable_ipv6: false
+  socket_path: /var/run/docker.sock
+  # Granted by upstream by default
+  events: true
+  ping: true
+  version: true
+  # Common read APIs (off upstream; on here for typical HA consumers)
+  containers: true
+  images: true
+  info: true
+  networks: true
+  volumes: true
+  # Security-critical / write (off)
+  post: false
+  auth: false
+  secrets: false
+  # Other API sections (off)
+  allow_restarts: false
+  allow_start: false
+  allow_stop: false
+  allow_pause: false
+  allow_unpause: false
+  build: false
+  commit: false
+  configs: false
+  distribution: false
+  exec: false
+  grpc: false
+  nodes: false
+  plugins: false
+  services: false
+  session: false
+  swarm: false
+  system: false
+  tasks: false
+schema:
+  log_level: list(debug|info|notice|warning|err|crit|alert|emerg)
+  disable_ipv6: bool
+  socket_path: str
+  events: bool
+  ping: bool
+  version: bool
+  containers: bool
+  images: bool
+  info: bool
+  networks: bool
+  volumes: bool
+  post: bool
+  auth: bool
+  secrets: bool
+  allow_restarts: bool
+  allow_start: bool
+  allow_stop: bool
+  allow_pause: bool
+  allow_unpause: bool
+  build: bool
+  commit: bool
+  configs: bool
+  distribution: bool
+  exec: bool
+  grpc: bool
+  nodes: bool
+  plugins: bool
+  services: bool
+  session: bool
+  swarm: bool
+  system: bool
+  tasks: bool

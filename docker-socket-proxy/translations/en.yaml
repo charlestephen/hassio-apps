@@ -1,0 +1,103 @@
+---
+configuration:
+  log_level:
+    name: Log level
+    description: HAProxy log level (LOG_LEVEL).
+  disable_ipv6:
+    name: Disable IPv6 listen
+    description: >-
+      When on, bind IPv4 only on port 2375 (DISABLE_IPV6). Off binds IPv4+IPv6.
+  socket_path:
+    name: Docker socket path
+    description: >-
+      Path to the host Docker socket inside the container (SOCKET_PATH). Leave
+      as /var/run/docker.sock unless your host uses a different path.
+  events:
+    name: Events
+    description: Allow /events (EVENTS). On by default upstream.
+  ping:
+    name: Ping
+    description: Allow /_ping (PING). On by default upstream.
+  version:
+    name: Version
+    description: Allow /version (VERSION). On by default upstream.
+  containers:
+    name: Containers
+    description: Allow /containers (CONTAINERS). Needed for docker ps/inspect/logs.
+  images:
+    name: Images
+    description: Allow /images (IMAGES).
+  info:
+    name: Info
+    description: Allow /info (INFO).
+  networks:
+    name: Networks
+    description: Allow /networks (NETWORKS).
+  volumes:
+    name: Volumes
+    description: Allow /volumes (VOLUMES).
+  post:
+    name: Allow POST/PUT/DELETE
+    description: >-
+      When off, only GET/HEAD are allowed on enabled sections (POST). Required
+      for any write operation.
+  auth:
+    name: Auth
+    description: Allow /auth (AUTH). Security-critical — keep off unless required.
+  secrets:
+    name: Secrets
+    description: Allow /secrets (SECRETS). Security-critical — keep off.
+  allow_restarts:
+    name: Allow restarts
+    description: Allow container stop/restart/kill paths (ALLOW_RESTARTS).
+  allow_start:
+    name: Allow start
+    description: Allow container start (ALLOW_START).
+  allow_stop:
+    name: Allow stop
+    description: Allow container stop (ALLOW_STOP).
+  allow_pause:
+    name: Allow pause
+    description: Allow container pause (ALLOW_PAUSE).
+  allow_unpause:
+    name: Allow unpause
+    description: Allow container unpause (ALLOW_UNPAUSE).
+  build:
+    name: Build
+    description: Allow /build (BUILD).
+  commit:
+    name: Commit
+    description: Allow /commit (COMMIT).
+  configs:
+    name: Configs
+    description: Allow /configs (CONFIGS).
+  distribution:
+    name: Distribution
+    description: Allow /distribution (DISTRIBUTION).
+  exec:
+    name: Exec
+    description: Allow /exec (EXEC). Dangerous — keep off unless required.
+  grpc:
+    name: gRPC
+    description: Allow /grpc (GRPC).
+  nodes:
+    name: Nodes
+    description: Allow /nodes (NODES).
+  plugins:
+    name: Plugins
+    description: Allow /plugins (PLUGINS).
+  services:
+    name: Services
+    description: Allow /services (SERVICES).
+  session:
+    name: Session
+    description: Allow /session (SESSION).
+  swarm:
+    name: Swarm
+    description: Allow /swarm (SWARM).
+  system:
+    name: System
+    description: Allow /system (SYSTEM), e.g. prune/df.
+  tasks:
+    name: Tasks
+    description: Allow /tasks (TASKS).

@@ -131,6 +131,13 @@ Or add it manually:
   chunks. Config UI for list URLs and exclusions; `/manage` UI for on-the-fly
   removals behind a reverse proxy.
 
+### &#10003; [Docker Socket Proxy](docker-socket-proxy/)
+
+- Filtered TCP proxy for the host Docker socket
+  ([Tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy)).
+  Other apps set `DOCKER_HOST=tcp://docker-socket-proxy:2375` instead of mounting
+  the socket. Version tracks upstream releases.
+
 ### &#10003; [Hawser Agent for Dockhand](dockhand-hawser/)
 
 - Runs the [Hawser](https://github.com/Finsys/hawser) agent so
