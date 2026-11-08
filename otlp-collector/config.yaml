@@ -3,7 +3,7 @@ description: >-
   OpenTelemetry Collector Contrib — collect Home Assistant / Docker metrics and
   receive OTLP logs, traces, and metrics; export to an endpoint you choose.
 url: https://github.com/charlestephen/hassio-apps/tree/main/otlp-collector
-version: "0.165.0-1"
+version: "0.165.0-2"
 stage: stable
 homeassistant: "2026.6.0"
 slug: otlp_collector
@@ -35,9 +35,9 @@ backup: cold
 
 options:
   log_level: info
-  # One OTLP/HTTP base URL for traces + metrics + logs (e.g. http://otel:4318
-  # or http://victoria-logs:9428/insert/opentelemetry). Leave empty only for
-  # bring-up (debug exporter) or when using config_yaml / per-signal URLs.
+  # One OTLP/HTTP base URL for traces + metrics + logs (e.g.
+  # http://otel-backend.example.com:4318). Leave empty only for bring-up
+  # (debug exporter) or when using config_yaml / per-signal URLs.
   otlp_endpoint: ""
   # Optional per-signal overrides (win over otlp_endpoint when set).
   otlp_traces_endpoint: ""
