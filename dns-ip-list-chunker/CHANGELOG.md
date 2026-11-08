@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0-2
+
+- Rebuild without Buildx provenance/SBOM attestations so GHCR tags are plain
+  image manifests again. HA Supervisor could not resolve the OCI index
+  (`unknown/unknown` attestation) and failed to download the add-on image.
+
 ## 1.4.0-1
 
 - Slim image: drop `hassio-addons/base` + s6/bashio for Alpine 3.24 thin wrap
