@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   discover:
@@ -20,12 +21,50 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - id: set
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
         run: |
-          list=$(for d in */; do [ -f "${d}config.yaml" ] && [ -f "${d}build.yaml" ] && echo "${d%/}"; done | jq -R . | jq -sc .)
+          set -euo pipefail
+
+          all_apps() {
+            for d in */; do
+              [ -f "${d}config.yaml" ] && [ -f "${d}build.yaml" ] && echo "${d%/}"
+            done
+          }
+
+          if [ "$EVENT_NAME" = "workflow_run" ]; then
+            # Only apps that actually built in the triggering run. Full-fleet
+            # scans after every single-app rebuild created ~27 check jobs and
+            # a matching Actions notification storm; weekly covers the rest.
+            mapfile -t built < <(
+              gh api "repos/$REPO/actions/runs/$RUN_ID/jobs" --paginate \
+                --jq '[.jobs[].name | capture("^build \\((?<a>[^,]+),") | .a] | unique | .[]'
+            )
+            apps=()
+            for a in "${built[@]+"${built[@]}"}"; do
+              if [ -f "$a/config.yaml" ] && [ -f "$a/build.yaml" ]; then
+                apps+=("$a")
+              fi
+            done
+            if [ "${#apps[@]}" -eq 0 ]; then
+              list='[]'
+              echo "No build matrix jobs in run $RUN_ID; skipping scan"
+            else
+              list=$(printf '%s\n' "${apps[@]}" | jq -R . | jq -sc .)
+              echo "Scanning apps from build run $RUN_ID: $list"
+            fi
+          else
+            list=$(all_apps | jq -R . | jq -sc .)
+            echo "Full-fleet scan ($EVENT_NAME): $list"
+          fi
           echo "apps=${list}" >> "$GITHUB_OUTPUT"
 
   scan:
     needs: discover
+    if: needs.discover.outputs.apps != '[]' && needs.discover.outputs.apps != ''
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
