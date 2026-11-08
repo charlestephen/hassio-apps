@@ -12,14 +12,13 @@ ARG ALLOY_VERSION="1.21.3"
 ARG BUILD_ARCH
 
 # Grafana Alloy is a glibc binary; libc6-compat provides the shim so it runs on
-# Alpine's musl. unzip is used to unpack the release archive.
-RUN apk upgrade --no-cache \
-    && apk add --no-cache libc6-compat unzip
-
+# Alpine's musl. unzip is a build-only dep and is removed in the same layer.
 # Download, checksum-verify and install the Alloy binary. Alloy publishes arm64
 # (not aarch64) assets, so translate the HA arch name on the fly.
-RUN \
-    ARCH="${BUILD_ARCH}" \
+RUN apk upgrade --no-cache \
+    && apk add --no-cache libc6-compat \
+    && apk add --no-cache --virtual .build-deps unzip \
+    && ARCH="${BUILD_ARCH}" \
     && if [ "${ARCH}" = "aarch64" ]; then ARCH="arm64"; fi \
     && ASSET="alloy-linux-${ARCH}.zip" \
     && BASE_URL="https://github.com/grafana/alloy/releases/download/${ALLOY_VERSION}" \
@@ -31,7 +30,8 @@ RUN \
     && unzip -q "/tmp/${ASSET}" -d /tmp/alloy \
     && mv /tmp/alloy/alloy-linux-* /usr/bin/alloy \
     && chmod +x /usr/bin/alloy \
-    && rm -rf /tmp/alloy /tmp/SHA256SUMS /tmp/alloy.sha256 "/tmp/${ASSET}"
+    && rm -rf /tmp/alloy /tmp/SHA256SUMS /tmp/alloy.sha256 "/tmp/${ASSET}" \
+    && apk del .build-deps
 
 # App filesystem: default config, config generator (cont-init) and the
 # s6 long-run service.

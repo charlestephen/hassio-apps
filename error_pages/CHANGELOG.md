@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.2.7-1
+
+- Slim image: drop `hassio-addons/base` + s6/bashio for Alpine 3.24 thin wrap
+  (jq maps options → env, then exec upstream `error-pages serve`).
+
 ## 4.2.7
 
 - Upgrading from upstream version 4.2.6 -> 4.2.7

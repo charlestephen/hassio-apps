@@ -1,7 +1,5 @@
 ---
-# https://github.com/hassio-addons/addon-base
-# This file exists only so GitHub's generic discover workflow (which requires
-# both config.yaml and build.yaml) finds this app.
+# Thin Alpine wrap (no s6/bashio). First-party; no upstream_repo.
 build_from:
-  aarch64: ghcr.io/hassio-addons/base:stable
-  amd64: ghcr.io/hassio-addons/base:stable
+  aarch64: alpine:3.24
+  amd64: alpine:3.24

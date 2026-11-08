@@ -1,23 +1,25 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
+ARG BUILD_FROM=alpine:3.24
 # error-pages ships a single static Go binary in a distroless image; copy it
-# onto the HA base so s6/bashio can supervise it.
+# onto Alpine with jq so the HA options wrapper can map config → env, then exec
+# upstream `error-pages serve` (no s6/bashio).
 # renovate: datasource=docker depName=ghcr.io/tarampampam/error-pages
 ARG ERROR_PAGES_VERSION=4.2.7
 
-# Stage 1: the upstream error-pages image
 FROM ghcr.io/tarampampam/error-pages:${ERROR_PAGES_VERSION} AS errorpages
 
-# Stage 2: final image on the HA base
 FROM ${BUILD_FROM}
 
+ARG ERROR_PAGES_VERSION=4.2.7
+ENV ERROR_PAGES_VERSION=${ERROR_PAGES_VERSION}
+
+# hadolint ignore=DL3018
+RUN apk upgrade --no-cache \
+    && apk add --no-cache ca-certificates jq \
+    && update-ca-certificates
+
 COPY --from=errorpages /bin/error-pages /usr/bin/error-pages
-
-# Copy local files
 COPY rootfs/ /
-
-# Corrects permissions for s6 v3
-RUN if [ -d /etc/cont-init.d ]; then chmod -R 755 /etc/cont-init.d; fi && \
-    if [ -d /etc/services.d ]; then chmod -R 755 /etc/services.d; fi
+RUN chmod +x /ha-entrypoint.sh
 
 EXPOSE 8080
 
@@ -47,3 +49,5 @@ LABEL \
     org.opencontainers.image.created=${BUILD_DATE} \
     org.opencontainers.image.revision=${BUILD_REF} \
     org.opencontainers.image.version=${BUILD_VERSION}
+
+ENTRYPOINT ["/ha-entrypoint.sh"]
