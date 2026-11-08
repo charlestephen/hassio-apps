@@ -1,5 +1,6 @@
 # Home Assistant App: Error Pages
 
+[![Build][build-shield]][build]
 [![Release][release-shield]][release]
 
 ![Supports aarch64 Architecture][aarch64-shield]
@@ -13,3 +14,6 @@ reverse proxy to use — powered by [tarampampam/error-pages][upstream].
 [release-shield]: https://img.shields.io/badge/version-v4.2.7-blue.svg
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/error_pages
 [upstream]: https://github.com/tarampampam/error-pages
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush

@@ -1,5 +1,7 @@
 # Home Assistant App: Cloudflared
 
+[![Build][build-shield]][build]
+
 Dual-replica [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
 for high availability, built on the stock `cloudflare/cloudflared` image.
 
@@ -12,3 +14,6 @@ for high availability, built on the stock `cloudflare/cloudflared` image.
   cloudflared's own self-updater is disabled.
 
 See [DOCS.md](DOCS.md) for setup.
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush

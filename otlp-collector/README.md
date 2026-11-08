@@ -1,5 +1,6 @@
 # Home Assistant App: OTLP Collector
 
+[![Build][build-shield]][build]
 [![Release][release-shield]][release]
 
 ![Supports aarch64 Architecture][aarch64-shield]
@@ -21,3 +22,6 @@ traces path. See [DOCS.md](DOCS.md).
 [release-shield]: https://img.shields.io/badge/version-v0.165.0-2-blue.svg
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/otlp-collector
 [image]: https://hub.docker.com/r/otel/opentelemetry-collector-contrib
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush

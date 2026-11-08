@@ -1,5 +1,6 @@
 # Home Assistant App: DNS/IP List Chunker
 
+[![Build][build-shield]][build]
 [![Release][release-shield]][release]
 [![Open your Home Assistant instance and show the dashboard of an app.][ha-badge]][ha-link]
 
@@ -163,3 +164,6 @@ leave **Public base URL** empty so generated links pick up
 [upstream]: https://github.com/charlestephen/dns-ip-list-chunker
 [ha-badge]: https://my.home-assistant.io/badges/supervisor_addon.svg
 [ha-link]: https://my.home-assistant.io/redirect/supervisor_addon/?addon=dns_ip_list_chunker&repository_url=https%3A%2F%2Fgithub.com%2Fcharlestephen%2Fhassio-apps
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush

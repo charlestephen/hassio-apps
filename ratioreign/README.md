@@ -1,5 +1,6 @@
 # Home Assistant App: RatioReign
 
+[![Build][build-shield]][build]
 [![Release][release-shield]][release]
 
 ![Supports aarch64 Architecture][aarch64-shield]
@@ -20,3 +21,6 @@ torrents, and wire up RSS / qBittorrent sync. See [DOCS.md](DOCS.md).
 [release-shield]: https://img.shields.io/badge/version-v2.2.0-blue.svg
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/ratioreign
 [upstream]: https://github.com/charlestephen/ratioreign
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush

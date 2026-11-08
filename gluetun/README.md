@@ -1,5 +1,6 @@
 # Home Assistant App: Gluetun
 
+[![Build][build-shield]][build]
 [![Release][release-shield]][release]
 
 ![Supports aarch64 Architecture][aarch64-shield]
@@ -21,3 +22,6 @@ Shadowsocks (`8388`). See [DOCS.md](DOCS.md).
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/gluetun
 [upstream]: https://github.com/qdm12/gluetun
 [image]: https://hub.docker.com/r/qmcgaw/gluetun
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush

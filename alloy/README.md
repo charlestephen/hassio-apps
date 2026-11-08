@@ -1,5 +1,7 @@
 # Home Assistant App: Grafana Alloy
 
+[![Build][build-shield]][build]
+
 Ship the logs of **every container** on your Home Assistant host to Loki with
 [Grafana Alloy](https://grafana.com/docs/alloy/latest/) — the supported successor
 to Promtail. Bring your own Alloy config when you need to, or use the built-in
@@ -25,3 +27,6 @@ See [DOCS.md](DOCS.md) for full configuration details.
 ## Architectures
 
 `amd64`, `aarch64`.
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush

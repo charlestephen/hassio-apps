@@ -1,5 +1,6 @@
 # Home Assistant App: Technitium DNS
 
+[![Build][build-shield]][build]
 [![Release][release-shield]][release]
 
 ![Supports aarch64 Architecture][aarch64-shield]
@@ -11,3 +12,6 @@ Technitium DNS Server - an open source authoritative and recursive DNS server wi
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
 [release-shield]: https://img.shields.io/badge/version-v15.6.2-blue.svg
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/technitium
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush
