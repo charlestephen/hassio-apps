@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0-3
+
+- Rebuild as Docker schema2 manifests (`oci-mediatypes=false`). `--provenance=false`
+  alone still published OCI image manifests that GHCR returns as 404 to classic
+  Docker Accept headers; Supervisor install stayed "won't download".
+
 ## 1.4.0-2
 
 - Rebuild without Buildx provenance/SBOM attestations so GHCR tags are plain
