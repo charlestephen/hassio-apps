@@ -1,5 +1,6 @@
 # Home Assistant App: Network Optimizer Speed Test
 
+[![Build][build-shield]][build]
 [![Release][release-shield]][release]
 
 ![Supports aarch64 Architecture][aarch64-shield]
@@ -22,3 +23,6 @@ Web UI: host port **3005** (container 3000).
 [release-shield]: https://img.shields.io/badge/version-v2.10.7-blue.svg
 [release]: https://github.com/charlestephen/hassio-apps/tree/main/network-optimizer-speedtest
 [image]: https://ghcr.io/ozark-connect/speedtest
+
+[build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
+[build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush
