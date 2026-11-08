@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.165.0-1
+
+- Slim image: drop `hassio-addons/base` (s6/bashio unused) for Alpine 3.24 +
+  jq + ca-certificates; still COPY the upstream contrib binary and exec it.
+
 ## 0.165.0
 
 - Upgrading from upstream version 0.164.0 -> 0.165.0

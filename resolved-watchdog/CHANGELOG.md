@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4
+
+- Slim image: drop `hassio-addons/base` + s6/bashio for Alpine 3.24 thin wrap
+  (`dbus`, `bind-tools`, `jq` + `ha-entrypoint.sh`).
+
 ## 1.0.3
 
 - CI: add upstream.yaml (no functional change) to autobuild all applications.

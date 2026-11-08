@@ -1,9 +1,9 @@
 # Official contrib image is FROM scratch (binary only). Copy that binary onto
-# the Home Assistant base so the HA options wrapper has a shell, then exec the
-# same upstream binary with --config.
+# Alpine with jq so the HA options wrapper can generate config, then exec the
+# upstream binary. No s6/bashio — the collector is a single long-running process.
 #
 # ARGs used in FROM must be declared before the first FROM (BuildKit).
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
+ARG BUILD_FROM=alpine:3.24
 ARG OTELCOL_VERSION=0.165.0
 
 FROM docker.io/otel/opentelemetry-collector-contrib:${OTELCOL_VERSION} AS otelcol
@@ -14,8 +14,10 @@ FROM ${BUILD_FROM}
 ARG OTELCOL_VERSION=0.165.0
 ENV OTELCOL_VERSION=${OTELCOL_VERSION}
 
+# hadolint ignore=DL3018
 RUN apk upgrade --no-cache \
-    && apk add --no-cache jq
+    && apk add --no-cache ca-certificates jq \
+    && update-ca-certificates
 
 COPY --from=otelcol /otelcol-contrib /usr/bin/otelcol-contrib
 COPY rootfs/ /

@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
+ARG BUILD_FROM=alpine:3.24
 # renovate: datasource=docker depName=ghcr.io/charlestephen/dns-ip-list-chunker
 ARG DNS_IP_LIST_CHUNKER_VERSION=1.4.0
 
@@ -6,12 +6,17 @@ FROM ghcr.io/charlestephen/dns-ip-list-chunker:${DNS_IP_LIST_CHUNKER_VERSION} AS
 
 FROM ${BUILD_FROM}
 
+ARG DNS_IP_LIST_CHUNKER_VERSION=1.4.0
+ENV DNS_IP_LIST_CHUNKER_VERSION=${DNS_IP_LIST_CHUNKER_VERSION}
+
+# hadolint ignore=DL3018
+RUN apk upgrade --no-cache \
+    && apk add --no-cache ca-certificates jq \
+    && update-ca-certificates
+
 COPY --from=upstream /dns-ip-list-chunker /usr/bin/dns-ip-list-chunker
-
 COPY rootfs/ /
-
-RUN if [ -d /etc/cont-init.d ]; then chmod -R 755 /etc/cont-init.d; fi && \
-    if [ -d /etc/services.d ]; then chmod -R 755 /etc/services.d; fi
+RUN chmod +x /ha-entrypoint.sh
 
 EXPOSE 8080
 
@@ -41,3 +46,5 @@ LABEL \
     org.opencontainers.image.created=${BUILD_DATE} \
     org.opencontainers.image.revision=${BUILD_REF} \
     org.opencontainers.image.version=${BUILD_VERSION}
+
+ENTRYPOINT ["/ha-entrypoint.sh"]

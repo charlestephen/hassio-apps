@@ -1,8 +1,8 @@
 ---
-# https://github.com/hassio-addons/addon-base
+# Multi-stage: upstream distroless binary copied onto Alpine (thin wrap, no s6).
 build_from:
-  aarch64: ghcr.io/hassio-addons/base:stable
-  amd64: ghcr.io/hassio-addons/base:stable
+  aarch64: alpine:3.24
+  amd64: alpine:3.24
 upstream_repo: "tarampampam/error-pages"
 args:
   ERROR_PAGES_VERSION: "4.2.7"

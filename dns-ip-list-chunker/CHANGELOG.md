@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.0-1
+
+- Slim image: drop `hassio-addons/base` + s6/bashio for Alpine 3.24 thin wrap
+  (jq maps options → env/lists, then exec upstream binary).
+
 ## 1.4.0
 
 - Wrap upstream `dns-ip-list-chunker` `1.4.0`.

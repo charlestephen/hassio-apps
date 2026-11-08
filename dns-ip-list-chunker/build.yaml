@@ -1,9 +1,9 @@
 ---
-# Multi-stage: upstream scratch binary copied onto the HA Alpine base (s6 + bashio).
+# Multi-stage: upstream scratch binary copied onto Alpine (thin wrap, no s6).
 build_from:
-  aarch64: ghcr.io/hassio-addons/base:stable
-  amd64: ghcr.io/hassio-addons/base:stable
+  aarch64: alpine:3.24
+  amd64: alpine:3.24
 upstream_repo: "charlestephen/dns-ip-list-chunker"
 upstream_version_arg: DNS_IP_LIST_CHUNKER_VERSION
 args:
-  DNS_IP_LIST_CHUNKER_VERSION: "1.3.0"
+  DNS_IP_LIST_CHUNKER_VERSION: "1.4.0"
