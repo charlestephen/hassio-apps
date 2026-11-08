@@ -6,8 +6,8 @@ configuration:
     name: OTLP endpoint
     description: >-
       Shared OTLP/HTTP base URL for traces, metrics, and logs (e.g.
-      http://tempo:4318 or http://victoria-logs:9428/insert/opentelemetry).
-      Per-signal fields below override this when set.
+      http://otel-backend.example.com:4318). Per-signal fields below override
+      this when set.
   otlp_traces_endpoint:
     name: OTLP traces endpoint (override)
     description: Optional; overrides OTLP endpoint for traces only.

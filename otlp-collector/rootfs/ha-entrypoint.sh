@@ -292,7 +292,12 @@ service:
     logs:
       level: ${LOG_LEVEL}
     metrics:
-      address: 0.0.0.0:8888
+      readers:
+        - pull:
+            exporter:
+              prometheus:
+                host: "0.0.0.0"
+                port: 8888
   pipelines:
     traces:
       receivers: [otlp]
