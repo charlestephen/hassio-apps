@@ -182,9 +182,11 @@ jobs:
           fi
           echo "Pushing ${IMG}:${VERSION}"
           mapfile -t EXTRA < extra_build_args
-          # provenance/sbom attestations wrap the tag in an OCI index with an
-          # unknown/unknown attestation manifest. HA Supervisor cannot resolve
-          # that index (manifest unknown / won't download). Plain image only.
+          # HA Supervisor / older Docker Accept headers do not pull OCI media
+          # types from GHCR (classic Docker schema2 Accept → 404). Buildx
+          # defaults to OCI manifests even with --provenance=false; that only
+          # removes the attestation *index* wrapper. Match official
+          # hassio-addons images: Docker schema2 + gzip layers, no attestations.
           docker buildx build \
             --platform "${PLATFORM}" \
             --provenance=false \
@@ -198,7 +200,5 @@ jobs:
             --build-arg BUILD_REF="${GITHUB_SHA}" \
             --build-arg BUILD_DATE="${DATE}" \
             "${EXTRA[@]}" \
-            -t "${IMG}:${VERSION}" \
-            -t "${IMG}:latest" \
-            --push \
+            --output "type=image,\"name=${IMG}:${VERSION},${IMG}:latest\",push=true,oci-mediatypes=false,compression=gzip,force-compression=true" \
             "$A"
