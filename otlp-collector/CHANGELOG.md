@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.165.0-3
+
+- Rebuild without Buildx provenance/SBOM attestations so GHCR tags are plain
+  image manifests again. HA Supervisor could not resolve the OCI index
+  (`unknown/unknown` attestation) and failed to download the add-on image.
+
 ## 0.165.0-2
 
 - Fix generated default config for Collector Contrib `0.165.0`: replace removed
