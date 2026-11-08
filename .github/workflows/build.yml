@@ -170,8 +170,13 @@ jobs:
           fi
           echo "Pushing ${IMG}:${VERSION}"
           mapfile -t EXTRA < extra_build_args
+          # provenance/sbom attestations wrap the tag in an OCI index with an
+          # unknown/unknown attestation manifest. HA Supervisor cannot resolve
+          # that index (manifest unknown / won't download). Plain image only.
           docker buildx build \
             --platform "${PLATFORM}" \
+            --provenance=false \
+            --sbom=false \
             --build-arg BUILD_ARCH="${ARCH}" \
             --build-arg BUILD_FROM="${BUILD_FROM}" \
             --build-arg BUILD_VERSION="${VERSION}" \
