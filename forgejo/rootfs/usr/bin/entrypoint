@@ -63,6 +63,20 @@ done
 : "${USER_UID:=1000}"
 : "${USER_GID:=1000}"
 
+# SECRET_KEY encrypts data in the database, so a generated key has to survive restarts and updates.
+LEGACY_SECRET_KEY="RNXVG8MSeh5ik6abGFctBMllvVAFWmP2"
+SECRET_KEY_FILE=/data/secret_key
+if [ -z "${SECRET_KEY:-}" ]; then
+    if [ ! -s "${SECRET_KEY_FILE}" ]; then
+        (umask 077; head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n' > "${SECRET_KEY_FILE}")
+        echo "Generated a new SECRET_KEY and stored it in ${SECRET_KEY_FILE}"
+    fi
+    SECRET_KEY="$(cat "${SECRET_KEY_FILE}")"
+    export SECRET_KEY
+elif [ "${SECRET_KEY}" = "${LEGACY_SECRET_KEY}" ]; then
+    echo "WARNING: SECRET_KEY is the default that earlier versions of this app published. Rotate it (see DOCS.md)."
+fi
+
 # Apply timezone
 if [ -n "${TZ}" ] && [ -f "/usr/share/zoneinfo/${TZ}" ]; then
     echo "Setting timezone to ${TZ}"
