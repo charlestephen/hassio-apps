@@ -1,0 +1,79 @@
+configuration:
+  email:
+    name: Admin email
+    description: Email address of the initial pgAdmin administrator. It is the sign-in name.
+  password:
+    name: Admin password
+    description: Password of the initial administrator. Change it from the default before starting.
+  log_level:
+    name: Log level
+    description: Verbosity of the app log.
+  config:
+    name: Custom configuration file
+    description: A full pgAdmin config_local.py to use instead of the generated default. It replaces the defaults entirely.
+  oauth2_enabled:
+    name: Enable single sign-on
+    description: Allow signing in through an OpenID Connect provider.
+  oauth2_name:
+    name: Provider name
+    description: Internal name of the OIDC provider.
+  oauth2_display_name:
+    name: Sign-in button text
+    description: Text of the single sign-on button.
+  oauth2_client_id:
+    name: Client ID
+    description: OIDC client ID.
+  oauth2_client_secret:
+    name: Client secret
+    description: OIDC client secret.
+  oauth2_server_metadata_url:
+    name: Server metadata URL
+    description: The provider's .well-known/openid-configuration URL.
+  oauth2_scope:
+    name: Scopes
+    description: Space separated OIDC scopes to request.
+  oauth2_icon:
+    name: Button icon
+    description: Font Awesome icon class for the sign-in button.
+  oauth2_button_color:
+    name: Button color
+    description: Color of the sign-in button.
+  oauth2_auto_create_user:
+    name: Create users automatically
+    description: Create a pgAdmin user the first time someone signs in through single sign-on.
+  authentication_sources:
+    name: Authentication sources
+    description: Comma separated authentication sources used when single sign-on is enabled. Empty means oauth2,internal.
+  config_vars:
+    name: Extra configuration values
+    description: Additional config_local.py assignments.
+    fields:
+      name:
+        name: Name
+        description: Setting name.
+      value:
+        name: Value
+        description: Setting value.
+      secret:
+        name: Secret
+        description: Keep the value masked in logs.
+  register_postgres:
+    name: Register the PostgreSQL app
+    description: Add a server entry for the PostgreSQL app so it appears in pgAdmin.
+  postgres_host:
+    name: PostgreSQL host
+    description: Host of the server to register. Leave empty to use the PostgreSQL app.
+  postgres_port:
+    name: PostgreSQL port
+    description: Port of the server to register.
+  postgres_user:
+    name: PostgreSQL user
+    description: User name for the registered server.
+  postgres_password:
+    name: PostgreSQL password
+    description: Password for the registered server.
+  postgres_db:
+    name: PostgreSQL database
+    description: Maintenance database of the registered server.
+network:
+  5050/tcp: pgAdmin web UI

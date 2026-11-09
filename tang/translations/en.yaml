@@ -1,0 +1,6 @@
+configuration:
+  log_level:
+    name: Log level
+    description: Verbosity of the app log.
+network:
+  8888/tcp: Tang network-bound disk encryption server
