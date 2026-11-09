@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.47.0-8
+
+- Build fix for 1.47.0-7: copy the no-op helpers as single files, since `/package/admin/s6-overlay` is a symlink.
+
 ## 1.47.0-7
 
 - Replace the HA base banner and log-level helpers with no-ops; they need `bashio`, which this image does not include, and the app failed to start.

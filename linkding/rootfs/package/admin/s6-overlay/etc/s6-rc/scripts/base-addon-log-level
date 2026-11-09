@@ -1,3 +1,0 @@
-#!/bin/sh
-# bashio is not installed in this image; the HA base helper is not needed.
-exit 0
