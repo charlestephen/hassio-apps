@@ -23,6 +23,11 @@ COPY --from=habase /etc/s6-overlay /etc/s6-overlay
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     S6_CMD_WAIT_FOR_SERVICES_MAXTIME=0
 
+# The grafted base-addon helpers start with `with-contenv bashio`, which this
+# image does not have; replace them with no-ops.
+COPY --chmod=755 noop-helper /package/admin/s6-overlay/etc/s6-rc/scripts/base-addon-banner
+COPY --chmod=755 noop-helper /package/admin/s6-overlay/etc/s6-rc/scripts/base-addon-log-level
+
 # App filesystem: config generator (cont-init) + the s6 long-run service.
 COPY rootfs /
 
