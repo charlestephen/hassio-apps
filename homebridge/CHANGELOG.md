@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-02-5
+
+- Guard the layout-migration `rm -rf` with `${STORE:?}` so it can never expand to `/`. No behaviour change.
+
 ## 2026-11-02-4
 
 - `webui` uses `[PROTO:https]` with an `https` bool (default false) so Open Web UI is http unless TLS is enabled.

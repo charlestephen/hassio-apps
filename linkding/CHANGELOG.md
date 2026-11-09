@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.47.0-6
+
+- Stop the service if `cd /etc/linkding` fails instead of running from the wrong directory.
+
 ## 1.47.0-5
 
 - Skip legacy migration when `/addon_configs/<slug>` is the same inode as `/config`.

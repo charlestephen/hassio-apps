@@ -99,7 +99,7 @@ if [ -d "${STORE}/homebridge" ] && [ -f "${STORE}/homebridge/config.json" ]; the
         base="$(basename "${f}")"
         # Never clobber Supervisor options.
         [ "${base}" = "options.json" ] && continue
-        rm -rf "${STORE}/${base}"
+        rm -rf "${STORE:?}/${base}"
         mv "${f}" "${STORE}/"
     done
     shopt -u dotglob nullglob
