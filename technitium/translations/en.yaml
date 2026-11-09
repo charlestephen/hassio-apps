@@ -1,0 +1,40 @@
+configuration:
+  log_level:
+    name: Log level
+    description: Verbosity of the app log.
+  web_service_local_addresses:
+    name: Web console addresses
+    description: Comma separated addresses the web console listens on. 0.0.0.0 listens on all addresses.
+  reset_webservice_config:
+    name: Reset web console settings
+    description: Reset the web console address and port settings to their defaults on the next start.
+  dns_server_domain:
+    name: DNS server domain
+    description: Fully qualified domain name this server uses to identify itself. Read on first start only.
+  dns_server_admin_password:
+    name: Admin password
+    description: Password of the admin user for the web console. Read on first start only.
+  dns_server_prefer_ipv6:
+    name: Prefer IPv6
+    description: Use IPv6 for upstream queries whenever possible. Applied on first start only; change it later in the web console.
+  dns_server_recursion:
+    name: Recursion
+    description: Who may use recursive resolution. AllowOnlyForPrivateNetworks is the safe default. Applied on first start only; change it later in the web console.
+  dns_server_forwarders:
+    name: Forwarders
+    description: Comma separated upstream DNS servers. Leave empty to resolve recursively. Applied on first start only; change it later in the web console.
+  dns_server_forwarder_protocol:
+    name: Forwarder protocol
+    description: Protocol used to reach the forwarders. Applied on first start only; change it later in the web console.
+  dns_server_enable_blocking:
+    name: Enable blocking
+    description: Block domains from the blocked zone and block lists. Applied on first start only; change it later in the web console.
+  dns_server_block_list_urls:
+    name: Block list URLs
+    description: Comma separated block list URLs. Applied on first start only; change it later in the web console.
+  dns_server_optional_protocol_dns_over_http:
+    name: DNS over HTTP
+    description: Accept DNS over plain HTTP on port 80, for use behind a TLS-terminating reverse proxy. Applied on first start only; change it later in the web console.
+  extra_env:
+    name: Extra DNS server variables
+    description: Additional DNS_SERVER_* variables, one per entry in the form NAME=value. Applied on first start only; change it later in the web console.

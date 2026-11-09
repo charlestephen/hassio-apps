@@ -89,7 +89,7 @@ configuration:
     description: Push this agent's own config to its own git repository after changes.
   git_backup_repo:
     name: Git backup repository
-    description: https:// or ssh:// remote URL. file:// and ext:: are rejected.
+    description: "https:// or ssh:// remote URL. file:// and ext:: are rejected."
   git_backup_branch:
     name: Git backup branch
     description: Branch to push to.

@@ -1,0 +1,15 @@
+configuration:
+  superuser_password:
+    name: Superuser password
+    description: Password of the postgres superuser. Change it from the default before starting.
+  database:
+    name: Database
+    description: Name of a database to create on first start.
+  max_connections:
+    name: Maximum connections
+    description: Maximum number of concurrent client connections.
+  log_level:
+    name: Log level
+    description: Verbosity of the app log.
+network:
+  5432/tcp: PostgreSQL

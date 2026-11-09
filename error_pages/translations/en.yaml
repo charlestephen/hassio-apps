@@ -1,0 +1,30 @@
+configuration:
+  theme:
+    name: Theme
+    description: Visual theme of the error pages.
+  default_error_page:
+    name: Default error page
+    description: Status code whose page is shown for the root path and unknown codes, for example 404.
+  send_same_http_code:
+    name: Send same HTTP status code
+    description: Reply with the HTTP status of the requested error page instead of 200.
+  show_details:
+    name: Show request details
+    description: Show request details, such as headers, on the error page.
+  rotation_mode:
+    name: Theme rotation
+    description: Whether and when the theme changes. disabled keeps the selected theme.
+  disable_l10n:
+    name: Disable localization
+    description: Always show pages in English instead of the browser language.
+  proxy_headers:
+    name: Proxy headers
+    description: Comma separated list of request headers passed through to the page.
+  log_level:
+    name: Log level
+    description: Verbosity of the app log.
+  log_format:
+    name: Log format
+    description: Plain console output or JSON lines.
+network:
+  8080/tcp: Error pages HTTP server

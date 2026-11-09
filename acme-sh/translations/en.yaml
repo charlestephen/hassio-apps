@@ -1,0 +1,66 @@
+configuration:
+  email:
+    name: Account email
+    description: >-
+      Email address registered with the certificate authority. Certificates are not issued until this is set.
+  ca:
+    name: Certificate authority
+    description: >-
+      Which CA to use: Let's Encrypt, Let's Encrypt staging (letsencrypt_test), ZeroSSL, or custom (set ACME server).
+  acme_server:
+    name: ACME server
+    description: >-
+      Only used when the certificate authority is custom. ACME directory URL (or an acme.sh short name) of your CA,
+      ACME proxy, or Step CA.
+  certificates:
+    name: Certificates
+    description: One entry per certificate to issue and renew.
+    fields:
+      domain:
+        name: Domain
+        description: Primary domain name (the certificate name).
+      alt_domains:
+        name: Alternative domains
+        description: Extra domain names for the same certificate, separated by commas.
+      challenge:
+        name: Challenge
+        description: How domain control is proved. dns uses a DNS provider hook, standalone and webroot use HTTP.
+      dns_hook:
+        name: DNS hook
+        description: acme.sh DNS API name for the dns challenge, for example dns_cf. Credentials go in Environment variables.
+      dns_sleep:
+        name: DNS wait (seconds)
+        description: Seconds to wait for the TXT record instead of checking public DNS. Leave empty to poll public resolvers.
+      certificate_profile:
+        name: Certificate profile
+        description: CA certificate profile to request, if the CA offers one.
+      renewal_days:
+        name: Renewal days
+        description: Days after issuance when renewal is due. Leave empty for the acme.sh default.
+      webroot:
+        name: Webroot
+        description: Directory for the webroot challenge. Must be under /share, /data, /config, or /ssl.
+      deploy_hooks:
+        name: Deploy hooks
+        description: Deploy hook names, separated by spaces or commas, for example unifios.
+      reload_cmd:
+        name: Reload command
+        description: Command to run after the certificate is installed.
+      home_assistant:
+        name: Install for Home Assistant
+        description: Copy this certificate to /ssl/fullchain.pem and /ssl/privkey.pem. If several entries set this, the last one wins.
+  env_vars:
+    name: Environment variables
+    description: >-
+      Variables exported before every acme.sh command, such as DNS provider credentials. Names must be shell
+      identifiers. Values are masked on this screen.
+    fields:
+      name:
+        name: Name
+        description: Variable name.
+      value:
+        name: Value
+        description: Variable value.
+      secret:
+        name: Secret
+        description: Keep the value masked in logs.

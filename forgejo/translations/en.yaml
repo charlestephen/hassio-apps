@@ -1,0 +1,96 @@
+configuration:
+  USER_UID:
+    name: User ID
+    description: Numeric user ID the Forgejo process runs as.
+  USER_GID:
+    name: Group ID
+    description: Numeric group ID the Forgejo process runs as.
+  TZ:
+    name: Time zone
+    description: Time zone name, for example America/New_York.
+  APP_NAME:
+    name: Site name
+    description: Name shown in the web interface.
+  DOMAIN:
+    name: Domain
+    description: Domain name used in generated links, for example for clone URLs.
+  ROOT_URL:
+    name: Public URL
+    description: Full public URL of the web interface, including the port when it is not 80 or 443.
+  HTTP_PORT:
+    name: HTTP port
+    description: Port Forgejo listens on inside the container.
+  SSH_LISTEN_PORT:
+    name: SSH listen port
+    description: Port the built-in SSH server listens on inside the container.
+  SSH_PORT:
+    name: SSH port in clone URLs
+    description: SSH port shown in clone URLs. Should match the host port you publish for SSH.
+  DISABLE_SSH:
+    name: Disable SSH
+    description: Turn the built-in SSH server off entirely.
+  SECRET_KEY:
+    name: Secret key
+    description: >-
+      Signs cookies and tokens and encrypts data such as two-factor secrets. Leave empty to generate a random key on
+      first start.
+  INSTALL_LOCK:
+    name: Install lock
+    description: Skip the first-run setup page. Keep this on.
+  DB_TYPE:
+    name: Database type
+    description: sqlite3 needs no setup. mysql and postgres use an external database.
+  DISABLE_REGISTRATION:
+    name: Disable registration
+    description: Stop new users from signing themselves up.
+  REQUIRE_SIGNIN_VIEW:
+    name: Require sign-in to view
+    description: Require a login to view anything, for fully private instances.
+  SHOW_REGISTRATION_BUTTON:
+    name: Show registration button
+    description: Show the register button on the sign-in page.
+  DEFAULT_USER_VISIBILITY:
+    name: Default user visibility
+    description: Visibility of newly created user profiles.
+  LFS_START_SERVER:
+    name: Enable Git LFS
+    description: Start the Git Large File Storage server.
+  DEFAULT_BRANCH:
+    name: Default branch
+    description: Name of the first branch in new repositories.
+  DEFAULT_PRIVATE:
+    name: Default repository visibility
+    description: Visibility offered for new repositories. last remembers the previous choice.
+  ENABLE_PUSH_CREATE_USER:
+    name: Create repositories on push (users)
+    description: Allow a push to a new repository path to create it for a user.
+  ENABLE_PUSH_CREATE_ORG:
+    name: Create repositories on push (organizations)
+    description: Allow a push to a new repository path to create it in an organization.
+  MAILER_ENABLED:
+    name: Enable email
+    description: Send email notifications through the SMTP settings below.
+  MAILER_FROM:
+    name: Email sender
+    description: From address of outgoing email.
+  MAILER_SMTP_ADDR:
+    name: SMTP server
+    description: Host name of the SMTP server.
+  MAILER_SMTP_PORT:
+    name: SMTP port
+    description: Port of the SMTP server.
+  MAILER_USER:
+    name: SMTP user
+    description: User name for the SMTP server.
+  MAILER_PASSWD:
+    name: SMTP password
+    description: Password for the SMTP server.
+  MAILER_PROTOCOL:
+    name: SMTP protocol
+    description: Connection security used with the SMTP server.
+  LOG_LEVEL:
+    name: Log level
+    description: Verbosity of the app log.
+network:
+  3000/tcp: Web interface
+  22/tcp: SSH for Git over SSH
