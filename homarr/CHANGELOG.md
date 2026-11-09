@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.12.0-1
+
+- Remove the empty `oidc_token_endpoint_auth_method` default, which failed the option schema and stopped the app from starting.
+
 ## 2.12.0
 
 - Upgrading from upstream version 2.11.1-2 -> 2.12.0

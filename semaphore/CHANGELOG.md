@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.19.17-1
+
+- Refuse to start while `cookie_hash`, `cookie_encryption` or `access_key_encryption` still hold the placeholder, instead of panicking on invalid base64.
+
 ## 2.19.17
 
 - Roll back from 2.19.18: GitHub released `v2.19.18` but Docker Hub never
