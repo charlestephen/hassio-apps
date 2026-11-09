@@ -63,3 +63,135 @@ configuration:
   oidc_scopes:
     name: OIDC scopes
     description: Space-separated scopes to request. Default "openid profile email".
+  cookie_hash:
+    name: Cookie hash key
+    description: Base64 key used to sign session cookies. Replace the placeholder before first start.
+  cookie_encryption:
+    name: Cookie encryption key
+    description: Base64 key used to encrypt session cookies. Replace the placeholder before first start.
+  access_key_encryption:
+    name: Access key encryption key
+    description: Base64 key used to encrypt stored access keys. Replace the placeholder before first start.
+  admin_username:
+    name: Admin username
+    description: Username of the administrator account created on first start.
+  admin_password:
+    name: Admin password
+    description: Password of the administrator account created on first start. Change it from the default.
+  admin_name:
+    name: Admin display name
+    description: Display name of the administrator account.
+  admin_email:
+    name: Admin email
+    description: Email address of the administrator account.
+  web_root:
+    name: Web root
+    description: URL path prefix when Semaphore is served under a sub-path. Leave empty otherwise.
+  schedule_timezone:
+    name: Schedule timezone
+    description: Timezone for scheduled tasks, for example "Europe/Berlin". Empty uses the Semaphore default.
+  max_parallel_tasks:
+    name: Maximum parallel tasks
+    description: Limit on tasks running at once. 0 leaves the Semaphore default.
+  max_task_duration_sec:
+    name: Maximum task duration (seconds)
+    description: Tasks running longer than this are stopped. 0 leaves the Semaphore default.
+  max_tasks_per_template:
+    name: Tasks kept per template
+    description: Number of past tasks kept for each template. 0 leaves the Semaphore default.
+  git_client:
+    name: Git client
+    description: "Git implementation used for repositories: cmd_git (git binary) or go_git (built in)."
+  password_login_disabled:
+    name: Disable password login
+    description: Hide the username and password form. Enable only after another login method works.
+  non_admin_can_create_project:
+    name: Let non-admins create projects
+    description: Allow users who are not administrators to create projects.
+  totp_enabled:
+    name: Enable TOTP
+    description: Let users enable time-based one-time-password two-factor authentication.
+  totp_allow_recovery:
+    name: Allow TOTP recovery
+    description: Let users recover their account with recovery codes if they lose their TOTP device.
+  totp_issuer:
+    name: TOTP issuer
+    description: Name shown in authenticator apps.
+  email_alert:
+    name: Enable email alerts
+    description: Send alerts by email. Fill the SMTP fields below.
+  email_sender:
+    name: Email sender
+    description: From address of alert emails.
+  email_host:
+    name: SMTP host
+    description: SMTP server hostname.
+  email_port:
+    name: SMTP port
+    description: SMTP server port.
+  email_username:
+    name: SMTP username
+    description: Username for the SMTP server, if it requires authentication.
+  email_password:
+    name: SMTP password
+    description: Password for the SMTP server. Stored as a secret.
+  email_secure:
+    name: SMTP secure connection
+    description: Use a secure connection to the SMTP server.
+  email_tls:
+    name: SMTP TLS
+    description: Use TLS for the SMTP connection.
+  ldap_enable:
+    name: Enable LDAP login
+    description: Authenticate users against an LDAP server. Fill the LDAP fields below.
+  ldap_server:
+    name: LDAP server
+    description: LDAP server address as host:port.
+  ldap_bind_dn:
+    name: LDAP bind DN
+    description: Distinguished name used to bind to the LDAP server.
+  ldap_bind_password:
+    name: LDAP bind password
+    description: Password for the bind DN. Stored as a secret.
+  ldap_search_dn:
+    name: LDAP search DN
+    description: Base DN searched for users.
+  ldap_search_filter:
+    name: LDAP search filter
+    description: Filter used to find a user.
+  ldap_needtls:
+    name: LDAP require TLS
+    description: Require a TLS connection to the LDAP server.
+  ldap_mapping_dn:
+    name: LDAP DN attribute
+    description: LDAP attribute holding the distinguished name.
+  ldap_mapping_mail:
+    name: LDAP mail attribute
+    description: LDAP attribute mapped to the user's email.
+  ldap_mapping_uid:
+    name: LDAP username attribute
+    description: LDAP attribute mapped to the username.
+  ldap_mapping_cn:
+    name: LDAP name attribute
+    description: LDAP attribute mapped to the display name.
+  telegram_alert:
+    name: Enable Telegram alerts
+    description: Send alerts to Telegram. Fill the chat and token below.
+  telegram_chat:
+    name: Telegram chat ID
+    description: Chat that receives alerts.
+  telegram_token:
+    name: Telegram bot token
+    description: Bot token. Treated as a secret.
+  slack_alert:
+    name: Enable Slack alerts
+    description: Send alerts to Slack. Set the webhook URL below.
+  rocketchat_alert:
+    name: Enable Rocket.Chat alerts
+    description: Send alerts to Rocket.Chat. Set the webhook URL below.
+  microsoft_teams_alert:
+    name: Enable Microsoft Teams alerts
+    description: Send alerts to Microsoft Teams. Set the webhook URL below.
+  ansible_host_key_checking:
+    name: Ansible host key checking
+    description: Make Ansible verify SSH host keys. Off by default, which accepts unknown hosts.

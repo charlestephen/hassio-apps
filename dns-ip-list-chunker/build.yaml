@@ -1,8 +1,8 @@
 ---
 # Multi-stage: upstream scratch binary copied onto Alpine (thin wrap, no s6).
 build_from:
-  aarch64: alpine:3.24
-  amd64: alpine:3.24
+  aarch64: docker.io/library/alpine:3.24
+  amd64: docker.io/library/alpine:3.24
 upstream_repo: "charlestephen/dns-ip-list-chunker"
 upstream_version_arg: DNS_IP_LIST_CHUNKER_VERSION
 args:
