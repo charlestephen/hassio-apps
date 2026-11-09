@@ -152,6 +152,12 @@ Or add it manually:
 - Official `homebridge/homebridge` image with host networking for HomeKit.
   Config UI on port 8581; version tracks dated docker-homebridge tags.
 
+### &#10003; [Homarr](homarr/)
+
+- [Homarr](https://homarr.dev) dashboard for your homelab with widgets,
+  integrations and SSO/OIDC. Web UI on port 7575; version tracks upstream
+  Homarr releases.
+
 ### &#10003; [Traefik](traefik/)
 
 - [Traefik](https://traefik.io/) reverse proxy with file-based dynamic config,
