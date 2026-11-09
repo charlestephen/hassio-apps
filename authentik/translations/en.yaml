@@ -1,0 +1,48 @@
+---
+configuration:
+  db_host:
+    name: Database host
+    description: Hostname of the PostgreSQL server. The PostgreSQL app is reachable as dd815a57-postgres.
+  db_port:
+    name: Database port
+    description: PostgreSQL port.
+  db_name:
+    name: Database name
+    description: Database authentik uses. Created on start when the admin password below is set.
+  db_user:
+    name: Database user
+    description: Role authentik connects as. Created on start when the admin password below is set.
+  db_password:
+    name: Database password
+    description: Required. Password of the database user.
+  db_admin_user:
+    name: Database admin user
+    description: PostgreSQL superuser used to create the role and database. Default postgres.
+  db_admin_password:
+    name: Database admin password
+    description: >-
+      Optional. When set, the app creates the database role and database on
+      start if they are missing. Leave empty if you create them yourself.
+  secret_key:
+    name: Secret key
+    description: >-
+      Signs sessions and encrypts stored secrets. Leave empty to generate one on
+      first start, stored in /data/.secret_key. Back it up; changing it later
+      makes stored secrets unreadable.
+  bootstrap_email:
+    name: Initial admin email
+    description: Email of the akadmin account. Only used on the first start.
+  bootstrap_password:
+    name: Initial admin password
+    description: >-
+      Password of the akadmin account. Only used on the first start. If empty,
+      open /if/flow/initial-setup/ in the browser to set it.
+  log_level:
+    name: Log level
+    description: authentik log verbosity.
+  env_vars:
+    name: Extra environment variables
+    description: Any other AUTHENTIK_* variable, for example AUTHENTIK_DISABLE_UPDATE_CHECK=true.
+network:
+  9000/tcp: Authentik web UI and OIDC endpoints (HTTP)
+  9443/tcp: Authentik web UI and OIDC endpoints (HTTPS, self-signed)

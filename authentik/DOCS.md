@@ -1,0 +1,53 @@
+# Authentik
+
+Thin Home Assistant wrapper around the official
+[authentik](https://goauthentik.io) image (`2026.8.5`). The upstream
+entrypoint runs in `allinone` mode, so the server and the worker run in one
+container.
+
+## Quick start
+
+1. Install and start the **PostgreSQL** app from this repository.
+2. Install **Authentik**. In its configuration set:
+   - **Database password**: a new password for the `authentik` role.
+   - **Database admin password**: the PostgreSQL app's superuser password. With
+     it, the app creates the `authentik` role and database on start. Leave it
+     empty if you create them yourself.
+3. Optionally set **Initial admin email** and **Initial admin password** for the
+   `akadmin` account. Without them, open `/if/flow/initial-setup/` on first
+   start and set the password there.
+4. Start the app and open the web UI on port `9000`.
+
+## Options
+
+| Option | Meaning |
+|--------|---------|
+| Database host / port / name / user / password | Connection to PostgreSQL. The PostgreSQL app is `dd815a57-postgres`. |
+| Database admin user / password | Used only to create the role and database. |
+| Secret key | Leave empty to generate one on first start (`/data/.secret_key`). Back it up. |
+| Initial admin email / password | First start only. |
+| Log level | `trace`, `debug`, `info`, `warning` or `error`. |
+| Extra environment variables | Any other `AUTHENTIK_*` variable. |
+
+## Behind a reverse proxy
+
+authentik trusts `X-Forwarded-*` headers from private address ranges by default,
+so a Traefik app on the same host works without extra settings. Use the public
+HTTPS address when you register OIDC redirect URIs.
+
+## Ports
+
+| Port | Use |
+|------|-----|
+| `9000/tcp` | Web UI and OIDC endpoints (HTTP) |
+| `9443/tcp` | Same, HTTPS with a self-signed certificate |
+
+## Data
+
+Media and the generated secret key are stored in `/data` and included in backups.
+The database lives in the PostgreSQL app and must be backed up with it.
+
+## Not included
+
+The stock compose file mounts the Docker socket into the worker so authentik can
+manage outposts. This app does not, so outposts must be run separately.

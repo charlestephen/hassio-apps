@@ -1,0 +1,7 @@
+---
+# Thin wrapper on authentik's official multi-arch image.
+build_from:
+  aarch64: ghcr.io/goauthentik/server:2026.8.5
+  amd64: ghcr.io/goauthentik/server:2026.8.5
+args:
+  AUTHENTIK_VERSION: "2026.8.5"

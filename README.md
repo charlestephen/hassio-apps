@@ -46,6 +46,12 @@ Or add it manually:
   successor). Bring your own Alloy config, or use the built-in Docker → Loki
   default.
 
+### &#10003; [Authentik](authentik/)
+
+- Identity provider (OpenID Connect, OAuth 2.0, SAML, LDAP). Thin wrapper on
+  `ghcr.io/goauthentik/server` running server and worker in one process, using
+  the PostgreSQL app for its database.
+
 ### &#10003; [Cloudflared](cloudflared/)
 
 - Dual-replica Cloudflare Tunnel for high availability - two connectors of one
