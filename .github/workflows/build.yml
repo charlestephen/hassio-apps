@@ -27,10 +27,11 @@ jobs:
     outputs:
       addons: ${{ steps.set.outputs.addons }}
     steps:
-      # fetch-depth 2 so push events can diff against the previous commit.
+      # Full history so a push of several commits can be diffed against the
+      # commit before it.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - id: set
         env:
           ADDON_INPUT: ${{ github.event.inputs.addon }}
@@ -76,7 +77,7 @@ jobs:
             fi
             echo "Detecting changed apps in $range"
             mapfile -t dirs < <(
-              git diff --name-only "$range" 2>/dev/null \
+              git diff --name-only "$range" \
                 | awk -F/ 'NF>=2 {print $1}' \
                 | sort -u
             )
