@@ -19,20 +19,25 @@ fail to reach Docker.
 Use Supervisor DNS only (same host, hassio network):
 
 ```text
-DOCKER_HOST=tcp://docker-socket-proxy:2375
+DOCKER_HOST=tcp://dd815a57-docker-socket-proxy:2375
 ```
 
-`docker-socket-proxy` is this app's `slug`. Do not publish `2375` on the host
-or LAN — the proxy has no TLS or authentication. Access control is the
-allow-list below plus hassio-network reachability.
+`dd815a57-docker-socket-proxy` is the app's slug with this repository's prefix
+(`dd815a57`, shown on the app's Info page); a fork added under another URL has
+a different prefix. The bare name `docker-socket-proxy` does not resolve.
+
+Do not publish `2375` on the host or LAN — the proxy has no TLS or
+authentication. Access control is the allow-list below plus hassio-network
+reachability.
 
 Examples:
 
 | Consumer | How to wire |
 | --- | --- |
-| Traefik Manager / Agent | Set **Docker host** / `docker_host` to `tcp://docker-socket-proxy:2375` (proxy restart method). |
+| Traefik Manager / Agent | Set **Docker host** / `docker_host` to `tcp://dd815a57-docker-socket-proxy:2375` (proxy restart method). |
 | Homarr | Prefer this proxy over mounting the socket; same `DOCKER_HOST` (or Homarr's Docker hostname/port fields pointing at this slug). |
-| Any container on hassio | `export DOCKER_HOST=tcp://docker-socket-proxy:2375` |
+| OTLP Collector | Docker stats read through this proxy by default (its **Docker host** option). Turn this app's **Containers** option on. |
+| Any container on hassio | `export DOCKER_HOST=tcp://dd815a57-docker-socket-proxy:2375` |
 
 Enable only the API toggles each consumer needs. In particular, leave
 `containers` off unless required — `GET /containers/{id}/json` can expose

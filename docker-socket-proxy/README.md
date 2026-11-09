@@ -13,7 +13,7 @@ Giving containers raw access to `/var/run/docker.sock` is effectively root on
 the host. This app mounts the socket once (with **Protection mode** off) and
 serves an allow-listed Docker Engine API on port `2375` on the hassio network
 only (not published on the host by default). Other apps set
-`DOCKER_HOST=tcp://docker-socket-proxy:2375` instead of mounting the socket.
+`DOCKER_HOST=tcp://dd815a57-docker-socket-proxy:2375` instead of mounting the socket.
 
 The app version tracks upstream Tecnativa releases via the repository's
 upstream updater.
