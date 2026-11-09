@@ -132,7 +132,7 @@ allowlist_also_excludes: false
 Then:
 
 1. Start the app.
-2. Open `http://<home-assistant-host>:8080/` (or your reverse-proxy URL) and
+2. Open `http://<home-assistant-host>:8180/` (or your reverse-proxy URL) and
    copy **all**-feed and/or per-category `dns-` / `ipv4-` / `ipv6-` chunk
    links into your DNS/router blocklist fields (one URL per field). Copy
    `/allowlists/…` links into allowlist fields when configured.
@@ -141,7 +141,7 @@ Then:
 
 ## Reverse proxy
 
-Behind Traefik (or any TLS-terminating proxy), publish host port **8080** and
+Behind Traefik (or any TLS-terminating proxy), publish host port **8180** and
 leave **Public base URL** empty so generated links pick up
 `X-Forwarded-Proto` / `X-Forwarded-Host` / `X-Forwarded-Prefix`.
 

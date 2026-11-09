@@ -9,7 +9,7 @@ when an upstream returns an error, the proxy fetches the matching page from this
 app and shows it to the visitor. This app tracks upstream error-pages `4.2.7`.
 
 The server listens on port **8080** inside the container; set the host port under
-the app's **Network** tab (default 8080).
+the app's **Network** tab (default 8181).
 
 ## Configuration
 
@@ -48,8 +48,8 @@ log_format: json
 
 Each error page is served at `/{code}.html`, e.g.:
 
-- `http://<home-assistant-ip>:8080/404.html`
-- `http://<home-assistant-ip>:8080/500.html`
+- `http://<home-assistant-ip>:8181/404.html`
+- `http://<home-assistant-ip>:8181/500.html`
 
 (The root `/` is just a minimal index — open a specific code to see the theme.)
 
@@ -73,7 +73,7 @@ http:
     error-pages:
       loadBalancer:
         servers:
-          - url: "http://<home-assistant-ip>:8080"
+          - url: "http://<home-assistant-ip>:8181"
 # then add `error-pages` to a router's middlewares list
 ```
 
@@ -82,7 +82,7 @@ http:
 ```nginx
 error_page 404 500 502 503 504 = @error_pages;
 location @error_pages {
-    proxy_pass http://<home-assistant-ip>:8080/$status.html;
+    proxy_pass http://<home-assistant-ip>:8181/$status.html;
     internal;
 }
 ```

@@ -44,7 +44,7 @@ any device that accepts a plain-text URL of domains / IPs / CIDRs.
 4. Optionally add **Exclusion / allow lists** (paste domains/IPs/CIDRs one per
    line; enable **Output allowlist** when you want subscribe-able allowlist
    feeds) and/or remote `exclusions_urls`.
-5. Start the app. Open `http://<home-assistant-host>:8080/` and paste each
+5. Start the app. Open `http://<home-assistant-host>:8180/` and paste each
    chunk URL into your DNS server or router (block feeds under `/lists/…`,
    allowlist feeds under `/allowlists/…`).
 
@@ -125,7 +125,7 @@ Browser auth for `/manage`: HTTP Basic — **any username**, password =
 
 ## Reverse proxy
 
-Point Traefik (or similar) at host port **8080**. Leave `base_url` empty so
+Point Traefik (or similar) at host port **8180**. Leave `base_url` empty so
 `/` emits `https://…` links from forwarding headers.
 
 - `https://<public-host>/` — chunk URL index for your DNS/router

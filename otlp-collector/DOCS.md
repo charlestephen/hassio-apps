@@ -76,7 +76,7 @@ Generated config (when not overridden) is written to `/data/collector.yaml`.
 | --- | --- |
 | `4317/tcp` | OTLP gRPC |
 | `4318/tcp` | OTLP HTTP |
-| `8888/tcp` | Collector self-metrics |
+| `8888/tcp` | Collector self-metrics (host port `8889` by default) |
 
 Health check listens on **13133** inside the container (not published).
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.2.7-4
+
+- Default host port is now `8181` (was `8080`, shared with Traefik, DNS/IP List Chunker and
+  Ultimate CA Manager). Still changeable under **Network**; the container still listens on `8080`.
+- Add a Supervisor watchdog on `/healthz`.
+- Fix the `url` in `config.yaml`, which pointed at a folder that does not exist.
+
 ## 4.2.7-3
 
 - Rebuild as Docker schema2 manifests (`oci-mediatypes=false`). `--provenance=false`
