@@ -3,6 +3,9 @@
 bashio::log.info "Ensuring SSL directory..."
 mkdir -p /ssl/traefik/
 
+bashio::log.info "Ensuring dynamic configuration directory..."
+mkdir -p /homeassistant/traefik/
+
 if bashio::config.true 'custom_config.use_config_file'; then
     bashio::log.info "Custom config enabled, skipping built-in static config generation."
 else

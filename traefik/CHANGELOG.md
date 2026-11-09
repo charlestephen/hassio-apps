@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.7.17-6
+
+- Create `/homeassistant/traefik/` on start. On a fresh install nothing created it, so the file provider failed with "unable to read directory".
+
 ## 3.7.17-5
 
 - Treat `/addon_configs/<slug>` and `/config` as the same bind mount when

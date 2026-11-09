@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: Traefik
-version: "3.7.17-5"
+version: "3.7.17-6"
 slug: traefik
 description: >-
   Modern HTTP reverse proxy and load balancer with file-based dynamic config
