@@ -10,7 +10,7 @@ set -a
 [ -f /var/run/linkding.env ] && . /var/run/linkding.env
 set +a
 
-cd /etc/linkding
+cd /etc/linkding || exit 1
 # Run the entire linkding stack as www-data (the uid uwsgi.ini drops to). Doing
 # the privilege drop here — rather than letting uwsgi do it — means every file
 # bootstrap creates (db.sqlite3 on first boot, migration artifacts on upgrade,
