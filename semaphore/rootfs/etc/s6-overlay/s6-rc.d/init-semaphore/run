@@ -16,17 +16,15 @@ if ! bashio::fs.directory_exists "/share/semaphore"; then
     mkdir -p /share/semaphore/playbooks /share/semaphore/inventory
 fi
 
-# Warn if security keys still hold the placeholder defaults
-cookie_hash="$(bashio::config 'cookie_hash')"
-if [[ "${cookie_hash}" == "CHANGE_ME"* ]]; then
-    bashio::log.warning "============================================================"
-    bashio::log.warning " SECURITY WARNING: cookie_hash / cookie_encryption /"
-    bashio::log.warning " access_key_encryption are using placeholder defaults."
-    bashio::log.warning " Generate real keys with:"
-    bashio::log.warning "   head -c32 /dev/urandom | base64"
-    bashio::log.warning " and set them in the app Configuration tab."
-    bashio::log.warning "============================================================"
-fi
+# The three keys have no usable default; refuse to start with the placeholders
+for key in cookie_hash cookie_encryption access_key_encryption; do
+    if [[ "$(bashio::config "${key}")" == "CHANGE_ME"* ]]; then
+        bashio::log.fatal "${key} still holds the placeholder value."
+        bashio::log.fatal "Generate one with: head -c32 /dev/urandom | base64"
+        bashio::log.fatal "and set it in the app Configuration tab."
+        bashio::exit.nok
+    fi
+done
 
 # Warn if admin password is the default
 admin_pass="$(bashio::config 'admin_password')"

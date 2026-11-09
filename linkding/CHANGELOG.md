@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.47.0-7
+
+- Replace the HA base banner and log-level helpers with no-ops; they need `bashio`, which this image does not include, and the app failed to start.
+
 ## 1.47.0-6
 
 - Stop the service if `cd /etc/linkding` fails instead of running from the wrong directory.
