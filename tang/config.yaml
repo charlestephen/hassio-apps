@@ -16,7 +16,7 @@ map:
 - type: data
   read_only: false
 ports:
-  8888/tcp: 8888
+  8888/tcp: 7500
 ports_description:
   8888/tcp: Tang NBDE
 options:

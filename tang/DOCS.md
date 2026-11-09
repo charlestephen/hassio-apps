@@ -29,7 +29,7 @@ On a client machine with Clevis installed:
 
 ```bash
 # Bind a LUKS2 volume to this Tang server
-clevis luks bind -d /dev/sdX tang '{"url":"http://<hassio-ip>:8888"}'
+clevis luks bind -d /dev/sdX tang '{"url":"http://<hassio-ip>:7500"}'
 
 # Verify the binding
 clevis luks list -d /dev/sdX
