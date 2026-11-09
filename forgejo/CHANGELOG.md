@@ -1,5 +1,11 @@
 # Changelog
 
+## 17.0.1-5
+
+- Security: the app no longer ships a fixed default `SECRET_KEY`. When the option is empty, a random key
+  is generated on first start and kept in `/data/secret_key`. Existing installations keep the key they
+  have, and a startup warning is logged if it is the old published default; see `DOCS.md` for rotating it.
+
 ## 17.0.1-4
 
 - Skip legacy migration when `/addon_configs/<slug>` is the same inode as `/config`.

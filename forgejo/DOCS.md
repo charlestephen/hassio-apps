@@ -33,7 +33,7 @@ This app tracks upstream Forgejo `17.0.1`.
 
 | Option | Env var | Description |
 |---|---|---|
-| `SECRET_KEY` | `SECRET_KEY` | Secret key used to sign cookies and tokens. **Change this from the default before exposing the instance.** Generate with `openssl rand -hex 32`. |
+| `SECRET_KEY` | `SECRET_KEY` | Secret key used to sign cookies and tokens and to encrypt data such as two-factor secrets. Leave it empty to generate a random key on first start, kept in `/data/secret_key` and included in backups. Set it only to supply your own (`openssl rand -hex 32`). |
 | `INSTALL_LOCK` | `INSTALL_LOCK` | Prevents the initial setup wizard from appearing. Keep `true`. |
 
 ### Database
@@ -129,7 +129,7 @@ When running behind Nginx Proxy Manager or Traefik:
 
 ## Security Recommendations
 
-- **Change `SECRET_KEY`** before first use: `openssl rand -hex 32`.
+- Leave `SECRET_KEY` empty so a random key is generated. Versions before 17.0.1-5 shipped a fixed default key; an installation that still has it (the log shows a warning) should replace it. Changing the key can invalidate data encrypted with the old one, such as two-factor secrets, so take a backup first.
 - **Set `DISABLE_REGISTRATION: true`** once you have created your accounts.
 - **Set `REQUIRE_SIGNIN_VIEW: true`** on fully private instances.
 - **Disable SSH** (`DISABLE_SSH: true`) if you only need the web UI.
