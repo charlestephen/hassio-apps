@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.5
+
+- Use `docker.io/library/alpine:3.24` in `build.yaml` so the Supervisor schema accepts it.
+
 ## 1.0.4
 
 - Slim image: drop `hassio-addons/base` + s6/bashio for Alpine 3.24 thin wrap
