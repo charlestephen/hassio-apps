@@ -28,7 +28,7 @@ jobs:
       addons: ${{ steps.set.outputs.addons }}
     steps:
       # fetch-depth 2 so push events can diff against the previous commit.
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 2
       - id: set
@@ -114,11 +114,11 @@ jobs:
         addon: ${{ fromJson(needs.discover.outputs.addons) }}
         arch: [amd64, aarch64]
     steps:
-      - uses: actions/checkout@v7
-      - uses: docker/setup-qemu-action@v4
-      - uses: docker/setup-buildx-action@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v4
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -181,6 +181,7 @@ jobs:
             IMG="ghcr.io/${OWNER}/hassio-addons-${A}-${ARCH}"
           fi
           echo "Pushing ${IMG}:${VERSION}"
+          echo "IMG=${IMG}" >> "$GITHUB_ENV"
           mapfile -t EXTRA < extra_build_args
           # HA Supervisor / older Docker Accept headers do not pull OCI media
           # types from GHCR (classic Docker schema2 Accept → 404). Buildx
@@ -202,3 +203,44 @@ jobs:
             "${EXTRA[@]}" \
             --output "type=image,\"name=${IMG}:${VERSION},${IMG}:latest\",push=true,oci-mediatypes=false,compression=gzip,force-compression=true" \
             "$A"
+
+      # Prove the image can be pulled the way the Supervisor pulls it: anonymously, with a classic Docker Accept
+      # header as well as an OCI one, and with the architecture the app declares. A private package, a missing
+      # tag or a wrong-architecture image fails here instead of on a Home Assistant host.
+      - name: Verify the image can be pulled
+        env:
+          ARCH: ${{ matrix.arch }}
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          set -euo pipefail
+          repo="${IMG#ghcr.io/}"
+          want="amd64"; [ "$ARCH" = "aarch64" ] && want="arm64"
+          schema2="application/vnd.docker.distribution.manifest.v2+json"
+          oci="application/vnd.oci.image.index.v1+json, application/vnd.oci.image.manifest.v1+json, ${schema2}"
+
+          fetch() { # url accept -> body on stdout, retrying while GHCR catches up
+            for attempt in 1 2 3 4; do
+              if out=$(curl -fsSL -H "Authorization: Bearer ${token}" -H "Accept: $2" "$1"); then
+                printf '%s' "$out"; return 0
+              fi
+              sleep $((attempt * 5))
+            done
+            return 1
+          }
+
+          token=$(curl -fsS "https://ghcr.io/token?scope=repository:${repo}:pull" | jq -r '.token // empty')
+          if [ -z "$token" ]; then
+            echo "::error::No anonymous pull token for ${IMG}. The package is probably private; make it public." >&2
+            exit 1
+          fi
+          manifest=$(fetch "https://ghcr.io/v2/${repo}/manifests/${VERSION}" "$schema2") \
+            || { echo "::error::${IMG}:${VERSION} cannot be fetched with a classic Docker Accept header" >&2; exit 1; }
+          fetch "https://ghcr.io/v2/${repo}/manifests/${VERSION}" "$oci" > /dev/null \
+            || { echo "::error::${IMG}:${VERSION} cannot be fetched with an OCI Accept header" >&2; exit 1; }
+          config=$(printf '%s' "$manifest" | jq -r '.config.digest')
+          got=$(fetch "https://ghcr.io/v2/${repo}/blobs/${config}" "*/*" | jq -r '.architecture')
+          if [ "$got" != "$want" ]; then
+            echo "::error::${IMG}:${VERSION} is built for ${got}, expected ${want}" >&2
+            exit 1
+          fi
+          echo "${IMG}:${VERSION} pulls with both Accept headers and is ${got}"
