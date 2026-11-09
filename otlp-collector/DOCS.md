@@ -8,7 +8,7 @@ collector YAML, then the wrapper **`exec`s**
 
 ## Default pipeline (no custom YAML)
 
-With **OTLP endpoint** set (and Protection mode off for Docker):
+With **OTLP endpoint** set:
 
 | Signal | Sources | Export |
 | --- | --- | --- |
@@ -25,14 +25,16 @@ Optional auto-enable when paths exist in the container:
 - `filelog` for Docker json logs if `/var/lib/docker/containers` is mounted
 - `journald` if `/var/log/journal` or `/run/log/journal` is mounted
 
-Stock Supervisor maps only give the Docker **socket** (with Protection mode
-off), so Docker stats work out of the box; host/journal/filelog need extra
-mounts or use [Grafana Alloy](../alloy/) for container log tailing.
+Docker stats come from the [Docker Socket Proxy](../docker-socket-proxy/) app
+(see below), so this app never needs the raw Docker socket. Host, journal and
+filelog collection need extra mounts; use [Grafana Alloy](../alloy/) for
+container log tailing.
 
 ## Quick start
 
 1. Install **OTLP Collector**.
-2. Turn **Protection mode → OFF** (required for Docker stats).
+2. For Docker stats, set up the Docker Socket Proxy (next section). Without it
+   the collector still runs and only skips container metrics.
 3. Set **OTLP endpoint** to your backend base URL, e.g.
    `http://otel-backend.example.com:4318` or
    `http://logs.example.com:9428/insert/opentelemetry`.
@@ -80,9 +82,26 @@ Generated config (when not overridden) is written to `/data/collector.yaml`.
 
 Health check listens on **13133** inside the container (not published).
 
+## Docker stats
+
+Container metrics are read through the Docker Socket Proxy app in this
+repository, which filters the Docker API:
+
+1. Install and start **Docker Socket Proxy**. Turn its **Protection mode OFF**
+   (it is the only app that mounts the socket).
+2. In its options, turn **Containers** on. **Events** is already on.
+3. Leave **Docker host** here at its default,
+   `tcp://dd815a57-docker-socket-proxy:2375`. The hostname is the app slug
+   with the repository prefix, so it differs if you added a fork under another
+   URL; the Supervisor shows the name on the proxy's Info page.
+
+The collector waits up to 20 seconds for the proxy at start. If it cannot
+connect it starts without Docker stats and logs a warning; restart it after
+the proxy is running. Turn **Enable Docker stats** off to skip all of this.
+
 ## Protection mode
 
-**Off** for Docker stats. OTLP receive/export alone does not need the socket.
+Leave **on**. This app does not use the Docker socket.
 
 AppArmor profile name: `otlp_collector`.
 

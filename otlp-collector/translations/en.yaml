@@ -25,8 +25,14 @@ configuration:
   enable_docker_stats:
     name: Enable Docker stats
     description: >-
-      Scrape container CPU/memory/network via the Docker socket. Requires
-      Protection mode off.
+      Collect container CPU, memory and network metrics through the Docker
+      Socket Proxy app. Skipped with a warning when the proxy is not reachable.
+  docker_host:
+    name: Docker host
+    description: >-
+      Docker API endpoint used for Docker stats. The default is the Docker
+      Socket Proxy app in this repository, which must have its Containers
+      option turned on.
   scrape_homeassistant:
     name: Scrape Home Assistant Prometheus
     description: >-
