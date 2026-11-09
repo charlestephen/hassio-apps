@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.15.6
+
+- Upgrading from upstream version 1.15.5 -> 1.15.6
+
+> Upstream v1.15.6: https://github.com/chr0nzz/traefik-manager/releases/tag/v1.15.6
+>
+> ## v1.15.6
+>
+> **Enhancements:**
+> - **[i18n]** Add Korean (thanks @WhiPaper)
+> - **[static]** Add a global Alias Headers field to System for Traefik 3.7.17 and newer, which sets `global.aliasHeadersStrategy` for every entry point
+> - **[routes]** Add a Backend server name (SNI) field to HTTP routes, which sets `serverName` on the route's serversTransport ([#230](https://github.com/chr0nzz/traefik-manager/discussions/230), thanks @sbakker1970)
+>
+> **Bug fixes:**
+> - **[static]** Keep `http3.advertisedPort` when saving an entry point ([#225](https://github.com/chr0nzz/traefik-manager/issues/225), thanks @stopspazzing)
+> - **[routes, dashboard]** Name the cause when a route check cannot connect (connection refused, DNS name does not resolve, TLS handshake failed, timed out) instead of a cut-off "Max retries exceeded" message
+> - **[agent]** Name the cause when the agent health check fails (DNS name does not resolve, timed out, no route to host, TLS handshake failed) instead of always saying "Connection refused", and show the verification reason for an untrusted agent certificate
+> - **[agent, settings]** Name the cause when an agent's routes or proxied calls cannot reach it, and when the Traefik API connection test fails, instead of a generic "Cannot reach agent" or a cut-off "Max retries exceeded" message
+> - **[middlewares]** Count Docker label and other provider routers that use a file middleware (`name@file`), instead of showing it as unused, and refuse to delete it while they still do
+
 ## 1.15.5
 
 - Upgrading from upstream version 1.15.4-1 -> 1.15.5
