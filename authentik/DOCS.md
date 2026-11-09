@@ -18,6 +18,15 @@ container.
    start and set the password there.
 4. Start the app and open the web UI on port `9000`.
 
+If you create the database yourself instead, make the database user its owner,
+because PostgreSQL 15 and later do not let other roles create tables in `public`:
+
+```sql
+ALTER DATABASE authentik OWNER TO authentik;
+\c authentik
+GRANT ALL ON SCHEMA public TO authentik;
+```
+
 ## Options
 
 | Option | Meaning |

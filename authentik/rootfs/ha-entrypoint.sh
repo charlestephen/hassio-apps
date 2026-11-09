@@ -99,6 +99,15 @@ cur.execute("SELECT 1 FROM pg_database WHERE datname = %s", (name,))
 if not cur.fetchone():
     cur.execute(sql.SQL("CREATE DATABASE {} OWNER {}").format(sql.Identifier(name), sql.Identifier(user)))
     print(f"[authentik-app] created database {name}", file=sys.stderr)
+# PostgreSQL 15+ only lets the database owner create tables in "public", so an
+# existing database owned by another role needs its owner and schema rights fixed.
+cur.execute(sql.SQL("ALTER DATABASE {} OWNER TO {}").format(sql.Identifier(name), sql.Identifier(user)))
+conn.close()
+with psycopg.connect(
+    host=o["db_host"], port=o["db_port"], dbname=name, autocommit=True,
+    user=o.get("db_admin_user") or "postgres", password=o["db_admin_password"],
+) as db:
+    db.execute(sql.SQL("GRANT ALL ON SCHEMA public TO {}").format(sql.Identifier(user)))
 PY
 fi
 
