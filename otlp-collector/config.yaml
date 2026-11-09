@@ -3,7 +3,7 @@ description: >-
   OpenTelemetry Collector Contrib — collect Home Assistant / Docker metrics and
   receive OTLP logs, traces, and metrics; export to an endpoint you choose.
 url: https://github.com/charlestephen/hassio-apps/tree/main/otlp-collector
-version: "0.165.0-4"
+version: "0.165.0-5"
 stage: stable
 homeassistant: "2026.6.0"
 slug: otlp_collector
@@ -26,7 +26,7 @@ map:
 ports:
   4317/tcp: 4317
   4318/tcp: 4318
-  8888/tcp: 8888
+  8888/tcp: 8889
 ports_description:
   4317/tcp: OTLP gRPC (apps push here)
   4318/tcp: OTLP HTTP (apps push here)

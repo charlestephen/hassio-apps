@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "DNS/IP List Chunker"
-version: "1.4.0-3"
+version: "1.4.0-4"
 slug: "dns_ip_list_chunker"
 description: "Merge DNS/IP blocklists (and optional allowlists), then serve sized plain-text chunks for DNS servers and routers"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/dns-ip-list-chunker"
@@ -16,13 +16,14 @@ boot: auto
 stage: stable
 panel_icon: mdi:shield-search
 webui: http://[HOST]:[PORT:8080]/
+watchdog: http://[HOST]:[PORT:8080]/healthz
 
 map:
   - type: data
     read_only: false
 
 ports:
-  8080/tcp: 8080
+  8080/tcp: 8180
 ports_description:
   8080/tcp: "Chunk index, block/allow lists, /stats, /search, and /manage UI"
 

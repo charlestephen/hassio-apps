@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.0-4
+
+- Default host port is now `8180` (was `8080`, which Traefik, Error Pages and Ultimate CA
+  Manager also use, so the app could not start next to them). The port is still changeable
+  under **Network**; the container still listens on `8080`.
+- Add a Supervisor watchdog on `/healthz` so a hung process is restarted.
+
 ## 1.4.0-3
 
 - Rebuild as Docker schema2 manifests (`oci-mediatypes=false`). `--provenance=false`

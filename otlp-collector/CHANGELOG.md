@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.165.0-5
+
+- Publish the collector's self-metrics on host port `8889` by default (was `8888`, shared with
+  Gluetun and Tang). The container still listens on `8888`; the host port is changeable under **Network**.
+
 ## 0.165.0-4
 
 - Rebuild as Docker schema2 manifests (`oci-mediatypes=false`). `--provenance=false`
