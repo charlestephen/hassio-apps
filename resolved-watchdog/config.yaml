@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Resolved Watchdog"
-version: "1.0.4"
+version: "1.0.5"
 slug: "resolved_watchdog"
 description: "Auto-restarts the host's systemd-resolved when it hangs, so on-node DNS self-heals"
 url: "https://github.com/charlestephen/hassio-apps/resolved-watchdog"

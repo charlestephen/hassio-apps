@@ -1,5 +1,10 @@
 # Changelog
 
+## 16-1
+
+- Publish on host port 7500 instead of 8888 to avoid clashing with Gluetun. Update existing Clevis bindings to the new port.
+- Use `docker.io/library/alpine:3.24` in `build.yaml` so the Supervisor schema accepts it.
+
 ## 16
 
 - Upgrading from upstream version 15 -> 16
