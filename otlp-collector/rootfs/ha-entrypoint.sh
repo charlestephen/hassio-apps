@@ -18,6 +18,24 @@ log() { echo "[otlp-collector-addon] $*"; }
 get() { jq -r --arg k "$1" '.[$k] // empty' "${OPTIONS}" 2>/dev/null || true; }
 is_true() { [ "$(jq -r --arg k "$1" '.[$k] // false' "${OPTIONS}" 2>/dev/null)" = "true" ]; }
 
+# True when a tcp:// endpoint accepts connections. The proxy app may still be
+# starting, so retry for up to 20 seconds in total.
+docker_reachable() {
+    case "$1" in
+        tcp://*:*) ;;
+        *) return 1 ;;
+    esac
+    _hostport="${1#tcp://}"
+    _deadline=$(($(date +%s) + 20))
+    while :; do
+        if timeout 3 nc -w 2 "${_hostport%%:*}" "${_hostport##*:}" </dev/null >/dev/null 2>&1; then
+            return 0
+        fi
+        [ "$(date +%s)" -ge "${_deadline}" ] && return 1
+        sleep 2
+    done
+}
+
 mkdir -p /data
 
 CUSTOM="$(get config_yaml)"
@@ -55,14 +73,19 @@ METRICS_RECV="otlp"
 LOGS_RECV="otlp"
 
 if is_true enable_docker_stats; then
-    RECEIVERS="${RECEIVERS}
+    DOCKER_EP="$(get docker_host)"
+    if docker_reachable "${DOCKER_EP}"; then
+        RECEIVERS="${RECEIVERS}
   docker_stats:
-    endpoint: unix:///var/run/docker.sock
+    endpoint: ${DOCKER_EP}
     collection_interval: 30s
     timeout: 20s
 "
-    METRICS_RECV="${METRICS_RECV}, docker_stats"
-    log "docker_stats enabled (requires Protection mode off)"
+        METRICS_RECV="${METRICS_RECV}, docker_stats"
+        log "docker_stats enabled via ${DOCKER_EP}"
+    else
+        log "WARNING: enable_docker_stats is on but '${DOCKER_EP}' is not reachable. Start the Docker Socket Proxy app with its 'containers' option on, or set docker_host. Continuing without container stats."
+    fi
 fi
 
 # Optional host metrics when /hostfs is mounted (custom Supervisor maps).

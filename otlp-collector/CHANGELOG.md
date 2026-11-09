@@ -4,6 +4,10 @@
 
 - Publish the collector's self-metrics on host port `8889` by default (was `8888`, shared with
   Gluetun and Tang). The container still listens on `8888`; the host port is changeable under **Network**.
+- Docker stats now go through the Docker Socket Proxy app (new `docker_host` option, default
+  `tcp://dd815a57-docker-socket-proxy:2375`) instead of the raw socket. The app no longer asks for
+  `docker_api`, so Protection mode stays on, and it no longer exits on its first start when the socket is
+  not mounted. If the proxy is not reachable the collector starts without Docker stats and logs why.
 
 ## 0.165.0-4
 

@@ -31,8 +31,6 @@ profile otlp_collector flags=(attach_disconnected,mediate_deleted) {
   /tmp/** mrwk,
   /var/run/{,**} mrwkl,
   /run/{,**} rwk,
-  /run/docker.sock rw,
-  /var/run/docker.sock rw,
   /dev/tty rw,
 
   # Optional host mounts (hostmetrics / journal / docker json logs)
