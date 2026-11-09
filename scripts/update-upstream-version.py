@@ -56,7 +56,7 @@ def is_prerelease(tag: str) -> bool:
 
 
 def read_config_version(path: Path) -> str:
-    match = re.search(r'(?m)^version\s*:\s*"?([^"#\n]+?)"?\s*$', path.read_text(encoding="utf-8"))
+    match = re.search(r'''(?m)^version\s*:\s*["']?([^"'#\n]+?)["']?\s*$''', path.read_text(encoding="utf-8"))
     if not match:
         raise ValueError(f"Could not find top-level version in {path}")
     return match.group(1).strip()

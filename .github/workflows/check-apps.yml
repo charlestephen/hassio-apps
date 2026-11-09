@@ -1,0 +1,70 @@
+name: Check apps
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    name: Static checks and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Unit tests
+        run: python3 -m unittest discover -s scripts -v
+
+      - name: Work out what to compare against
+        id: base
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          base=""
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            base=$(git merge-base "origin/${BASE_REF}" HEAD)
+          elif [ "$EVENT_NAME" = "push" ] && [ -n "$BEFORE" ] && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]; then
+            base="$BEFORE"
+          fi
+          echo "base=${base}" >> "$GITHUB_OUTPUT"
+
+      - name: Check apps
+        env:
+          BASE: ${{ steps.base.outputs.base }}
+        run: python3 scripts/check-apps.py ${BASE:+--base "$BASE"}
+
+  apparmor:
+    name: AppArmor profiles parse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install the AppArmor parser
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends apparmor
+
+      # -Q parses without loading anything into the kernel. A profile that does not
+      # parse makes the Supervisor fail the install after the image has downloaded.
+      - name: Parse every profile
+        run: |
+          status=0
+          for profile in */apparmor.txt; do
+            if sudo apparmor_parser -Q -K "$profile" > /tmp/parse.log 2>&1; then
+              echo "ok      $profile"
+            else
+              echo "::error file=${profile}::AppArmor profile does not parse"
+              sed 's/^/        /' /tmp/parse.log
+              status=1
+            fi
+          done
+          exit "$status"
