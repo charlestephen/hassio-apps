@@ -1,0 +1,10 @@
+---
+# Thin wrapper on the LinuxServer.io Speedtest Tracker image (lscr.io).
+build_from:
+  aarch64: lscr.io/linuxserver/speedtest-tracker:1.15.1
+  amd64: lscr.io/linuxserver/speedtest-tracker:1.15.1
+upstream_repo: "alexjustesen/speedtest-tracker"
+upstream_build_from: true
+upstream_version_arg: SPEEDTEST_TRACKER_VERSION
+args:
+  SPEEDTEST_TRACKER_VERSION: "1.15.1"
