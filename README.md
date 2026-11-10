@@ -96,6 +96,11 @@ Or add it manually:
   optional Prometheus scrape; export to Tempo / Loki / Prometheus. Pair with
   Alloy for Docker container log tailing.
 
+### &#10003; [PatchMon](patchmon/)
+
+- Linux patch management and monitoring. Official server image with a private
+  Valkey cache, using the PostgreSQL app for its database.
+
 ### &#10003; [pgAdmin](pgadmin/)
 
 - pgAdmin 4 web UI to administer and query the PostgreSQL app.
