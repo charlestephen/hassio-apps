@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026.8.5-3
+
+- Default **Log level** is back to `info`; 2026.8.5-2 changed it to `warning`.
+
 ## 2026.8.5-2
 
 - Default **Log level** is now `warning`, which removes per-request and health-check log lines and suits SD-card installs. Existing installs keep their current setting.

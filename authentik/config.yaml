@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Authentik"
-version: "2026.8.5-2"
+version: "2026.8.5-3"
 slug: authentik
 description: >-
   Open-source identity provider (OpenID Connect, OAuth 2.0, SAML, LDAP).
@@ -36,7 +36,7 @@ options:
   secret_key: ""
   bootstrap_email: ""
   bootstrap_password: ""
-  log_level: warning
+  log_level: info
   env_vars: []
 schema:
   db_host: str

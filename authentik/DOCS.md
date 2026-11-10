@@ -35,7 +35,7 @@ GRANT ALL ON SCHEMA public TO authentik;
 | Database admin user / password | Used only to create the role and database. |
 | Secret key | Leave empty to generate one on first start (`/data/.secret_key`). Back it up. |
 | Initial admin email / password | First start only. |
-| Log level | `trace`, `debug`, `info`, `warning` (default) or `error`. At `info` every request, including each relying party's token and userinfo calls, is logged as a line of about 430 bytes. |
+| Log level | `trace`, `debug`, `info`, `warning` or `error`. |
 | Extra environment variables | Any other `AUTHENTIK_*` variable. |
 
 ## Behind a reverse proxy
@@ -50,14 +50,6 @@ HTTPS address when you register OIDC redirect URIs.
 |------|-----|
 | `9000/tcp` | Web UI and OIDC endpoints (HTTP) |
 | `9443/tcp` | Same, HTTPS with a self-signed certificate |
-
-## Running on an SD card
-
-The default log level is `warning`, which cuts request logging to almost nothing
-(200 requests logged about 2.5 KB instead of about 86 KB in testing). Existing
-installs keep the level they already have, so set **Log level** to `warning`
-yourself. Authentik also stores events in PostgreSQL; lowering the event
-retention in **System > Settings** in the admin interface reduces those writes.
 
 ## Data
 
