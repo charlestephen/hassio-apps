@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026.8.5-5
+
+- With **Use PgBouncer** on, connect with `sslmode=prefer`. authentik defaults to no TLS, so it could not connect when PgBouncer required TLS.
+
 ## 2026.8.5-4
 
 - New **Use PgBouncer** option connects through the PgBouncer app with the settings authentik requires behind a transaction-mode pooler.
