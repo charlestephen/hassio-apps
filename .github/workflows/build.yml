@@ -78,8 +78,9 @@ jobs:
             echo "Detecting changed apps in $range"
             mapfile -t dirs < <(
               git diff --name-only "$range" \
+                | grep -vE '^[^/]+/(README\.md|DOCS\.md|CHANGELOG\.md|icon\.png|logo\.png|upstream_version\.txt|translations/)' \
                 | awk -F/ 'NF>=2 {print $1}' \
-                | sort -u
+                | sort -u || true
             )
             apps=()
             for d in "${dirs[@]+"${dirs[@]}"}"; do
