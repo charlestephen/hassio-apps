@@ -1,0 +1,42 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "UniFi API Server"
+version: "0.26.0"
+slug: unifi-api-server
+description: >-
+  REST and read-only GraphQL API in front of UniFi Network, Protect and Access.
+  Thin wrapper on the official image.
+url: https://github.com/charlestephen/hassio-apps/tree/main/unifi-api-server
+homeassistant: "2026.6.0"
+stage: stable
+image: ghcr.io/charlestephen/hassio-addons-unifi-api-server-{arch}
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: application
+boot: auto
+apparmor: true
+panel_icon: mdi:api
+webui: http://[HOST]:[PORT:8080]/admin/login
+watchdog: http://[HOST]:[PORT:8080]/v1/health
+ports:
+  8080/tcp: 8089
+ports_description:
+  8080/tcp: UniFi API Server (REST, GraphQL and admin UI)
+backup: cold
+
+options:
+  db_key: ""
+  log_level: "INFO"
+  read_only: false
+  allow_sensitive_fields: false
+  env_vars: []
+schema:
+  db_key: password?
+  log_level: list(DEBUG|INFO|WARNING|ERROR)
+  read_only: bool
+  allow_sensitive_fields: bool
+  env_vars:
+    - name: str
+      value: password?
+      secret: bool?

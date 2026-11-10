@@ -1,0 +1,24 @@
+---
+configuration:
+  db_key:
+    name: State encryption key
+    description: >-
+      Optional. Encrypts the controller credentials stored in the state database. Leave empty to generate one on first start and keep it in /data/.db_encryption_key.
+  log_level:
+    name: Log level
+    description: >-
+      Log verbosity.
+  read_only:
+    name: Read-only mode
+    description: >-
+      Deny every action that is not a read.
+  allow_sensitive_fields:
+    name: Return sensitive fields
+    description: >-
+      Turn off redaction of controller secrets in responses. Only for a trusted setup.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Any other UNIFI_API_* or UNIFI_* variable, for example UNIFI_API_HTTP_CORS_ORIGINS.
+network:
+  8080/tcp: UniFi API Server (REST, GraphQL and admin UI)
