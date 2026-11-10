@@ -1,0 +1,52 @@
+---
+configuration:
+  postgres_host:
+    name: PostgreSQL host
+    description: >-
+      Leave empty to use the PostgreSQL app from this repository. It is found
+      automatically from this app's own hostname.
+  postgres_port:
+    name: PostgreSQL port
+    description: Port of the PostgreSQL server.
+  postgres_admin_user:
+    name: PostgreSQL admin user
+    description: Superuser used once per start to create the authentication role.
+  postgres_admin_password:
+    name: PostgreSQL admin password
+    description: >-
+      Required. The password of the admin user. It is only used to create a
+      limited role and a lookup function that let PgBouncer check logins against
+      the server's own password hashes, so logins are never copied into this app.
+  databases:
+    name: Databases
+    description: >-
+      Optional. Without entries, every database on the server can be reached
+      through PgBouncer. List databases to expose only those, each with an
+      optional pool mode of its own.
+  pool_mode:
+    name: Pool mode
+    description: >-
+      transaction returns a server connection after each transaction and pools
+      best. session keeps one for the whole client connection. Use session for
+      clients that rely on session state.
+  max_client_conn:
+    name: Maximum client connections
+    description: How many clients may connect to PgBouncer at once.
+  default_pool_size:
+    name: Default pool size
+    description: Server connections kept for each database and login pair.
+  admin_password:
+    name: Admin console password
+    description: >-
+      Optional. Enables the admin console, a virtual database named pgbouncer
+      that you reach as the user pgbouncer with this password.
+  log_connections:
+    name: Log connections
+    description: Log every connect and disconnect. Leave off to keep logs small.
+  extra_settings:
+    name: Extra settings
+    description: >-
+      Further PgBouncer settings, one per entry, written as name = value, for
+      example server_idle_timeout = 120.
+network:
+  6432/tcp: PgBouncer (PostgreSQL protocol)

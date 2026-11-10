@@ -1,0 +1,50 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "PgBouncer"
+version: "1.26.1"
+slug: pgbouncer
+description: >-
+  Lightweight connection pooler for PostgreSQL. Finds the PostgreSQL app on
+  its own and reuses its logins.
+url: https://github.com/charlestephen/hassio-apps/tree/main/pgbouncer
+image: ghcr.io/charlestephen/hassio-addons-pgbouncer-{arch}
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: application
+boot: auto
+apparmor: true
+panel_icon: mdi:database-sync
+watchdog: tcp://[HOST]:[PORT:6432]
+ports:
+  6432/tcp: 6432
+ports_description:
+  6432/tcp: PgBouncer (PostgreSQL protocol)
+
+options:
+  postgres_host: ""
+  postgres_port: 5432
+  postgres_admin_user: postgres
+  postgres_admin_password: ""
+  databases: []
+  pool_mode: transaction
+  max_client_conn: 200
+  default_pool_size: 20
+  admin_password: ""
+  log_connections: false
+  extra_settings: []
+schema:
+  postgres_host: str?
+  postgres_port: port
+  postgres_admin_user: str
+  postgres_admin_password: password?
+  databases:
+    - name: str
+      pool_mode: list(session|transaction|statement)?
+  pool_mode: list(session|transaction|statement)
+  max_client_conn: int(1,100000)
+  default_pool_size: int(1,10000)
+  admin_password: password?
+  log_connections: bool
+  extra_settings:
+    - str?
