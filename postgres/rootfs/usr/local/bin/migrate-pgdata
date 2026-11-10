@@ -1,0 +1,45 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Copy an existing PostgreSQL cluster to a new data directory.
+# Usage: migrate-pgdata <source> <destination>
+# The source is never modified. A marker file in the destination makes an
+# interrupted copy restart from scratch on the next run.
+# ==============================================================================
+set -euo pipefail
+
+readonly SRC="${1:?source directory}"
+readonly DST="${2:?destination directory}"
+readonly MARKER="${DST}/.migration-in-progress"
+
+if [[ -e "${MARKER}" ]]; then
+  bashio::log.warning "Discarding an unfinished copy in ${DST} and starting again."
+  find "${DST}" -mindepth 1 -delete
+fi
+
+if [[ -n "$(ls -A "${DST}")" ]]; then
+  bashio::log.fatal "${DST} is not empty, so the data cannot be copied there."
+  exit 1
+fi
+
+need_kb="$(du -sk "${SRC}" | cut -f1)"
+free_kb="$(df -Pk "${DST}" | awk 'NR==2 {print $4}')"
+if (( free_kb < need_kb + need_kb / 10 )); then
+  bashio::log.fatal "Not enough space in ${DST}: ${need_kb} KB needed, ${free_kb} KB free."
+  exit 1
+fi
+
+bashio::log.info "Copying the cluster from ${SRC} to ${DST} (${need_kb} KB) ..."
+touch "${MARKER}"
+cp -a "${SRC}/." "${DST}/"
+
+src_count="$(find "${SRC}" | wc -l)"
+dst_count="$(find "${DST}" -not -path "${MARKER}" | wc -l)"
+if [[ "${src_count}" != "${dst_count}" ]] || ! cmp -s "${SRC}/PG_VERSION" "${DST}/PG_VERSION"; then
+  bashio::log.fatal "The copy does not match the original (${src_count} vs ${dst_count} entries)."
+  exit 1
+fi
+
+rm -f "${MARKER}"
+bashio::log.info "Copy complete and verified."
+bashio::log.warning "The original in ${SRC} is no longer used. Delete it after checking the new location."

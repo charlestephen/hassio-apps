@@ -1,7 +1,7 @@
 name: PostgreSQL
 description: PostgreSQL 18 object-relational database server.
 url: https://github.com/charlestephen/hassio-apps/tree/main/postgres
-version: "18.6"
+version: "18.6-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: postgres
@@ -18,6 +18,8 @@ arch:
 map:
   - type: data
     read_only: false
+  - type: media
+    read_only: false
 ports:
   5432/tcp: 5432
 ports_description:
@@ -25,10 +27,14 @@ ports_description:
 options:
   superuser_password: changeme
   database: homeassistant
+  data_directory: ""
+  migrate_existing_data: false
   max_connections: 100
   log_level: info
 schema:
   superuser_password: password
   database: str?
+  data_directory: str?
+  migrate_existing_data: bool
   max_connections: int(10,10000)
   log_level: list(trace|debug|info|warning|error|fatal)

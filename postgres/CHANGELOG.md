@@ -1,5 +1,10 @@
 # Changelog
 
+## 18.6-1
+
+- New **Data directory** option to keep the database on an external drive under `/media`, for installs on SD cards. Tested only on Home Assistant Supervised. Refuses to start when the folder is on the same filesystem as the app storage, and copies an existing cluster across when **Migrate existing data** is on (verified copy, original kept, interrupted copies restart).
+- The app now maps the Supervisor media folder read-write.
+
 ## 18.6
 
 - Upgrading from upstream version 18.4.f -> 18.6

@@ -4,14 +4,56 @@
 # ==============================================================================
 set -e
 
-readonly PGDATA="/data/postgres"
+# shellcheck source=/dev/null
+source /usr/local/lib/pgdata.sh
+resolve_pgdata
+readonly PGDATA
+readonly DEFAULT_PGDATA="/data/postgres"
 
 # The unix socket directory lives on tmpfs (/run), so recreate it every start.
 mkdir -p /run/postgresql
 chown postgres:postgres /run/postgresql
 
-mkdir -p "${PGDATA}"
-chown postgres:postgres /data "${PGDATA}"
+if [[ "${PGDATA}" != "${DEFAULT_PGDATA}" ]]; then
+  # An unmounted drive leaves an empty folder on the system disk. Refuse to
+  # start there, or a new cluster would be created on the wrong disk.
+  mkdir -p "${PGDATA}"
+  if [[ "$(stat -c %d /data)" == "$(stat -c %d "${PGDATA}")" ]]; then
+    rmdir "${PGDATA}" 2>/dev/null || true
+    bashio::log.fatal "${PGDATA} is on the same filesystem as the app data."
+    bashio::log.fatal "Mount the external drive under the Supervisor media folder first."
+    bashio::exit.nok
+  fi
+  case "$(stat -f -c %T "${PGDATA}")" in
+    msdos|vfat|exfat|fuseblk|ntfs|cifs|smb|smb2|v9fs)
+      bashio::log.fatal "${PGDATA} is on a filesystem without Unix ownership and permissions."
+      bashio::log.fatal "Use ext4, xfs or btrfs for the PostgreSQL data."
+      bashio::exit.nok
+      ;;
+  esac
+  # An existing cluster in the app storage is only copied when asked to.
+  marker="${PGDATA}/.migration-in-progress"
+  if bashio::fs.file_exists "${marker}" \
+      || { ! bashio::fs.file_exists "${PGDATA}/PG_VERSION" \
+           && bashio::fs.file_exists "${DEFAULT_PGDATA}/PG_VERSION"; }; then
+    if bashio::config.true 'migrate_existing_data'; then
+      migrate-pgdata "${DEFAULT_PGDATA}" "${PGDATA}" || bashio::exit.nok
+    else
+      bashio::log.fatal "An existing database was found in ${DEFAULT_PGDATA}, or a copy to ${PGDATA} is unfinished."
+      bashio::log.fatal "Turn on 'Migrate existing data' to copy it, or uninstall the app to start empty."
+      bashio::exit.nok
+    fi
+  fi
+  chown postgres:postgres "${PGDATA}"
+  if [[ "$(stat -c %U "${PGDATA}")" != "postgres" ]]; then
+    bashio::log.fatal "Could not give ownership of ${PGDATA} to postgres."
+    bashio::exit.nok
+  fi
+else
+  mkdir -p "${PGDATA}"
+  chown postgres:postgres "${PGDATA}"
+fi
+chown postgres:postgres /data
 chmod 700 "${PGDATA}"
 
 if bashio::fs.file_exists "${PGDATA}/PG_VERSION"; then
