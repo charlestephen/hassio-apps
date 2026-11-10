@@ -4,7 +4,7 @@ description: >-
   Self-hosted Certificate Authority with ACME, SCEP, EST, OCSP, CRL, TSA, and
   SSH CA. Thin wrapper on neyslim/ultimate-ca-manager.
 url: https://github.com/charlestephen/hassio-apps/tree/main/ultimate-ca-manager
-version: "2.252"
+version: "2.252-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: ultimate-ca-manager
@@ -54,6 +54,14 @@ options:
   secret_key: ""
   key_encryption_key: ""
   database_url: ""
+  database: auto
+  postgres_host: ""
+  postgres_port: 5432
+  postgres_db: ucm
+  postgres_user: ucm
+  postgres_password: ""
+  postgres_admin_user: postgres
+  postgres_admin_password: ""
   backup_enabled: true
   backup_retention_days: 30
   behind_proxy: false
@@ -79,6 +87,14 @@ schema:
   secret_key: password?
   key_encryption_key: password?
   database_url: str?
+  database: list(auto|postgres|sqlite)
+  postgres_host: str?
+  postgres_port: port
+  postgres_db: str
+  postgres_user: str
+  postgres_password: password?
+  postgres_admin_user: str
+  postgres_admin_password: password?
   backup_enabled: bool
   backup_retention_days: int(1,)
   behind_proxy: bool

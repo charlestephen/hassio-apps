@@ -28,6 +28,107 @@ log() {
 get() { jq -r --arg k "$1" '.[$k] // empty' "${OPTIONS}" 2>/dev/null || true; }
 is_true() { [ "$(jq -r --arg k "$1" '.[$k] // false' "${OPTIONS}" 2>/dev/null)" = "true" ]; }
 
+# PostgreSQL: an explicit database_url always wins. In "auto" mode the backend is
+# decided once and remembered in /data/.database_backend, because upstream creates
+# a ucm.db file even when it runs on PostgreSQL. On the first start of this
+# version a ucm.db can only belong to an install from before PostgreSQL support,
+# which keeps SQLite since the data is not migrated; a new install uses the
+# PostgreSQL app when its admin password is set.
+configure_database() {
+    local choice host port db user pw admin_user admin_pw tries out marker backend
+    marker="/data/.database_backend"
+    if [ -n "$(get database_url)" ]; then
+        export_if_set 'database_url' 'DATABASE_URL'
+        return 0
+    fi
+    choice="$(get database)"
+    choice="${choice:-auto}"
+    admin_user="$(get postgres_admin_user)"
+    admin_pw="$(get postgres_admin_password)"
+    case "${choice}" in
+        sqlite)
+            echo sqlite > "${marker}"
+            log "database: SQLite (selected)"
+            return 0
+            ;;
+        auto)
+            if [ -s "${marker}" ]; then
+                backend="$(cat "${marker}")"
+            elif [ -e "${VOL_DATA}/ucm.db" ]; then
+                backend=sqlite
+                echo sqlite > "${marker}"
+                log "database: keeping the existing SQLite database; set Database to postgres to switch (data is not migrated)"
+            elif [ -n "${admin_pw}" ]; then
+                backend=postgres
+                echo postgres > "${marker}"
+            else
+                log "database: SQLite. Set the PostgreSQL admin password to use the PostgreSQL app instead."
+                return 0
+            fi
+            if [ "${backend}" = "sqlite" ]; then
+                log "database: SQLite"
+                return 0
+            fi
+            ;;
+        postgres)
+            if [ -z "${admin_pw}" ] && [ ! -s /data/.postgres_password ] && [ -z "$(get postgres_password)" ]; then
+                log "ERROR: Database is set to postgres but the PostgreSQL admin password is empty."
+                exit 1
+            fi
+            echo postgres > "${marker}"
+            ;;
+    esac
+
+    host="$(get postgres_host)"
+    [ -n "${host}" ] || host="$(hostname | sed 's/-ultimate-ca-manager$/-postgres/')"
+    port="$(get postgres_port)"; port="${port:-5432}"
+    db="$(get postgres_db)"; db="${db:-ucm}"
+    user="$(get postgres_user)"; user="${user:-ucm}"
+    pw="$(get postgres_password)"
+    if [ -z "${pw}" ]; then
+        if [ ! -s /data/.postgres_password ]; then
+            (umask 077 && head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n' > /data/.postgres_password)
+        fi
+        pw="$(cat /data/.postgres_password)"
+    fi
+
+    log "database: PostgreSQL at ${host}:${port}"
+    if [ -n "${admin_pw}" ]; then
+    tries=0
+    until out="$(PGPASSWORD="${admin_pw}" psql -X -q -h "${host}" -p "${port}" -U "${admin_user}" -d postgres -c 'SELECT 1' 2>&1)"; do
+        case "${out}" in
+            *"authentication failed"*)
+                log "ERROR: PostgreSQL refused the admin user '${admin_user}'. Check the admin password."
+                exit 1
+                ;;
+        esac
+        tries=$((tries + 1))
+        if [ "${tries}" -ge 60 ]; then
+            log "ERROR: cannot reach PostgreSQL at ${host}:${port}."
+            exit 1
+        fi
+        sleep 2
+    done
+    PGPASSWORD="${admin_pw}" psql -X -q -v ON_ERROR_STOP=1 -h "${host}" -p "${port}" -U "${admin_user}" \
+        -d postgres -v u="${user}" -v p="${pw}" -v d="${db}" <<'SQL'
+SELECT format('CREATE ROLE %I LOGIN PASSWORD %L', :'u', :'p')
+WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'u') \gexec
+SELECT format('ALTER ROLE %I LOGIN PASSWORD %L', :'u', :'p')
+WHERE EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'u') \gexec
+SELECT format('CREATE DATABASE %I OWNER %I', :'d', :'u')
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = :'d') \gexec
+SELECT format('ALTER DATABASE %I OWNER TO %I', :'d', :'u') \gexec
+SQL
+    PGPASSWORD="${admin_pw}" psql -X -q -v ON_ERROR_STOP=1 -h "${host}" -p "${port}" -U "${admin_user}" \
+        -d "${db}" -v u="${user}" <<'SQL'
+SELECT format('GRANT ALL ON SCHEMA public TO %I', :'u') \gexec
+SQL
+    fi
+    export DATABASE_URL
+    DATABASE_URL="postgresql://$(jq -rn --arg v "${user}" '$v|@uri'):$(jq -rn --arg v "${pw}" '$v|@uri')@${host}:${port}/${db}"
+    log "set DATABASE_URL (hidden); database '${db}' is ready"
+}
+
 dir_has_entries() {
     local d="$1"
     [[ -d "$d" ]] || return 1
@@ -72,7 +173,7 @@ export_if_set() {
     if [ -n "${_v}" ]; then
         export "$2=${_v}"
         case "$2" in
-            *PASSWORD*|*SECRET*|*KEY*|*TOKEN*|*PIN*) log "set $2 (hidden)";;
+            *PASSWORD*|*SECRET*|*KEY*|*TOKEN*|*PIN*|DATABASE_URL) log "set $2 (hidden)";;
             *)                                      log "set $2=${_v}";;
         esac
     fi
@@ -215,7 +316,7 @@ fi
 export KEY_ENCRYPTION_KEY="${KEK}"
 log "set KEY_ENCRYPTION_KEY (hidden)"
 
-export_if_set 'database_url' 'DATABASE_URL'
+configure_database
 export_bool 'backup_enabled' 'UCM_BACKUP_ENABLED'
 RETENTION="$(get 'backup_retention_days')"
 if [ -n "${RETENTION}" ]; then

@@ -50,6 +50,36 @@ configuration:
       (KEY_ENCRYPTION_KEY). Leave blank to auto-generate and persist under
       /ssl/ucm/etc/key_encryption_key. Losing this file makes encrypted keys
       unrecoverable — back up /ssl/ucm/.
+  database:
+    name: Database
+    description: >-
+      auto uses the PostgreSQL app when its admin password is set and this is a
+      new install; an install that already has a SQLite database keeps it,
+      because the data is not migrated. postgres forces PostgreSQL, sqlite forces
+      SQLite. A Database URL below overrides all of this.
+  postgres_host:
+    name: PostgreSQL host
+    description: Leave empty to use the PostgreSQL app from this repository.
+  postgres_port:
+    name: PostgreSQL port
+    description: Port of the PostgreSQL server.
+  postgres_db:
+    name: Database name
+    description: Database UCM uses. Created on start.
+  postgres_user:
+    name: Database user
+    description: Login UCM connects as. Created on start.
+  postgres_password:
+    name: Database password
+    description: Optional. Leave empty to generate one, kept in /data/.postgres_password.
+  postgres_admin_user:
+    name: PostgreSQL admin user
+    description: Superuser used to create the database and login.
+  postgres_admin_password:
+    name: PostgreSQL admin password
+    description: >-
+      The PostgreSQL superuser's password. Setting it lets UCM use the PostgreSQL
+      app on a new install.
   database_url:
     name: Database URL
     description: >-

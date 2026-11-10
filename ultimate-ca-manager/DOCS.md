@@ -77,3 +77,22 @@ with `secret: true`.
 - Docker install: <https://github.com/NeySlim/ultimate-ca-manager/blob/main/docs/installation/docker.md>
 - Admin guide: <https://github.com/NeySlim/ultimate-ca-manager/blob/main/docs/ADMIN_GUIDE.md>
 - Security: <https://github.com/NeySlim/ultimate-ca-manager/blob/main/docs/SECURITY.md>
+
+## Database
+
+By default a new install uses the **PostgreSQL** app from this repository: set
+**PostgreSQL admin password** to its superuser password and UCM creates its own
+database and login on start. Without that password, or if the install already
+has a SQLite database, UCM keeps using SQLite.
+
+| Database | Behaviour |
+|----------|-----------|
+| `auto` (default) | PostgreSQL on a new install when the admin password is set; otherwise SQLite. An install that already had a SQLite database keeps it. The choice is made once and remembered in `/data/.database_backend`. |
+| `postgres` | Always PostgreSQL. The app stops with a message if the admin password is missing. |
+| `sqlite` | Always SQLite. |
+
+A **Database URL** overrides everything above. Switching an install that
+already holds a CA from SQLite to PostgreSQL starts with an empty database; the
+data is not migrated. The login password is generated and kept in
+`/data/.postgres_password` unless you set one. Back up the PostgreSQL database
+with the PostgreSQL app; it is not part of this app's backup.
