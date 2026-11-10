@@ -3,7 +3,7 @@ ARG BUILD_FROM=docker.io/library/alpine:3.24
 # Build PgBouncer from the upstream release tarball. Alpine's own package lags
 # behind the latest release.
 FROM ${BUILD_FROM} AS build
-ARG PGBOUNCER_VERSION=1.26.1
+ARG PGBOUNCER_VERSION=pgbouncer_1_23_1-fixed
 # hadolint ignore=DL3018
 RUN apk add --no-cache build-base libevent-dev openssl-dev c-ares-dev pkgconf curl \
     && curl -fsSL -o /tmp/pgbouncer.tar.gz \
@@ -28,7 +28,7 @@ RUN apk upgrade --no-cache \
 COPY --from=build /out/usr/bin/pgbouncer /usr/bin/pgbouncer
 COPY --chmod=755 rootfs/ha-entrypoint.sh /ha-entrypoint.sh
 
-ARG PGBOUNCER_VERSION=1.26.1
+ARG PGBOUNCER_VERSION=pgbouncer_1_23_1-fixed
 ENV PGBOUNCER_VERSION=${PGBOUNCER_VERSION}
 
 EXPOSE 6432/tcp

@@ -1,12 +1,12 @@
 ---
 # Thin wrapper on the official multi-arch Network Optimizer image (GHCR only).
 build_from:
-  aarch64: ghcr.io/ozark-connect/network-optimizer:2.10.7
-  amd64: ghcr.io/ozark-connect/network-optimizer:2.10.7
+  aarch64: ghcr.io/ozark-connect/network-optimizer:2.11.0
+  amd64: ghcr.io/ozark-connect/network-optimizer:2.11.0
 upstream_repo: "Ozark-Connect/NetworkOptimizer"
 upstream_build_from: true
 # Images publish to GHCR as 2.10.7 (no leading v). Do not set
 # upstream_docker_image — that gate is Docker Hub only.
 upstream_version_arg: NETWORK_OPTIMIZER_VERSION
 args:
-  NETWORK_OPTIMIZER_VERSION: "2.10.7"
+  NETWORK_OPTIMIZER_VERSION: "2.11.0"

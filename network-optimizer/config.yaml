@@ -3,7 +3,7 @@ description: >-
   UniFi network optimization, monitoring, security audit, Wi-Fi health, and
   speed-test orchestration. Thin wrapper on ghcr.io/ozark-connect/network-optimizer.
 url: https://github.com/charlestephen/hassio-apps/tree/main/network-optimizer
-version: "2.10.7-1"
+version: "2.11.0"
 stage: stable
 homeassistant: "2026.6.0"
 slug: network_optimizer
