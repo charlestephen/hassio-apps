@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.6-2
+
+- The database is now kept in a `postgres` subfolder of **Data directory**, so a freshly formatted drive (which contains `lost+found`) works. Fixes the copy refusing an ext4 drive as not empty.
+
 ## 18.6-1
 
 - New **Data directory** option to keep the database on an external drive under `/media`, for installs on SD cards. Tested only on Home Assistant Supervised. Refuses to start when the folder is on the same filesystem as the app storage, and copies an existing cluster across when **Migrate existing data** is on (verified copy, original kept, interrupted copies restart).
