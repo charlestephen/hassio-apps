@@ -11,3 +11,7 @@
 ## 1.8.32-2
 
 - Run the image's own `/usr/bin/dump`, patched in place for the output folder, so its Docker healthcheck finds the process. The container was reported unhealthy before.
+
+## 1.8.32-3
+
+- Forward SIGTERM to the dump script and exit 0 when it stops. It ignored SIGTERM as PID 1, so a stop took 10 seconds and ended in an error.

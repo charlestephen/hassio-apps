@@ -79,4 +79,16 @@ $(jq -r '(.env_vars // [])[] | select((.name // "") != "") | .name + "=" + (.val
 EOF
 
 log "starting traefik-certs-dumper ${TRAEFIK_CERTS_DUMPER_VERSION:-}"
-exec /usr/bin/dump "$@"
+# Forward SIGTERM and exit 0 once it stops: the Supervisor reports an app that
+# exits 143 on stop as an error.
+/usr/bin/dump "$@" &
+child=$!
+stopping=0
+trap 'stopping=1; kill -TERM "${child}" 2>/dev/null' TERM INT
+code=0
+wait "${child}" || code=$?
+if [ "${stopping}" = 1 ]; then
+    wait "${child}" 2>/dev/null || true
+    exit 0
+fi
+exit "${code}"

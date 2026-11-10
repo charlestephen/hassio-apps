@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Traefik Certs Dumper"
-version: "1.8.32-2"
+version: "1.8.32-3"
 slug: traefik-cert-dumper
 description: >-
   Extracts the certificates from Traefik's acme.json into PEM files under /ssl and keeps them up to date.
