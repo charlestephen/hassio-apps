@@ -12,5 +12,7 @@ declare max_connections
 max_connections="$(bashio::config 'max_connections')"
 
 bashio::log.info "Starting PostgreSQL 18 ..."
+# shellcheck disable=SC2046
 exec su-exec postgres postgres -D "${PGDATA}" \
-  -c max_connections="${max_connections}"
+  -c max_connections="${max_connections}" \
+  $(cat /run/postgresql/ssl_args)

@@ -18,6 +18,8 @@ app) and the server listens on port **5432**.
 | `databases` | list | empty | Databases created on every start if missing. |
 | `logins` | list | empty | Logins (`username`, `password`) created or updated on every start. |
 | `rights` | list | empty | Pairs of `username` and `database`; the login gets full access to that database. |
+| `ssl` | list | `auto` | `auto`, `on` or `off`. See [TLS](#tls). |
+| `certfile` / `keyfile` | string | `fullchain.pem` / `privkey.pem` | Certificate and key, relative to Home Assistant's `/ssl` folder. |
 | `data_directory` | string | empty | Keep the data on an external drive. See [External drive](#external-drive). |
 | `migrate_existing_data` | bool | `false` | Copy an existing database to the new Data directory on start. |
 | `max_connections` | int | `100` | Maximum concurrent connections. |
@@ -67,6 +69,24 @@ database: homeassistant
 max_connections: 100
 log_level: info
 ```
+
+## TLS
+
+By default (`ssl: auto`) the server uses TLS when `fullchain.pem` and
+`privkey.pem` exist in Home Assistant's `/ssl` folder, and runs without it when
+they do not, so an update never stops the app for lack of a certificate. Use
+`on` to make a missing certificate an error, or `off` to never use TLS. For
+certificates issued by the Acme.sh app, set `certfile` and `keyfile` to the paths
+inside `/ssl`, such as `acme.sh/example.com/fullchain.pem`.
+
+- Clients that use `sslmode=prefer`, the default for `psql` and most drivers,
+  start using TLS on their own. Use `sslmode=require` or stricter to insist on it.
+- The server still accepts plain connections. To refuse them, change the `host`
+  lines in `pg_hba.conf` to `hostssl`.
+- The key is copied to memory at start with the ownership PostgreSQL demands and
+  is not written to disk. The certificate is read at start, so restart the app
+  after it is renewed.
+- The PgBouncer app uses TLS to PostgreSQL automatically once it is on.
 
 ## External drive
 

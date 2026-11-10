@@ -57,6 +57,40 @@ fi
 chown postgres:postgres /data
 chmod 700 "${PGDATA}"
 
+# --- TLS ----------------------------------------------------------------------
+# PostgreSQL refuses a key that others can read, and /ssl is read-only, so the
+# files are copied to /run (memory only) owned by postgres. The server reads the
+# resulting arguments from /run/postgresql/ssl_args when it starts.
+SSL_ARGS_FILE="/run/postgresql/ssl_args"
+: > "${SSL_ARGS_FILE}"
+ssl_choice="$(bashio::config 'ssl')"
+if [[ "${ssl_choice}" != "off" ]]; then
+  certfile="$(bashio::config 'certfile')"
+  keyfile="$(bashio::config 'keyfile')"
+  ssl_ok=true
+  for f in "${certfile}" "${keyfile}"; do
+    case "${f}" in
+      ''|/*|*..*) bashio::log.fatal "The certificate and key names must be relative paths inside /ssl."; bashio::exit.nok ;;
+    esac
+    if [[ ! -r "/ssl/${f}" ]]; then ssl_ok=false; fi
+  done
+  if [[ "${ssl_ok}" == "true" ]]; then
+    mkdir -p /run/postgresql-ssl
+    cp "/ssl/${certfile}" /run/postgresql-ssl/server.crt
+    cp "/ssl/${keyfile}" /run/postgresql-ssl/server.key
+    chown -R postgres:postgres /run/postgresql-ssl
+    chmod 644 /run/postgresql-ssl/server.crt
+    chmod 600 /run/postgresql-ssl/server.key
+    printf '%s' "-c ssl=on -c ssl_cert_file=/run/postgresql-ssl/server.crt -c ssl_key_file=/run/postgresql-ssl/server.key" > "${SSL_ARGS_FILE}"
+    bashio::log.info "TLS is on, using /ssl/${certfile}."
+  elif [[ "${ssl_choice}" == "on" ]]; then
+    bashio::log.fatal "TLS is set to on but /ssl/${certfile} or /ssl/${keyfile} was not found."
+    bashio::exit.nok
+  else
+    bashio::log.info "No certificate found in /ssl (looked for ${certfile} and ${keyfile}); TLS is off."
+  fi
+fi
+
 first_run=""
 if bashio::fs.file_exists "${PGDATA}/PG_VERSION"; then
   bashio::log.info "Existing PostgreSQL data directory found in ${PGDATA}."

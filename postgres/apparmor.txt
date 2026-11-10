@@ -48,6 +48,7 @@ profile postgres flags=(attach_disconnected,mediate_deleted) {
   # PostgreSQL data, shared resources and packaged files
   /data/** mrwk,
   /media/** mrwkl,
+  /ssl/** r,
   /dev/shm/** mrwk,
   /usr/share/postgresql*/** r,
   /usr/share/zoneinfo/** r,

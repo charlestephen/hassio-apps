@@ -73,8 +73,9 @@ Acme.sh app. Clients then connect with `sslmode=require` or stricter.
 - The certificate is read when the app starts. Restart the app after it is
   renewed.
 - This secures the connection between clients and PgBouncer. The connection from
-  PgBouncer to PostgreSQL uses TLS only if the PostgreSQL server offers it, which
-  the PostgreSQL app in this repository does not yet do.
+  PgBouncer to PostgreSQL uses TLS whenever the PostgreSQL server offers it,
+  which the PostgreSQL app in this repository does when it has a certificate in
+  `/ssl`.
 - Use a certificate whose name matches the address clients connect to if they
   verify it (`sslmode=verify-full`).
 
