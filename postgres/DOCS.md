@@ -44,7 +44,8 @@ rights:
     database: authentik
 ```
 
-- A login can reach only the databases it has a right for. Give a login rights
+- A login can connect only to the databases it has a right for, for databases
+  in the `databases` list. The superuser can reach all of them. Give a login rights
   on several databases with several `rights` entries.
 - A right gives the login all privileges on the database and on its `public`
   schema. Tables created by one login are not visible to another login with

@@ -14,15 +14,16 @@ readonly FIRST_RUN="${2:-}"
 readonly OPTIONS="/data/options.json"
 
 mapfile -t databases < <(jq -r '(.databases // [])[] | select(. != "")' "${OPTIONS}")
-# The single "database" option from earlier versions applies to a new cluster only.
-legacy="$(jq -r '.database // empty' "${OPTIONS}")"
-if [[ "${FIRST_RUN}" == "first-run" && -n "${legacy}" ]]; then
-  databases+=("${legacy}")
+# The single "database" option from earlier versions applies to a new cluster
+# only and keeps PostgreSQL's default of letting every login connect.
+legacy=""
+if [[ "${FIRST_RUN}" == "first-run" ]]; then
+  legacy="$(jq -r '.database // empty' "${OPTIONS}")"
 fi
 mapfile -t logins < <(jq -c '(.logins // [])[]' "${OPTIONS}")
 mapfile -t rights < <(jq -c '(.rights // [])[]' "${OPTIONS}")
 
-if (( ${#databases[@]} + ${#logins[@]} + ${#rights[@]} == 0 )); then
+if (( ${#databases[@]} + ${#logins[@]} + ${#rights[@]} == 0 )) && [[ -z "${legacy}" ]]; then
   exit 0
 fi
 
@@ -31,11 +32,21 @@ psql_pg() { su-exec postgres psql -X -q -v ON_ERROR_STOP=1 -U postgres "$@"; }
 su-exec postgres pg_ctl -D "${PGDATA}" -o "-c listen_addresses='' -p 5432" -w -s start
 trap 'su-exec postgres pg_ctl -D "${PGDATA}" -m fast -w -s stop' EXIT
 
+if [[ -n "${legacy}" ]]; then
+  bashio::log.info "Database '${legacy}'"
+  psql_pg -d postgres -v d="${legacy}" <<'SQL'
+SELECT format('CREATE DATABASE %I', :'d')
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = :'d') \gexec
+SQL
+fi
+
+# Databases from the list are closed to everyone without a right.
 for db in "${databases[@]}"; do
   bashio::log.info "Database '${db}'"
   psql_pg -d postgres -v d="${db}" <<'SQL'
 SELECT format('CREATE DATABASE %I', :'d')
 WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = :'d') \gexec
+SELECT format('REVOKE ALL ON DATABASE %I FROM PUBLIC', :'d') \gexec
 SQL
 done
 

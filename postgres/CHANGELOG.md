@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.6-4
+
+- Databases from the `databases` list are closed to every login without a right, so a login can connect only to the databases it was given rights on.
+
 ## 18.6-3
 
 - New `databases`, `logins` and `rights` options to create several databases and logins and match them, like the MariaDB app. Applied on every start and safe to repeat. The single `database` option still applies to a new cluster only.
