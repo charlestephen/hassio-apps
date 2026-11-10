@@ -30,6 +30,7 @@ profile traefik-manager-agent flags=(attach_disconnected,mediate_deleted) {
 
   /data/** rw,
   /config/** rw,
+  /app_configs/** rw,
   /tmp/** mrwk,
   /var/run/{,**} mrwkl,
   /run/{,**} rwk,

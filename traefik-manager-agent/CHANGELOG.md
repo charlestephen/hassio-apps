@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.15.6-1
+
+- Read the Traefik app's config folder through `all_app_configs` (`/app_configs/*_traefik/...`) instead of `/homeassistant/traefik/`; point `traefik_api_url` at `dd815a57-traefik`. Glob in path options is resolved at start.
+
 ## 1.15.6
 
 - Upgrading from upstream version 1.15.5-1 -> 1.15.6

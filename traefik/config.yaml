@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: Traefik
-version: "3.7.18"
+version: "3.7.18-1"
 slug: traefik
 description: >-
   Modern HTTP reverse proxy and load balancer with file-based dynamic config
@@ -23,12 +23,12 @@ panel_icon: mdi:earth-arrow-right
 ingress: true
 ingress_entry: dashboard/
 map:
-  - type: homeassistant_config
-    read_only: false
-  # Temporary: see leftover /config/traefik from 3.7.17 and migrate it.
   - type: app_config
     read_only: false
-  - type: all_addon_configs
+  # Legacy: one-shot migration of /homeassistant/traefik and addon_configs.
+  - type: homeassistant_config
+    read_only: false
+  - type: all_app_configs
     read_only: false
   - type: share
     read_only: false
@@ -49,9 +49,8 @@ options:
   access_logs: false
   forwarded_headers_insecure: false
   insecure_skip_verify: false
-  # homeassistant_config is mounted at /homeassistant (HA config dir).
-  # On disk that is the folder next to configuration.yaml, e.g. …/homeassistant/traefik/.
-  dynamic_configuration_path: "/homeassistant/traefik/"
+  # app_config is mounted at /config (host: addon_configs/<repo>_traefik/).
+  dynamic_configuration_path: "/config/dynamic/"
   letsencrypt:
     enabled: false
     resolvers:
@@ -62,7 +61,7 @@ options:
     delayBeforeCheck: 10
   custom_config:
     use_config_file: false
-    config_file: "/homeassistant/traefik/traefik.yaml"
+    config_file: "/config/traefik.yaml"
   env_vars: []
 schema:
   log_level: list(TRACE|DEBUG|INFO|WARN|ERROR|FATAL|PANIC)

@@ -70,8 +70,14 @@ export_if_set 'traefik_api_password'           'TRAEFIK_API_PASSWORD'
 export_bool_if_set 'traefik_insecure_skip_verify' 'TRAEFIK_INSECURE_SKIP_VERIFY'
 
 # --- Config files ------------------------------------------------------------------
-export_if_set 'config_path'         'CONFIG_PATH'
-export_if_set 'static_config_path'  'STATIC_CONFIG_PATH'
+# Paths may contain a glob (e.g. /app_configs/*_traefik/dynamic); the repo
+# prefix in the folder name is not known at build time.
+for _p in config_path:CONFIG_PATH static_config_path:STATIC_CONFIG_PATH; do
+    _v="$(get "${_p%%:*}")"
+    [ -n "${_v}" ] || continue
+    case "${_v}" in *[*?]*) for _m in ${_v}; do _v="${_m}"; break; done;; esac
+    export "${_p##*:}=${_v}"; log "set ${_p##*:}=${_v}"
+done
 
 # --- Optional paths -----------------------------------------------------------------
 export_if_set 'acme_json_path'      'ACME_JSON_PATH'
