@@ -40,6 +40,22 @@ configuration:
     description: >-
       Optional. Enables the admin console, a virtual database named pgbouncer
       that you reach as the user pgbouncer with this password.
+  ssl:
+    name: Enable TLS
+    description: >-
+      Accept TLS connections from clients, using a certificate from Home
+      Assistant's /ssl folder. Restart the app after the certificate is renewed.
+  certfile:
+    name: Certificate file
+    description: Certificate chain, relative to /ssl, for example fullchain.pem.
+  keyfile:
+    name: Private key file
+    description: Private key, relative to /ssl, for example privkey.pem.
+  ssl_mode:
+    name: TLS mode
+    description: >-
+      allow accepts TLS or plain connections, prefer is the same but asks for TLS
+      first, require refuses clients that do not use TLS.
   log_connections:
     name: Log connections
     description: Log every connect and disconnect. Leave off to keep logs small.

@@ -49,6 +49,7 @@ profile pgbouncer flags=(attach_disconnected,mediate_deleted) {
   # App data and generated configuration
   /data/** mrwk,
   /etc/pgbouncer/** rw,
+  /ssl/** r,
   /dev/shm/** mrwk,
   /usr/share/zoneinfo/** r,
 

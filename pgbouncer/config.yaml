@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "PgBouncer"
-version: "1.26.1"
+version: "1.26.1-1"
 slug: pgbouncer
 description: >-
   Lightweight connection pooler for PostgreSQL. Finds the PostgreSQL app on
@@ -16,6 +16,9 @@ boot: auto
 apparmor: true
 panel_icon: mdi:database-sync
 watchdog: tcp://[HOST]:[PORT:6432]
+map:
+  - type: ssl
+    read_only: true
 ports:
   6432/tcp: 6432
 ports_description:
@@ -31,6 +34,10 @@ options:
   max_client_conn: 200
   default_pool_size: 20
   admin_password: ""
+  ssl: false
+  certfile: fullchain.pem
+  keyfile: privkey.pem
+  ssl_mode: prefer
   log_connections: false
   extra_settings: []
 schema:
@@ -45,6 +52,10 @@ schema:
   max_client_conn: int(1,100000)
   default_pool_size: int(1,10000)
   admin_password: password?
+  ssl: bool
+  certfile: str
+  keyfile: str
+  ssl_mode: list(allow|prefer|require)
   log_connections: bool
   extra_settings:
     - str?
