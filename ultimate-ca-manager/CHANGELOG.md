@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.252-1
+
+- New **Database** option. A new install uses the PostgreSQL app from this repository when the PostgreSQL admin password is set; the database and login are created on start. An install that already has a SQLite database keeps it, and **Database URL** still overrides everything. The Database URL is no longer written to the log, because it can contain a password.
+
 ## 2.252
 
 - Upgrading from upstream version 2.251 -> 2.252
