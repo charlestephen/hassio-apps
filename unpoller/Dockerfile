@@ -10,7 +10,7 @@ ARG UNPOLLER_VERSION=5.9.4
 ENV UNPOLLER_VERSION=${UNPOLLER_VERSION}
 
 # hadolint ignore=DL3018
-RUN apk add --no-cache ca-certificates jq tini
+RUN apk add --no-cache ca-certificates jq tini tzdata
 
 COPY --from=upstream /usr/bin/unpoller /usr/bin/unpoller
 COPY --from=upstream /etc/unpoller /etc/unpoller
