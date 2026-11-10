@@ -1,0 +1,53 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "Traefik Certs Dumper"
+version: "1.8.32"
+slug: traefik-cert-dumper
+description: >-
+  Extracts the certificates from Traefik's acme.json into PEM files under /ssl and keeps them up to date.
+  Thin wrapper on the kereis image.
+url: https://github.com/charlestephen/hassio-apps/tree/main/traefik-cert-dumper
+homeassistant: "2026.6.0"
+stage: stable
+image: ghcr.io/charlestephen/hassio-addons-traefik-cert-dumper-{arch}
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+boot: auto
+apparmor: true
+panel_icon: mdi:certificate-outline
+map:
+  - type: ssl
+    read_only: false
+backup: cold
+
+options:
+  acme_file: "traefik/acme.json"
+  output_dir: "traefik-certs"
+  domain: ""
+  certificate_file_name: "fullchain"
+  private_key_file_name: "privkey"
+  combined_pem: ""
+  convert_keys_to_rsa: false
+  combine_pkcs12: false
+  pkcs12_password: ""
+  override_uid: null
+  override_gid: null
+  env_vars: []
+schema:
+  acme_file: str
+  output_dir: str
+  domain: str?
+  certificate_file_name: str
+  private_key_file_name: str
+  combined_pem: str?
+  convert_keys_to_rsa: bool
+  combine_pkcs12: bool
+  pkcs12_password: password?
+  override_uid: int?
+  override_gid: int?
+  env_vars:
+    - name: str
+      value: password?
+      secret: bool?

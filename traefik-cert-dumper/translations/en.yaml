@@ -1,0 +1,50 @@
+---
+configuration:
+  acme_file:
+    name: ACME file
+    description: >-
+      Path of Traefik's acme.json, relative to the ssl folder. The Traefik app keeps it at traefik/acme.json.
+  output_dir:
+    name: Output folder
+    description: >-
+      Folder under the ssl folder that receives the certificates, one subfolder per domain.
+  domain:
+    name: Domains
+    description: >-
+      Optional. Comma-separated main domains to extract. Empty extracts every domain. A single domain is written straight into the output folder.
+  certificate_file_name:
+    name: Certificate file name
+    description: >-
+      Base name of the certificate file. The extension is .pem.
+  private_key_file_name:
+    name: Private key file name
+    description: >-
+      Base name of the private key file. The extension is .pem.
+  combined_pem:
+    name: Combined PEM file
+    description: >-
+      Optional. File name (with extension) for a file holding key and certificate together.
+  convert_keys_to_rsa:
+    name: Also write RSA keys
+    description: >-
+      Write each key a second time in RSA format, as rsakey.pem.
+  combine_pkcs12:
+    name: Also write PKCS12
+    description: >-
+      Write a combined cert.p12 file.
+  pkcs12_password:
+    name: PKCS12 password
+    description: >-
+      Password for the PKCS12 file.
+  override_uid:
+    name: Owner user ID
+    description: >-
+      Optional. Owner of the written files. Set together with the group ID.
+  override_gid:
+    name: Owner group ID
+    description: >-
+      Optional. Group of the written files. Set together with the user ID.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Any other variable the image reads, for example POST_HOOK_FILE_PATH.
