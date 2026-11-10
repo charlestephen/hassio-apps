@@ -7,7 +7,7 @@ set -e
 # shellcheck source=/dev/null
 source /usr/local/lib/pgdata.sh
 resolve_pgdata
-readonly PGDATA
+readonly PGBASE PGDATA
 readonly DEFAULT_PGDATA="/data/postgres"
 
 # The unix socket directory lives on tmpfs (/run), so recreate it every start.
@@ -17,20 +17,21 @@ chown postgres:postgres /run/postgresql
 if [[ "${PGDATA}" != "${DEFAULT_PGDATA}" ]]; then
   # An unmounted drive leaves an empty folder on the system disk. Refuse to
   # start there, or a new cluster would be created on the wrong disk.
-  mkdir -p "${PGDATA}"
-  if [[ "$(stat -c %d /data)" == "$(stat -c %d "${PGDATA}")" ]]; then
-    rmdir "${PGDATA}" 2>/dev/null || true
-    bashio::log.fatal "${PGDATA} is on the same filesystem as the app data."
+  mkdir -p "${PGBASE}"
+  if [[ "$(stat -c %d /data)" == "$(stat -c %d "${PGBASE}")" ]]; then
+    rmdir "${PGBASE}" 2>/dev/null || true
+    bashio::log.fatal "${PGBASE} is on the same filesystem as the app data."
     bashio::log.fatal "Mount the external drive under the Supervisor media folder first."
     bashio::exit.nok
   fi
-  case "$(stat -f -c %T "${PGDATA}")" in
+  case "$(stat -f -c %T "${PGBASE}")" in
     msdos|vfat|exfat|fuseblk|ntfs|cifs|smb|smb2|v9fs)
-      bashio::log.fatal "${PGDATA} is on a filesystem without Unix ownership and permissions."
+      bashio::log.fatal "${PGBASE} is on a filesystem without Unix ownership and permissions."
       bashio::log.fatal "Use ext4, xfs or btrfs for the PostgreSQL data."
       bashio::exit.nok
       ;;
   esac
+  mkdir -p "${PGDATA}"
   # An existing cluster in the app storage is only copied when asked to.
   marker="${PGDATA}/.migration-in-progress"
   if bashio::fs.file_exists "${marker}" \

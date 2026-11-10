@@ -8,9 +8,10 @@ configuration:
   data_directory:
     name: Data directory
     description: >-
-      Optional. Folder inside /media to keep the database on an external drive
-      instead of the system disk, for example /media/pgdata. Tested only on
-      Home Assistant Supervised. Leave empty to use the app's own storage.
+      Optional. The folder inside /media where an external drive is mounted, for
+      example /media/pgdata. The database is kept in a postgres subfolder of it.
+      Tested only on Home Assistant Supervised. Leave empty to use the app's own
+      storage.
   migrate_existing_data:
     name: Migrate existing data
     description: >-

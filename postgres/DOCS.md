@@ -46,12 +46,16 @@ data on an external drive instead.
 1. Format the drive with **ext4**, **xfs** or **btrfs**. FAT, exFAT and NTFS
    cannot hold a PostgreSQL cluster because they lack Unix ownership and
    permissions.
-2. Mount it on the host under the Supervisor's media folder. On a default
-   Supervised install that folder is `/usr/share/hassio/media`, so for example
-   mount the drive at `/usr/share/hassio/media/pgdata`. Add it to `/etc/fstab`
+2. Mount it on the host under the Supervisor's media folder. Find the
+   Supervisor's data folder with
+   `docker inspect hassio_supervisor --format '{{range .Mounts}}{{if eq .Destination "/data"}}{{.Source}}{{end}}{{end}}'`;
+   the media folder is `media` inside it (often `/usr/share/hassio/media` or
+   `/var/lib/homeassistant/media`). For example, mount the drive at
+   `<data folder>/media/pgdata`. Add it to `/etc/fstab`
    so it comes back after a reboot.
 3. Set **Data directory** to the same path as the app sees it, for example
-   `/media/pgdata`, and restart the app.
+   `/media/pgdata`, and restart the app. The database is kept in a `postgres`
+   subfolder of that folder.
 
 If you already have a database, turn on **Migrate existing data** before the
 first start with the new location. The app copies the cluster across, checks the
