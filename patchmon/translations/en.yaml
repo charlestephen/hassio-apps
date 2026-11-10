@@ -1,0 +1,48 @@
+---
+configuration:
+  server_url:
+    name: Server URL
+    description: >-
+      Required. The address you open PatchMon at, for example
+      http://homeassistant.local:3100 or https://patchmon.example.com. Several
+      addresses can be given separated by commas. Browsers using any other
+      address are rejected. Agents use it to connect back.
+  postgres_host:
+    name: PostgreSQL host
+    description: Leave empty to use the PostgreSQL app from this repository.
+  postgres_port:
+    name: PostgreSQL port
+    description: Port of the PostgreSQL server.
+  postgres_db:
+    name: Database name
+    description: Database PatchMon uses.
+  postgres_user:
+    name: Database user
+    description: Login PatchMon connects as.
+  postgres_password:
+    name: Database password
+    description: Required. Password of the database user.
+  postgres_admin_user:
+    name: PostgreSQL admin user
+    description: Superuser used to create the database and login.
+  postgres_admin_password:
+    name: PostgreSQL admin password
+    description: >-
+      Optional. When set, the database and login are created or updated on every
+      start. Leave empty if you create them yourself.
+  trust_proxy:
+    name: Trust proxy
+    description: Turn on when a reverse proxy such as Traefik sits in front of PatchMon.
+  log_level:
+    name: Log level
+    description: PatchMon log verbosity.
+  timezone:
+    name: Timezone
+    description: Optional, for example Europe/London. Leave empty for UTC.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Any other PatchMon setting, for example the OIDC variables. Mark a value as
+      secret to hide it in the log.
+network:
+  3000/tcp: PatchMon web UI and agent API

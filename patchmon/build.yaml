@@ -1,0 +1,10 @@
+---
+# PatchMon's official server image supplies the application; it is copied onto
+# Alpine so a Redis-compatible cache can run beside it in the same app.
+build_from:
+  aarch64: docker.io/library/alpine:3.24
+  amd64: docker.io/library/alpine:3.24
+upstream_repo: "PatchMon/PatchMon"
+upstream_version_arg: PATCHMON_VERSION
+args:
+  PATCHMON_VERSION: "2.1.8"
