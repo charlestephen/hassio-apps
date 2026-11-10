@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "UniFi Access MCP"
-version: "0.9.0"
+version: "0.9.0-1"
 slug: unifi-access-mcp
 description: >-
   MCP server that lets AI assistants manage UniFi Access: doors, users, credentials, visitors and access logs.
@@ -50,7 +50,7 @@ schema:
   ssl_fingerprint: str?
   access_api_port: port
   access_api_ssl_fingerprint: str?
-  http_auth_token: password?
+  http_auth_token: password
   allowed_hosts: str?
   permission_mode: list(confirm|bypass)
   read_only: bool

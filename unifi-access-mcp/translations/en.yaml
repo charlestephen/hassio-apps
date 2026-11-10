@@ -39,7 +39,7 @@ configuration:
   http_auth_token:
     name: Bearer token
     description: >-
-      Token clients send as Authorization: Bearer. At least 32 characters. Leave empty to generate one on first start; it is printed once in the log and kept in /data/.http_auth_token.
+      Required. Token clients send as Authorization: Bearer. At least 32 characters with no spaces, for example the output of openssl rand -hex 32.
   allowed_hosts:
     name: Allowed hosts
     description: >-

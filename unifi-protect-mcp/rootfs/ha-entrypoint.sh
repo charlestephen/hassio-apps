@@ -12,7 +12,7 @@ fi
 
 env_file="$(mktemp)"
 python3 - > "${env_file}" <<'PY'
-import json, os, re, secrets, shlex, sys, pathlib
+import json, os, re, shlex, sys
 
 APP = "unifi-protect-mcp"
 o = json.load(open(os.environ["OPTIONS"]))
@@ -51,14 +51,9 @@ flag("UNIFI_VERIFY_SSL", o.get("verify_ssl"))
 put("UNIFI_SSL_FINGERPRINT", o.get("ssl_fingerprint"))
 
 token = o.get("http_auth_token") or ""
-token_file = pathlib.Path("/data/.http_auth_token")
-if not token:
-    if not token_file.exists():
-        token_file.write_text(secrets.token_hex(32))
-        token_file.chmod(0o600)
-        log("generated an HTTP bearer token; it is kept in /data/.http_auth_token")
-        log("bearer token (shown once): " + token_file.read_text().strip())
-    token = token_file.read_text().strip()
+if len(token) < 32 or not re.fullmatch(r"[!-~]+", token):
+    log("ERROR: set the bearer token to at least 32 characters with no spaces, for example the output of: openssl rand -hex 32")
+    sys.exit(1)
 put("UNIFI_MCP_HTTP_AUTH_TOKEN", token, hidden=True)
 
 env["UNIFI_MCP_HTTP_ENABLED"] = "true"

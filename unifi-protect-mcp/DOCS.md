@@ -12,9 +12,8 @@ PostgreSQL options.
 1. In the UniFi console, create an API key (or a local admin user) for the
    assistant.
 2. Install **UniFi Protect MCP** and set **UniFi host** and **UniFi API key**.
-3. Start the app. Open the log once and copy the line `bearer token (shown
-   once)`, or set **Bearer token** to a value of your own with at least 32
-   characters.
+3. Set **Bearer token** to a random value of at least 32 characters, for example
+   the output of `openssl rand -hex 32`. The app refuses to start without it.
 4. Set **Allowed hosts** to the address clients use, with the port, for example
    `192.168.1.10:3111`.
 5. Add the server to your MCP client at `http://<home-assistant>:3111/mcp`
