@@ -1,11 +1,9 @@
 # Home Assistant App: Hawser Agent for Dockhand
 
 [![Build][build-shield]][build]
+[![Version][version-shield]][version]
 ![Supports aarch64 Architecture][aarch64-shield]
 ![Supports amd64 Architecture][amd64-shield]
-![Doesn't support armhf Architecture][armhf-shield]
-![Doesn't support armv7 Architecture][armv7-shield]
-![Doesn't support i386 Architecture][i386-shield]
 
 _Run the Hawser agent to let [Dockhand](https://dockhand.pro) manage your Home Assistant Docker host — containers, images, networks, volumes and Compose stacks — from anywhere._
 
@@ -39,9 +37,8 @@ See [DOCS.md](DOCS.md) for full configuration and usage.
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
-[armhf-shield]: https://img.shields.io/badge/armhf-no-red.svg
-[armv7-shield]: https://img.shields.io/badge/armv7-no-red.svg
-[i386-shield]: https://img.shields.io/badge/i386-no-red.svg
 
 [build-shield]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml/badge.svg?branch=main
 [build]: https://github.com/charlestephen/hassio-apps/actions/workflows/build.yml?query=branch%3Amain+event%3Apush
+[version-shield]: https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcharlestephen%2Fhassio-apps%2Fmain%2Fdockhand-hawser%2Fconfig.yaml&query=%24.version&label=version&color=blue
+[version]: https://github.com/charlestephen/hassio-apps/tree/main/dockhand-hawser
