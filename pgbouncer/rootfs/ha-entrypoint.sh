@@ -145,6 +145,8 @@ fi
     echo "max_client_conn = $(get max_client_conn)"
     echo "default_pool_size = $(get default_pool_size)"
     echo "server_tls_sslmode = prefer"
+    # Clients such as sqlx and JDBC send this on every connection; refusing it is never useful.
+    echo "ignore_startup_parameters = extra_float_digits"
     echo "log_connections = ${LOG_CONN}"
     echo "log_disconnections = ${LOG_CONN}"
     if [ -n "${ADMIN_CONSOLE_PW}" ]; then
