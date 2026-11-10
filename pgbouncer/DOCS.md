@@ -43,6 +43,13 @@ password is generated and kept in `/data/.auth_password`.
 | Log connections | Log each connect and disconnect. Off by default. |
 | Extra settings | Further PgBouncer settings, written as `name = value`. |
 
+## Client compatibility
+
+PgBouncer is told to ignore the `extra_float_digits` startup parameter, which
+clients built on sqlx or JDBC (including the Authentik server) send on every
+connection and which PgBouncer would otherwise refuse. To change this, add your
+own `ignore_startup_parameters = ...` line under **Extra settings**.
+
 ## Pool modes
 
 In `transaction` mode a server connection is handed back after every
