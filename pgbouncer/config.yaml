@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "PgBouncer"
-version: "pgbouncer_1_23_1-fixed"
+version: "1.26.1-2"
 slug: pgbouncer
 description: >-
   Lightweight connection pooler for PostgreSQL. Finds the PostgreSQL app on

@@ -36,7 +36,7 @@ def normalize_version(release_tag: str) -> str:
     release = re.fullmatch(r"REL[_-](\d+(?:_\d+)+)", version)
     if release:
         version = release.group(1).replace("_", ".")
-    named = re.fullmatch(r"[A-Za-z]+_(\d+(?:_\d+)+)", version)
+    named = re.fullmatch(r"[A-Za-z]+_(\d+(?:_\d+)+)(?:-fixed)?", version)
     if named:
         version = named.group(1).replace("_", ".")
     return version
