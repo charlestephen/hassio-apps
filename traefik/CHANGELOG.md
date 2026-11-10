@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.7.18-2
+
+- Migrate a static `traefik.yml` (not only `traefik.yaml`) out of the old dynamic folder into `/config`. Without this it was loaded as a dynamic route file and never found at the custom config path.
+- Fix the service `finish` scripts: they called `s6-test`, which the base image does not ship ("unable to spawn s6-test").
+
 ## 3.7.18-1
 
 - Use the app's own config folder (`app_config`, `/config`) instead of the Home Assistant config directory. Defaults are now `/config/dynamic/` and `/config/traefik.yaml`; existing files under `/homeassistant/traefik/` are migrated once.

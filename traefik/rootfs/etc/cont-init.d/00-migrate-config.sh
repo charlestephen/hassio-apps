@@ -20,6 +20,8 @@ for SRC in /homeassistant/traefik /config/traefik; do
   rm -rf "${SRC}"
 done
 
-if [[ -f "${DEST}/traefik.yaml" && ! -e /config/traefik.yaml ]]; then
-  mv "${DEST}/traefik.yaml" /config/traefik.yaml
-fi
+for NAME in traefik.yaml traefik.yml; do
+  if [[ -f "${DEST}/${NAME}" && ! -e "/config/${NAME}" ]]; then
+    mv "${DEST}/${NAME}" "/config/${NAME}"
+  fi
+done
