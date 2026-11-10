@@ -100,6 +100,11 @@ Or add it manually:
 
 - pgAdmin 4 web UI to administer and query the PostgreSQL app.
 
+### &#10003; [PgBouncer](pgbouncer/)
+
+- Connection pooler for PostgreSQL, built from the upstream source. Finds the
+  PostgreSQL app on its own and reuses its logins.
+
 ### &#10003; [Pocket ID](pocket-id/)
 
 - OpenID Connect Certified™ / OAuth 2.0 provider with passkey-only sign-in.

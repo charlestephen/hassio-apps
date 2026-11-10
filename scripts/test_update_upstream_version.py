@@ -33,6 +33,7 @@ class NormalizeVersion(unittest.TestCase):
 
     def test_maps_dashed_release_tags(self):
         self.assertEqual(uuv.normalize_version("REL-9_18"), "9.18")
+        self.assertEqual(uuv.normalize_version("pgbouncer_1_26_1"), "1.26.1")
 
     def test_leaves_plain_versions_alone(self):
         self.assertEqual(uuv.normalize_version("2026.10.7"), "2026.10.7")

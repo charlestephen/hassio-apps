@@ -1,0 +1,9 @@
+---
+# PgBouncer is built from the upstream source release on Alpine.
+build_from:
+  aarch64: docker.io/library/alpine:3.24
+  amd64: docker.io/library/alpine:3.24
+upstream_repo: "pgbouncer/pgbouncer"
+upstream_version_arg: PGBOUNCER_VERSION
+args:
+  PGBOUNCER_VERSION: "1.26.1"
