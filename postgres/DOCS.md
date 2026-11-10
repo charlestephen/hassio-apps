@@ -121,6 +121,10 @@ starting an empty one beside it. The toggle can stay on, because it does
 nothing once the new location holds a cluster. If there is no existing
 database, a new one is created in the new location.
 
+Inside the app, `/media` is the `media` folder in the Supervisor's data folder on
+the host, **not** the host's own `/media`. A drive mounted at the host's
+`/media/pgdata` is invisible to the app.
+
 The app refuses to start when the folder is on the same filesystem as the app's
 own storage, which is what an unmounted drive looks like. This stops it from
 quietly creating a new database on the system disk.
