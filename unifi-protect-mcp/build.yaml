@@ -1,0 +1,7 @@
+---
+# Thin wrapper on the unifi-mcp Protect image. Tags have no v prefix.
+build_from:
+  aarch64: ghcr.io/sirkirby/unifi-protect-mcp:0.12.0
+  amd64: ghcr.io/sirkirby/unifi-protect-mcp:0.12.0
+args:
+  UNIFI_PROTECT_MCP_VERSION: "0.12.0"

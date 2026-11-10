@@ -1,0 +1,56 @@
+---
+configuration:
+  unifi_host:
+    name: UniFi host
+    description: >-
+      Required. Address of the UniFi console or controller, for example 192.168.1.1.
+  unifi_port:
+    name: UniFi port
+    description: >-
+      HTTPS port of the console. 443 for UniFi OS, 8443 for a self-hosted controller.
+  unifi_api_key:
+    name: UniFi API key
+    description: >-
+      Preferred. API key from the console. Used instead of the username and password.
+  unifi_username:
+    name: UniFi username
+    description: >-
+      Local admin user. Used when no API key is set.
+  unifi_password:
+    name: UniFi password
+    description: >-
+      Password for the local admin user.
+  verify_ssl:
+    name: Verify TLS certificate
+    description: >-
+      Check the console's certificate. Consoles use a self-signed one by default, so this is off. Prefer a fingerprint.
+  ssl_fingerprint:
+    name: Certificate fingerprint
+    description: >-
+      Optional. SHA-256 fingerprint to pin instead of verifying the chain. Takes precedence over Verify TLS certificate.
+  http_auth_token:
+    name: Bearer token
+    description: >-
+      Token clients send as Authorization: Bearer. At least 32 characters. Leave empty to generate one on first start; it is printed once in the log and kept in /data/.http_auth_token.
+  allowed_hosts:
+    name: Allowed hosts
+    description: >-
+      Comma-separated Host header values clients use, including the port, for example 192.168.1.10:3111,mcp.example.com. localhost is always allowed. Requests for other hosts get HTTP 421.
+  permission_mode:
+    name: Permission mode
+    description: >-
+      confirm makes every change return a preview first. bypass applies changes immediately.
+  read_only:
+    name: Read-only mode
+    description: >-
+      Deny every action that is not a read, whatever the policy gates say.
+  otel_endpoint:
+    name: OpenTelemetry endpoint
+    description: >-
+      Optional. OTLP endpoint for traces, for example http://otlp-collector:4318.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Any other UNIFI_* variable, for example UNIFI_POLICY_DELETE=false to deny deletes or UNIFI_REQUIRE_PREVIEW_TOKEN=true.
+network:
+  3001/tcp: MCP endpoint (Streamable HTTP, path /mcp)
