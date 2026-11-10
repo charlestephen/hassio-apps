@@ -1,0 +1,7 @@
+---
+# Thin wrapper on the unifi-mcp Network image. Tags have no v prefix.
+build_from:
+  aarch64: ghcr.io/sirkirby/unifi-network-mcp:0.45.0
+  amd64: ghcr.io/sirkirby/unifi-network-mcp:0.45.0
+args:
+  UNIFI_NETWORK_MCP_VERSION: "0.45.0"
