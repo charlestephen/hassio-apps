@@ -1,0 +1,78 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "UnPoller"
+version: "5.9.4"
+slug: unpoller
+description: >-
+  Collects UniFi controller metrics and exports them to Prometheus, InfluxDB and Loki.
+  Thin wrapper on the official image.
+url: https://github.com/charlestephen/hassio-apps/tree/main/unpoller
+homeassistant: "2026.6.0"
+stage: stable
+image: ghcr.io/charlestephen/hassio-addons-unpoller-{arch}
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: application
+boot: auto
+apparmor: true
+panel_icon: mdi:chart-line
+ports:
+  9130/tcp: 9130
+ports_description:
+  9130/tcp: Prometheus metrics (/metrics)
+backup: cold
+
+options:
+  controller_url: ""
+  controller_api_key: ""
+  controller_user: ""
+  controller_password: ""
+  verify_ssl: false
+  sites: "all"
+  save_sites: true
+  save_dpi: false
+  save_ids: false
+  save_events: false
+  save_alarms: false
+  save_anomalies: false
+  prometheus_enabled: true
+  prometheus_namespace: "unifipoller"
+  influxdb_url: ""
+  influxdb_user: ""
+  influxdb_password: ""
+  influxdb_db: "unifi"
+  loki_url: ""
+  loki_user: ""
+  loki_password: ""
+  loki_tenant_id: ""
+  debug: false
+  env_vars: []
+schema:
+  controller_url: str
+  controller_api_key: password?
+  controller_user: str?
+  controller_password: password?
+  verify_ssl: bool
+  sites: str
+  save_sites: bool
+  save_dpi: bool
+  save_ids: bool
+  save_events: bool
+  save_alarms: bool
+  save_anomalies: bool
+  prometheus_enabled: bool
+  prometheus_namespace: str
+  influxdb_url: str?
+  influxdb_user: str?
+  influxdb_password: password?
+  influxdb_db: str?
+  loki_url: str?
+  loki_user: str?
+  loki_password: password?
+  loki_tenant_id: str?
+  debug: bool
+  env_vars:
+    - name: str
+      value: password?
+      secret: bool?
