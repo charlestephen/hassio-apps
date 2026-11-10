@@ -1,0 +1,60 @@
+---
+configuration:
+  db_host:
+    name: Database host
+    description: >-
+      Hostname of the PostgreSQL server. The PostgreSQL app is reachable as dd815a57-postgres.
+  db_port:
+    name: Database port
+    description: >-
+      PostgreSQL port.
+  db_name:
+    name: Database name
+    description: >-
+      Database the app uses. Created on start when the admin password below is set.
+  db_user:
+    name: Database user
+    description: >-
+      Login the app uses. Created or updated on start when the admin password below is set.
+  db_password:
+    name: Database password
+    description: >-
+      Password for the database user. Required.
+  db_admin_user:
+    name: PostgreSQL admin user
+    description: >-
+      Superuser used to create the database and login.
+  db_admin_password:
+    name: PostgreSQL admin password
+    description: >-
+      Optional. When set, the app creates the database and login on every start. Leave empty if they already exist.
+  origin:
+    name: Public origin
+    description: >-
+      Optional. Public scheme and host, for example https://dockhand.example.com. Needed for passkeys and when a reverse proxy changes the host.
+  encryption_key:
+    name: Encryption key
+    description: >-
+      Optional. Base64 AES-256 key for stored credentials. Leave empty to let Dockhand generate one in the data folder.
+  puid:
+    name: User ID
+    description: >-
+      User the app runs as. 0 (root) is needed to read the Docker socket on Home Assistant OS.
+  pgid:
+    name: Group ID
+    description: >-
+      Group the app runs as.
+  export_metrics:
+    name: Export metrics
+    description: >-
+      Serve Prometheus metrics at /metrics.
+  disable_local_login:
+    name: Disable local login
+    description: >-
+      Hide the username and password form. Only enable it after another sign-in method works.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Any other Dockhand variable, for example HTTPS_MODE or COMPOSE_TIMEOUT.
+network:
+  3000/tcp: Dockhand web UI
