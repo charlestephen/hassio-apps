@@ -1,7 +1,7 @@
 name: pgAdmin
 description: pgAdmin 4 — web-based management UI for PostgreSQL.
 url: https://github.com/charlestephen/hassio-apps/tree/main/pgadmin
-version: "9.19-5"
+version: "9.19-6"
 stage: stable
 homeassistant: "2026.6.0"
 slug: pgadmin
@@ -47,6 +47,7 @@ options:
   # Extra config_local.py assignments (name = Python identifier).
   config_vars: []
   register_postgres: true
+  register_pgbouncer: false
   postgres_host: ""
   postgres_port: 5432
   postgres_user: postgres
@@ -73,6 +74,7 @@ schema:
       value: password?
       secret: bool?
   register_postgres: bool
+  register_pgbouncer: bool
   postgres_host: str?
   postgres_port: port?
   postgres_user: str?

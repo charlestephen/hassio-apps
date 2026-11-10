@@ -134,13 +134,24 @@ if bashio::config.true 'register_postgres'; then
   admin_email="$(bashio::config 'email')"
   pgpass="${DATA_DIR}/pgpass"
 
+  bouncer_host="$(hostname | sed 's/-pgadmin$/-pgbouncer/')"
   passfile_field=""
   if bashio::config.has_value 'postgres_password'; then
     # .pgpass enables passwordless connect: host:port:db:user:password
     printf '%s:%s:*:%s:%s\n' "${pg_host}" "${pg_port}" "${pg_user}" \
       "$(bashio::config 'postgres_password')" > "${pgpass}"
+    if bashio::config.true 'register_pgbouncer'; then
+      printf '%s:6432:*:%s:%s\n' "${bouncer_host}" "${pg_user}" \
+        "$(bashio::config 'postgres_password')" >> "${pgpass}"
+    fi
     chmod 600 "${pgpass}"
     passfile_field=$(printf ',\n      "PassFile": "%s"' "${pgpass}")
+  fi
+
+  bouncer_entry=""
+  if bashio::config.true 'register_pgbouncer'; then
+    bouncer_entry=$(printf ',\n    "2": {\n      "Name": "Home Assistant PgBouncer",\n      "Group": "Servers",\n      "Host": "%s",\n      "Port": 6432,\n      "Username": "%s",\n      "MaintenanceDB": "%s",\n      "SSLMode": "prefer"%s\n    }' \
+      "${bouncer_host}" "${pg_user}" "${pg_db}" "${passfile_field}")
   fi
 
   cat > /tmp/servers.json <<EOF
@@ -154,7 +165,7 @@ if bashio::config.true 'register_postgres'; then
       "Username": "${pg_user}",
       "MaintenanceDB": "${pg_db}",
       "SSLMode": "prefer"${passfile_field}
-    }
+    }${bouncer_entry}
   }
 }
 EOF

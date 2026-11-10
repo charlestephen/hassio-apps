@@ -23,6 +23,13 @@ configuration:
     description: >-
       Optional. When set, the app creates the database role and database on
       start if they are missing. Leave empty if you create them yourself.
+  use_pgbouncer:
+    name: Use PgBouncer
+    description: >-
+      Connect through the PgBouncer app from this repository. Turns off
+      server-side cursors and keeps a direct connection to PostgreSQL for the
+      parts that cannot use a transaction-mode pooler. The database is still
+      created through the direct connection.
   secret_key:
     name: Secret key
     description: >-
