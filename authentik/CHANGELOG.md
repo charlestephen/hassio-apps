@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026.8.5-4
+
+- New **Use PgBouncer** option connects through the PgBouncer app with the settings authentik requires behind a transaction-mode pooler.
+
 ## 2026.8.5-3
 
 - Default **Log level** is back to `info`; 2026.8.5-2 changed it to `warning`.

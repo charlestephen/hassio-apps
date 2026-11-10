@@ -60,6 +60,11 @@ configuration:
   register_postgres:
     name: Register the PostgreSQL app
     description: Add a server entry for the PostgreSQL app so it appears in pgAdmin.
+  register_pgbouncer:
+    name: Register PgBouncer
+    description: >-
+      Also add the PgBouncer app as a server, using the same login as the
+      PostgreSQL entry. Needs the PgBouncer app from this repository.
   postgres_host:
     name: PostgreSQL host
     description: Host of the server to register. Leave empty to use the PostgreSQL app.

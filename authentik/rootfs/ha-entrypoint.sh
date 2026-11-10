@@ -12,7 +12,7 @@ if [[ ! -f "${OPTIONS}" ]]; then
 fi
 
 eval "$(python - <<'PY'
-import json, os, pathlib, re, secrets, shlex, sys
+import json, os, pathlib, re, secrets, shlex, socket, sys
 
 o = json.load(open(os.environ["OPTIONS"]))
 env = {}
@@ -44,8 +44,19 @@ if not o.get("db_password"):
     print("exit 1")
     sys.exit(0)
 
-put("AUTHENTIK_POSTGRESQL__HOST", o.get("db_host"))
-put("AUTHENTIK_POSTGRESQL__PORT", o.get("db_port"))
+if o.get("use_pgbouncer"):
+    # Behind a transaction-mode pooler authentik needs server-side cursors off and
+    # a direct endpoint for LISTEN/NOTIFY and advisory locks.
+    host = socket.gethostname()
+    bouncer = re.sub(r"-authentik$", "-pgbouncer", host)
+    put("AUTHENTIK_POSTGRESQL__HOST", bouncer)
+    put("AUTHENTIK_POSTGRESQL__PORT", 6432)
+    put("AUTHENTIK_POSTGRESQL__DISABLE_SERVER_SIDE_CURSORS", "true")
+    put("AUTHENTIK_POSTGRESQL__DIRECT__HOST", o.get("db_host"))
+    put("AUTHENTIK_POSTGRESQL__DIRECT__PORT", o.get("db_port"))
+else:
+    put("AUTHENTIK_POSTGRESQL__HOST", o.get("db_host"))
+    put("AUTHENTIK_POSTGRESQL__PORT", o.get("db_port"))
 put("AUTHENTIK_POSTGRESQL__NAME", o.get("db_name"))
 put("AUTHENTIK_POSTGRESQL__USER", o.get("db_user"))
 put("AUTHENTIK_POSTGRESQL__PASSWORD", o.get("db_password"), hidden=True)

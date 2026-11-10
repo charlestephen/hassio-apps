@@ -33,6 +33,7 @@ GRANT ALL ON SCHEMA public TO authentik;
 |--------|---------|
 | Database host / port / name / user / password | Connection to PostgreSQL. The PostgreSQL app is `dd815a57-postgres`. |
 | Database admin user / password | Used only to create the role and database. |
+| Use PgBouncer | Connect through the PgBouncer app. Authentik is pointed at PgBouncer with server-side cursors off, and keeps a direct connection to PostgreSQL for LISTEN/NOTIFY and its advisory locks, as the Authentik documentation requires for a transaction-mode pooler. |
 | Secret key | Leave empty to generate one on first start (`/data/.secret_key`). Back it up. |
 | Initial admin email / password | First start only. |
 | Log level | `trace`, `debug`, `info`, `warning` or `error`. |

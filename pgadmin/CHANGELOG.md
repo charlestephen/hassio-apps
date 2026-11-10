@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.19-6
+
+- New **Register PgBouncer** option adds the PgBouncer app as a second server entry, using the same login.
+
 ## 9.19-5
 
 - Skip legacy migration when `/addon_configs/<slug>` is the same inode as `/config`.
