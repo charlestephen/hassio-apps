@@ -15,10 +15,44 @@ app) and the server listens on port **5432**.
 |--------|------|---------|-------------|
 | `superuser_password` | password | `changeme` | Password for the `postgres` superuser. **Change this before exposing the server.** |
 | `database` | string | `homeassistant` | A database created on first init (leave empty to skip). |
+| `databases` | list | empty | Databases created on every start if missing. |
+| `logins` | list | empty | Logins (`username`, `password`) created or updated on every start. |
+| `rights` | list | empty | Pairs of `username` and `database`; the login gets full access to that database. |
 | `data_directory` | string | empty | Keep the data on an external drive. See [External drive](#external-drive). |
 | `migrate_existing_data` | bool | `false` | Copy an existing database to the new Data directory on start. |
 | `max_connections` | int | `100` | Maximum concurrent connections. |
 | `log_level` | list | `info` | App log verbosity. |
+
+### Databases, logins and rights
+
+Like the MariaDB app, you describe the databases, the logins and which login may
+use which database. Everything is applied on every start and is safe to repeat.
+
+```yaml
+databases:
+  - homeassistant
+  - authentik
+logins:
+  - username: homeassistant
+    password: "first-password"
+  - username: authentik
+    password: "second-password"
+rights:
+  - username: homeassistant
+    database: homeassistant
+  - username: authentik
+    database: authentik
+```
+
+- A login can reach only the databases it has a right for. Give a login rights
+  on several databases with several `rights` entries.
+- A right gives the login all privileges on the database and on its `public`
+  schema. Tables created by one login are not visible to another login with
+  rights on the same database unless you grant them yourself.
+- A right is skipped with a warning if the login or the database does not exist.
+- Removing an entry does not delete the database or the login.
+- The single `database` option from earlier versions still works and applies
+  only when a new cluster is created.
 
 > ⚠️ The `superuser_password` is only applied when the cluster is **first
 > initialized**. To change it later, connect and run

@@ -1,0 +1,76 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Create the databases and logins from the app options and apply the rights.
+# Usage: provision-postgres <pgdata> [first-run]
+# Runs on every start against a temporary, socket-only server. Everything is
+# idempotent: existing databases are kept, passwords are set to the configured
+# value, and grants are repeated.
+# ==============================================================================
+set -euo pipefail
+
+readonly PGDATA="${1:?data directory}"
+readonly FIRST_RUN="${2:-}"
+readonly OPTIONS="/data/options.json"
+
+mapfile -t databases < <(jq -r '(.databases // [])[] | select(. != "")' "${OPTIONS}")
+# The single "database" option from earlier versions applies to a new cluster only.
+legacy="$(jq -r '.database // empty' "${OPTIONS}")"
+if [[ "${FIRST_RUN}" == "first-run" && -n "${legacy}" ]]; then
+  databases+=("${legacy}")
+fi
+mapfile -t logins < <(jq -c '(.logins // [])[]' "${OPTIONS}")
+mapfile -t rights < <(jq -c '(.rights // [])[]' "${OPTIONS}")
+
+if (( ${#databases[@]} + ${#logins[@]} + ${#rights[@]} == 0 )); then
+  exit 0
+fi
+
+psql_pg() { su-exec postgres psql -X -q -v ON_ERROR_STOP=1 -U postgres "$@"; }
+
+su-exec postgres pg_ctl -D "${PGDATA}" -o "-c listen_addresses='' -p 5432" -w -s start
+trap 'su-exec postgres pg_ctl -D "${PGDATA}" -m fast -w -s stop' EXIT
+
+for db in "${databases[@]}"; do
+  bashio::log.info "Database '${db}'"
+  psql_pg -d postgres -v d="${db}" <<'SQL'
+SELECT format('CREATE DATABASE %I', :'d')
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = :'d') \gexec
+SQL
+done
+
+for row in "${logins[@]}"; do
+  user="$(jq -r '.username // empty' <<<"${row}")"
+  pass="$(jq -r '.password // empty' <<<"${row}")"
+  if [[ -z "${user}" || -z "${pass}" ]]; then
+    bashio::log.warning "Skipping a login without a username or password."
+    continue
+  fi
+  bashio::log.info "Login '${user}'"
+  psql_pg -d postgres -v u="${user}" -v p="${pass}" <<'SQL'
+SELECT format('CREATE ROLE %I LOGIN PASSWORD %L', :'u', :'p')
+WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'u') \gexec
+SELECT format('ALTER ROLE %I LOGIN PASSWORD %L', :'u', :'p')
+WHERE EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'u') \gexec
+SQL
+done
+
+for row in "${rights[@]}"; do
+  user="$(jq -r '.username // empty' <<<"${row}")"
+  db="$(jq -r '.database // empty' <<<"${row}")"
+  if [[ -z "${user}" || -z "${db}" ]]; then
+    bashio::log.warning "Skipping a right without a username or database."
+    continue
+  fi
+  role_ok="$(psql_pg -d postgres -tA -v u="${user}" <<<"SELECT 1 FROM pg_roles WHERE rolname = :'u'")"
+  db_ok="$(psql_pg -d postgres -tA -v d="${db}" <<<"SELECT 1 FROM pg_database WHERE datname = :'d'")"
+  if [[ -z "${role_ok}" || -z "${db_ok}" ]]; then
+    bashio::log.warning "Right for '${user}' on '${db}' skipped: the login or the database does not exist."
+    continue
+  fi
+  bashio::log.info "Rights: '${user}' on '${db}'"
+  psql_pg -d "${db}" -v u="${user}" -v d="${db}" <<'SQL'
+SELECT format('GRANT ALL PRIVILEGES ON DATABASE %I TO %I', :'d', :'u') \gexec
+SELECT format('GRANT ALL ON SCHEMA public TO %I', :'u') \gexec
+SQL
+done

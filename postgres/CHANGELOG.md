@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.6-3
+
+- New `databases`, `logins` and `rights` options to create several databases and logins and match them, like the MariaDB app. Applied on every start and safe to repeat. The single `database` option still applies to a new cluster only.
+
 ## 18.6-2
 
 - The database is now kept in a `postgres` subfolder of **Data directory**, so a freshly formatted drive (which contains `lost+found`) works. Fixes the copy refusing an ext4 drive as not empty.

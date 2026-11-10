@@ -4,7 +4,20 @@ configuration:
     description: Password of the postgres superuser. Change it from the default before starting.
   database:
     name: Database
-    description: Name of a database to create on first start.
+    description: Name of a database to create when the cluster is first created. Kept for existing installs; use Databases instead.
+  databases:
+    name: Databases
+    description: Databases to create on every start if they are missing.
+  logins:
+    name: Logins
+    description: >-
+      Logins to create or update on every start. The password is set to the value
+      given here.
+  rights:
+    name: Rights
+    description: >-
+      Gives a login full access to a database. Both must exist, from the lists
+      above or from before.
   data_directory:
     name: Data directory
     description: >-
