@@ -35,7 +35,7 @@ configuration:
   allowed_hosts:
     name: Allowed hosts
     description: >-
-      Comma-separated Host header values clients use, including the port, for example 192.168.1.10:3110,mcp.example.com. localhost is always allowed. Requests for other hosts get HTTP 421.
+      Comma-separated Host header values clients use, including the port, for example 192.168.1.10:3110,mcp.example.com. localhost is always allowed. Requests for other hosts are rejected with HTTP 400.
   permission_mode:
     name: Permission mode
     description: >-
