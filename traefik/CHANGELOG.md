@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.7.18-1
+
+- Use the app's own config folder (`app_config`, `/config`) instead of the Home Assistant config directory. Defaults are now `/config/dynamic/` and `/config/traefik.yaml`; existing files under `/homeassistant/traefik/` are migrated once.
+
 ## 3.7.18
 
 - Upgrading from upstream version 3.7.17-6 -> 3.7.18

@@ -8,43 +8,38 @@ Upstream docs: <https://doc.traefik.io/traefik/>
 
 ## Where config lives
 
-This app maps the Home Assistant configuration directory with
-`homeassistant_config`, which appears **inside the container** as
-`/homeassistant`. Do **not** use `/config/...` for Traefik routes — in current
-Supervisor that is the app’s own config folder, not HA’s `configuration.yaml`
-tree (older boomam-style addons used `/config` for HA config; that mapping no
-longer applies here).
+This app uses its own config folder (`app_config`), mounted **inside the
+container** at `/config`. On the host it is `addon_configs/<repo>_traefik/`
+(visible in Samba, SSH, or the File editor app).
 
 | Place | Path |
 | --- | --- |
-| On disk / Samba / VS Code | `homeassistant/traefik/` next to `configuration.yaml` |
-| Inside the Traefik container | `/homeassistant/traefik/` |
+| Dynamic routes | `/config/dynamic/` |
+| Optional custom static file | `/config/traefik.yaml` |
+| ACME storage | `/ssl/traefik/acme.json` |
 
-Defaults:
+The folder is created on first start. On upgrade, files from
+`/homeassistant/traefik/` (3.7.17-1 to -6), `/config/traefik/` (3.7.17) and
+legacy `addon_configs/…_traefik` are copied into `/config/dynamic/` once and
+the old trees are removed. A `traefik.yaml` found there moves to
+`/config/traefik.yaml`.
 
-- Dynamic routes: `dynamic_configuration_path: /homeassistant/traefik/`
-- Optional custom static file: `/homeassistant/traefik/traefik.yaml`
-- ACME storage: `/ssl/traefik/acme.json`
-
-Create the `traefik` folder yourself and drop YAML there before or right after
-first start. On upgrade from `3.7.18`, any leftover `/config/traefik/` (or
-legacy `addon_configs/…_traefik`) is copied into `/homeassistant/traefik/` once
-and then removed.
+Traefik Manager Agent reads this folder through its `all_app_configs` mount;
+its defaults already point here.
 
 ## Quick start
 
 1. Install **Traefik** from this app repository.
-2. Create `homeassistant/traefik/` (beside `configuration.yaml`) and add at
-   least one dynamic YAML file (example below).
+2. Add at least one dynamic YAML file to `/config/dynamic/` (example below).
 3. In the app **Configuration** tab, confirm
-   `dynamic_configuration_path: /homeassistant/traefik/`.
+   `dynamic_configuration_path: /config/dynamic/`.
 4. Optionally enable Let's Encrypt and set provider env vars (see below).
 5. Start the app. Open the dashboard via the HA sidebar (Ingress) or
    `http://<ha-host>:8080/dashboard/`.
 
 ### Starter dynamic config
 
-Save as `homeassistant/traefik/fileConfig.yaml` (create the directory first).
+Save as `fileConfig.yaml` in `/config/dynamic/`.
 Replace `home.example.com` with your hostname:
 
 ```yaml
@@ -127,8 +122,7 @@ entrypoint.
 ### `dynamic_configuration_path` (required)
 
 Directory for Traefik’s file provider (watched for changes). Default
-`/homeassistant/traefik/` — the Home Assistant config directory inside the
-container. Create `traefik/` next to `configuration.yaml` on the host.
+`/config/dynamic/` in the app config folder.
 
 ### `letsencrypt`
 
@@ -154,7 +148,7 @@ env_vars:
 
 Expert override: when `use_config_file` is `true`, **all** generated static
 options above are ignored and Traefik starts with `--configFile` pointing at
-`config_file` (default `/homeassistant/traefik/traefik.yaml`). The file must
+`config_file` (default `/config/traefik.yaml`). The file must
 exist before start.
 
 ### `env_vars`
@@ -166,7 +160,7 @@ List of `NAME=value` strings exported into the Traefik process environment
 
 | Path | Contents |
 | --- | --- |
-| `/homeassistant/traefik/` (host: `…/homeassistant/traefik/`) | Dynamic (and optional custom static) YAML |
+| `/config/dynamic/` (host: `addon_configs/<repo>_traefik/dynamic/`) | Dynamic (and optional custom static) YAML |
 | `/ssl/traefik/` | ACME storage (`acme.json`) when Let's Encrypt is on |
 
 ## Notes

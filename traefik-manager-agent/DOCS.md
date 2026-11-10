@@ -22,10 +22,12 @@ run on the same Home Assistant instance as Traefik Manager, but can). This app t
 
 - `backup_dir` → `/data/backups` — `.bak` files written before each change,
   persisted under this app's own `/data` volume.
-- `config_path` → `/homeassistant/traefik/dynamic` by default (same layout as
-  this repo's Traefik app: HA config dir mounted at `/homeassistant`). Point
-  it at the directory or single file Traefik's file provider watches.
-- `static_config_path` → `/homeassistant/traefik/traefik.yml` by default.
+- `config_path` → `/app_configs/*_traefik/dynamic` by default: the Traefik
+  app's config folder, read through the `all_app_configs` mount. The `*` is
+  this repository's prefix and is resolved at start. Point it at the directory
+  or single file Traefik's file provider watches.
+- `traefik_api_url` → `http://dd815a57-traefik:8080` (the Traefik app's API).
+- `static_config_path` → `/app_configs/*_traefik/traefik.yaml` by default.
 - `acme_json_path` → `/ssl/traefik/acme.json` by default (this app maps
   `/ssl` read-write).
 

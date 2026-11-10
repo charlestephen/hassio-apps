@@ -54,6 +54,7 @@ profile traefik flags=(attach_disconnected,mediate_deleted) {
   /data/** rw,
   /homeassistant/** rw,
   /config/** rw,
+  /app_configs/** rw,
   /share/** rw,
   /ssl/** rw,
 
