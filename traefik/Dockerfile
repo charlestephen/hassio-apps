@@ -4,7 +4,7 @@
 # runs Traefik (+ nginx for Ingress dashboard) under s6-overlay.
 FROM ghcr.io/hassio-addons/base:stable
 
-ARG TRAEFIK_VERSION="3.7.17"
+ARG TRAEFIK_VERSION="3.7.18"
 ARG BUILD_ARCH
 
 # nginx proxies the dashboard for HA Ingress; gomplate renders the static config.

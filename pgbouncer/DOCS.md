@@ -1,7 +1,7 @@
 # PgBouncer
 
 A connection pooler for PostgreSQL, built from the upstream
-[PgBouncer](https://www.pgbouncer.org) source (`1.26.1`). Clients connect to
+[PgBouncer](https://www.pgbouncer.org) source (`pgbouncer_1_23_1-fixed`). Clients connect to
 PgBouncer instead of PostgreSQL, and PgBouncer shares a small number of server
 connections between them. This helps when many apps open many connections.
 

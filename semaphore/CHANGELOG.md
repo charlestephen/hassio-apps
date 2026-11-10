@@ -1,5 +1,110 @@
 # Changelog
 
+## 2.20.23
+
+- Upgrading from upstream version 2.19.17-1 -> 2.20.23
+
+> Upstream v2.20.23: https://github.com/semaphoreui/semaphore/releases/tag/v2.20.23
+>
+> <a href="https://semaphoreui.com/releases/semaphore-v2_20">
+> <img width="1536" height="700" alt="image" src="https://github.com/user-attachments/assets/84f5d6b0-7e82-4a29-82c3-52c0114e1db8" />
+> </a>
+>
+> ## What's Changed
+> * Semaphore UI one-click deployment on Cloudzy  by @sabased in https://github.com/semaphoreui/semaphore/pull/4148
+> * Persist per-user language selection in user options by @fiftin with @Copilot in https://github.com/semaphoreui/semaphore/pull/4149
+> * fix/delete user error by @fiftin in https://github.com/semaphoreui/semaphore/pull/4147
+> * fix(ui): prevent Enter in CLI args dialog from submitting parent form by @fiftin in https://github.com/semaphoreui/semaphore/pull/4092
+> * fix: add missing env tag for SEMAPHORE_RUNNER_EXECUTOR by @jon4hz in https://github.com/semaphoreui/semaphore/pull/4154
+> * Sem 212 git clone retry by @befika in https://github.com/semaphoreui/semaphore/pull/4140
+> * fix(config): add backward-compatible top-level secrets_path fallback by @NewMayur in https://github.com/semaphoreui/semaphore/pull/4133
+> * fix(tasks): preserve output from short shell commands by @rzaitov in https://github.com/semaphoreui/semaphore/pull/4159
+> * chore(deps): update dependency core-js to v3.50.0 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4143
+> * chore(deps): update dependency nanoid to v6.0.1 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4119
+> * chore(deps): update dependency dayjs to v1.11.23 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4177
+> * chore(deps): update dependency axios to v1.20.0 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4187
+> * docs: sync engineering documentation with recent config and feature changes by @cursor[bot] in https://github.com/semaphoreui/semaphore/pull/4179
+> * chore(deps): update dependency cron-parser to v5.10.0 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4189
+> * feat(TaskDetails, TaskLogView): link to schedule or integration details and handle deleted origins by @befika in https://github.com/semaphoreui/semaphore/pull/4183
+> * feat(git): parallelize submodule fetches with git --jobs flag by @dungeon-master-666 in https://github.com/semaphoreui/semaphore/pull/4172
+> * docs: add RepoCloud as a deployment option by @cosark in https://github.com/semaphoreui/semaphore/pull/4170
+> * feat(tasks): support and test Ansible forks concurrency by @NewMayur in https://github.com/semaphoreui/semaphore/pull/4166
+> * fix/jwt for docker executor by @fiftin in https://github.com/semaphoreui/semaphore/pull/4194
+> * feat(runner): add check interval configuration for job polling by @befika in https://github.com/semaphoreui/semaphore/pull/4175
+> * refactor(api): function parseInt returns bool instead of error by @fiftin in https://github.com/semaphoreui/semaphore/pull/4195
+> * Feat: add delay node  by @LowSwoo in https://github.com/semaphoreui/semaphore/pull/4145
+> * fix(web): remove trailing spaces that break the build by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4200
+> * docs: workflows guide, runner poll interval, Ansible forks by @cursor[bot] in https://github.com/semaphoreui/semaphore/pull/4199
+> * add repository-relative template working directory by @rzaitov in https://github.com/semaphoreui/semaphore/pull/4181
+> * fix(tasks): isolate checkouts by effective branch by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4198
+> * fix(deps): update module github.com/go-jose/go-jose/v4 to v4.1.5 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4201
+> * fix(deps): update module github.com/coreos/go-oidc/v3 to v3.21.0 - autoclosed by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4202
+> * Fix Dredd test server startup and port conflicts by @rzaitov in https://github.com/semaphoreui/semaphore/pull/4206
+> * feat(api): allow template_name when creating project tasks via API by @befika in https://github.com/semaphoreui/semaphore/pull/4128
+> * test(runners): add integration test suite for local, docker, and k8s executor modes by @NewMayur in https://github.com/semaphoreui/semaphore/pull/4208
+> * feat(config): support SEMAPHORE_TLS_HTTP_REDIRECT_PORT pointer env var by @NewMayur in https://github.com/semaphoreui/semaphore/pull/4167
+> * feat(ui): add YAML format support for Extra Variables in Variable Groups by @thinas1115 in https://github.com/semaphoreui/semaphore/pull/4158
+> * feat(ansible): add support for galaxy role and collection arguments i… by @befika in https://github.com/semaphoreui/semaphore/pull/4160
+> * chore(deps-dev): bump svgo from 2.8.3 to 2.8.4 in /web by @dependabot[bot] in https://github.com/semaphoreui/semaphore/pull/4217
+> * fix(deps): update module github.com/stretchr/testify to v1.12.1 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4205
+> * fix(deps): update module github.com/sirupsen/logrus to v1.10.2 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4204
+> * feat(templates): hide Dry Run and Diff checkboxes per template by @lucuma13 in https://github.com/semaphoreui/semaphore/pull/4152
+> * chore(deps): update dependency openai to v7.13.0 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4121
+> * fix(deps): update module golang.org/x/crypto to v0.57.0 - autoclosed by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4218
+> * fix(deps): update dependency js-yaml to v5 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4221
+> * fix(deps): update module modernc.org/sqlite to v1.58.0 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4220
+> * fix(deps): update module golang.org/x/oauth2 to v0.37.0 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4219
+> * feat(runners): add server-side debug diagnostics by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4222
+> * fix(runner): authenticate unregister requests by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4214
+> * chore(deps): update dependency openai to v7.14.0 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4224
+> * feat(integration): initialize Params map if nil in GetTaskDefinition by @befika in https://github.com/semaphoreui/semaphore/pull/4089
+> * feat(auth): session duration by @fiftin in https://github.com/semaphoreui/semaphore/pull/4227
+> * chore(deps): update dependency openai to v7.15.0 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4226
+> * feat: suppress error notifications per template by @EyJunge1 in https://github.com/semaphoreui/semaphore/pull/4232
+> * chore(deps): update dependency cron-parser to v5.10.1 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4237
+> * Adding username to task logging by @JRNC in https://github.com/semaphoreui/semaphore/pull/4239
+> * chore(deps): update dependency js-yaml to v5.4.2 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4238
+> * docs: template alert suppression and server log debugging by @cursor[bot] in https://github.com/semaphoreui/semaphore/pull/4241
+> * Gracefully stop and clean up local task process groups by @rzaitov in https://github.com/semaphoreui/semaphore/pull/4228
+> * fix(deps): update module modernc.org/sqlite to v1.59.0 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4242
+> * chore(deps): update dependency openai to v7.18.0 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4245
+> * chore(deps): update dependency prettier to v3.9.8 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4244
+> * chore(deps): update dependency dotenv to v18 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4248
+> * chore(deps): update dependency openai to v7.20.0 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4252
+> * feat/gen ssh key by @fiftin in https://github.com/semaphoreui/semaphore/pull/3656
+> * chore(tests): replace os.Setenv with t.Setenv by @EyJunge1 in https://github.com/semaphoreui/semaphore/pull/4271
+> * fix(ui): make schedule timezone alert dismissible by @EyJunge1 in https://github.com/semaphoreui/semaphore/pull/4267
+> * chore(deps): update dependency dotenv to v18.0.3 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4273
+> * feat(integrations): add HMAC-SHA512 webhook auth method by @EyJunge1 in https://github.com/semaphoreui/semaphore/pull/4270
+> * fix(ui): exclude log timestamps from text selection by @EyJunge1 in https://github.com/semaphoreui/semaphore/pull/4266
+> * fix(git): forward proxy environment vars and support auth encoding in bare metal installations by @NewMayur in https://github.com/semaphoreui/semaphore/pull/4197
+> * feat(host-config): map ssh hosts and git URLs to project credentials by @befika in https://github.com/semaphoreui/semaphore/pull/4251
+> * Feat/refactor workflows by @fiftin in https://github.com/semaphoreui/semaphore/pull/4287
+> * feat(audit): add the security audit log by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4291
+> * feat(git): enhance galaxyGitEnv for private repository authentication and add tests by @befika in https://github.com/semaphoreui/semaphore/pull/4156
+> * feat(audit): record resource and secret events by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4296
+> * feat(audit): record task and runner events by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4300
+> * feat(workflows): add environment variables about current workflow run by @fiftin in https://github.com/semaphoreui/semaphore/pull/4302
+> * feat(audit): add the audit.splunk_hec configuration section by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4309
+> * feat(audit): delete audit events older than a retention period by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4313
+> * fix(template): offer the files of the selected app in the file picker by @befika in https://github.com/semaphoreui/semaphore/pull/4298
+> * chore(deps): update dependency dotenv to v18.0.7 by @renovate[bot] in https://github.com/semaphoreui/semaphore/pull/4283
+> * chore(deps-dev): bump compression from 1.8.1 to 1.8.2 in /web by @dependabot[bot] in https://github.com/semaphoreui/semaphore/pull/4331
+> * chore(deps-dev): bump joi from 17.13.4 to 17.13.8 in /web by @dependabot[bot] in https://github.com/semaphoreui/semaphore/pull/4330
+> * feat(audit): add the audit log screen by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4325
+> * feat/workflow artifacts by @fiftin in https://github.com/semaphoreui/semaphore/pull/4334
+> * feat(repository): share one checkout between the templates of a monorepo by @befika in https://github.com/semaphoreui/semaphore/pull/4326
+> * Fix concurrent static inventory cleanup by @sean0407 in https://github.com/semaphoreui/semaphore/pull/4335
+> * fix(tasks): use unsafe only for Jinja2 by @fiftin in https://github.com/semaphoreui/semaphore/pull/4339
+> * feat/git shallow clone by @fiftin in https://github.com/semaphoreui/semaphore/pull/4340
+> * docs: add Pethost as a deployment option by @sadfun in https://github.com/semaphoreui/semaphore/pull/4342
+> * feat(roles): give every role an ID by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4341
+> * feat(roles): let members hold several roles by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4343
+> * feat(roles): read roles from group mappings by @souryogurt in https://github.com/semaphoreui/semaphore/pull/4347
+> * Feat/wf survey vars by @fiftin in https://github.com/semaphoreui/semaphore/pull/4346
+> * Feat/features from ex by @fiftin in https://github.com/semaphoreui/semaphore/pull/4348
+> …
+
 ## 2.19.17-1
 
 - Refuse to start while `cookie_hash`, `cookie_encryption` or `access_key_encryption` still hold the placeholder, instead of panicking on invalid base64.

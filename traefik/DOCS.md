@@ -27,7 +27,7 @@ Defaults:
 - ACME storage: `/ssl/traefik/acme.json`
 
 Create the `traefik` folder yourself and drop YAML there before or right after
-first start. On upgrade from `3.7.17`, any leftover `/config/traefik/` (or
+first start. On upgrade from `3.7.18`, any leftover `/config/traefik/` (or
 legacy `addon_configs/…_traefik`) is copied into `/homeassistant/traefik/` once
 and then removed.
 
@@ -176,5 +176,5 @@ List of `NAME=value` strings exported into the Traefik process environment
 - App version tracks the bundled Traefik release (bumped by this repository’s
   upstream tracker when [traefik/traefik](https://github.com/traefik/traefik)
   publishes a new stable tag). Wrapper-only fixes append a suffix (e.g.
-  `3.7.17-1`) so Supervisor downloads a new image — it will not re-pull an
+  `3.7.18-1`) so Supervisor downloads a new image — it will not re-pull an
   unchanged version string.

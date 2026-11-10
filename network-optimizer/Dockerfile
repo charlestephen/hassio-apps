@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/ozark-connect/network-optimizer:2.10.7
+ARG BUILD_FROM=ghcr.io/ozark-connect/network-optimizer:2.11.0
 
 # Thin Home Assistant wrapper on the official Network Optimizer image.
 # Upstream entrypoint (/entrypoint.sh) is preserved after options → env.
@@ -14,7 +14,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends jq \
     && rm -rf /var/lib/apt/lists/*
 
-ARG NETWORK_OPTIMIZER_VERSION=2.10.7
+ARG NETWORK_OPTIMIZER_VERSION=2.11.0
 ENV NETWORK_OPTIMIZER_VERSION=${NETWORK_OPTIMIZER_VERSION}
 
 COPY rootfs/ /
