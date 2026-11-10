@@ -27,6 +27,10 @@
 
 # Changelog
 
+## 15.6.2-3
+
+- The app no longer changes Technitium's DNS listeners. Technitium listens on every address, as upstream does, and the `DNS listen mode` option is removed.
+
 ## 15.6.2-2
 
 - The DNS listeners are now restricted to the host's addresses only when another service on the host already holds port 53 (`DNS listen mode` `auto`), instead of always. The earlier reason, a resolver on `172.30.32.2`, does not apply: the Supervisor's DNS plugin is a separate container. Upstream's default of listening on every address follows address changes, so it is kept unless a conflict is found. `host-addresses` and `all-addresses` force either behaviour. Replaces the `restrict_dns_listeners` option from 15.6.2-1.

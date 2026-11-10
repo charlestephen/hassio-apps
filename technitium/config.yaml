@@ -1,7 +1,7 @@
 name: Technitium DNS
 description: Technitium DNS Server is an open source authoritative and recursive DNS server with a web-based management UI.
 url: https://github.com/charlestephen/hassio-apps/tree/main/technitium
-version: "15.6.2-2"
+version: "15.6.2-3"
 stage: stable
 homeassistant: "2026.6.0"
 slug: technitium
@@ -59,7 +59,6 @@ options:
   dns_server_enable_blocking: true
   dns_server_block_list_urls: ""
   dns_server_optional_protocol_dns_over_http: false
-  dns_listen_mode: auto
   postgres_query_logs: true
   postgres_host: "127.0.0.1"
   postgres_port: 5432
@@ -82,7 +81,6 @@ schema:
   dns_server_enable_blocking: bool?
   dns_server_block_list_urls: str?
   dns_server_optional_protocol_dns_over_http: bool?
-  dns_listen_mode: list(auto|host-addresses|all-addresses)
   postgres_query_logs: bool
   postgres_host: str
   postgres_port: port

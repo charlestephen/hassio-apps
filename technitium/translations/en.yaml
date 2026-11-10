@@ -32,14 +32,6 @@ configuration:
   dns_server_optional_protocol_dns_over_http:
     name: DNS over HTTP
     description: Accept DNS over plain HTTP on port 80, for use behind a TLS-terminating reverse proxy. Applied on first start only; change it later in the web console.
-  dns_listen_mode:
-    name: DNS listen mode
-    description: >-
-      all-addresses is Technitium's default and follows address changes by
-      itself. host-addresses binds DNS to the host's own addresses, which is
-      needed when another service on the host already holds port 53 on one
-      address, such as the systemd-resolved stub on 127.0.0.53. auto picks
-      host-addresses only when it finds such a service. Needs the admin password.
   postgres_query_logs:
     name: Log queries to PostgreSQL
     description: >-
