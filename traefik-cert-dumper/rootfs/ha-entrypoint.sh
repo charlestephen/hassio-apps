@@ -79,4 +79,4 @@ $(jq -r '(.env_vars // [])[] | select((.name // "") != "") | .name + "=" + (.val
 EOF
 
 log "starting traefik-certs-dumper ${TRAEFIK_CERTS_DUMPER_VERSION:-}"
-exec /usr/local/bin/dump-ha "$@"
+exec /usr/bin/dump "$@"
