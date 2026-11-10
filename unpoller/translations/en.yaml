@@ -1,0 +1,100 @@
+---
+configuration:
+  controller_url:
+    name: Controller URL
+    description: >-
+      Required. UniFi controller or console URL, for example https://192.168.1.1. Leave off :8443 for UniFi OS consoles.
+  controller_api_key:
+    name: Controller API key
+    description: >-
+      API key from the UniFi console (preferred). When set, user and password are ignored.
+  controller_user:
+    name: Controller user
+    description: >-
+      Read-only local user with access to all sites. Used when no API key is set.
+  controller_password:
+    name: Controller password
+    description: >-
+      Password for the controller user.
+  verify_ssl:
+    name: Verify TLS certificate
+    description: >-
+      Check the controller's certificate. Consoles use a self-signed one by default, so this is off.
+  sites:
+    name: Sites
+    description: >-
+      Comma-separated site names to poll, or all.
+  save_sites:
+    name: Save sites
+    description: >-
+      Collect site health data.
+  save_dpi:
+    name: Save DPI
+    description: >-
+      Collect deep packet inspection data. Adds many series.
+  save_ids:
+    name: Save IDS/IPS
+    description: >-
+      Collect intrusion detection events.
+  save_events:
+    name: Save events
+    description: >-
+      Collect controller events (Loki and InfluxDB).
+  save_alarms:
+    name: Save alarms
+    description: >-
+      Collect controller alarms (Loki and InfluxDB).
+  save_anomalies:
+    name: Save anomalies
+    description: >-
+      Collect anomalies (Loki and InfluxDB).
+  prometheus_enabled:
+    name: Prometheus output
+    description: >-
+      Serve metrics on port 9130.
+  prometheus_namespace:
+    name: Prometheus namespace
+    description: >-
+      Prefix for metric names.
+  influxdb_url:
+    name: InfluxDB URL
+    description: >-
+      Optional. Turns on the InfluxDB output, for example http://influxdb:8086.
+  influxdb_user:
+    name: InfluxDB user
+    description: >-
+      InfluxDB user.
+  influxdb_password:
+    name: InfluxDB password
+    description: >-
+      InfluxDB password.
+  influxdb_db:
+    name: InfluxDB database
+    description: >-
+      InfluxDB database name.
+  loki_url:
+    name: Loki URL
+    description: >-
+      Optional. Turns on the Loki output, for example http://loki:3100.
+  loki_user:
+    name: Loki user
+    description: >-
+      Loki basic-auth user.
+  loki_password:
+    name: Loki password
+    description: >-
+      Loki basic-auth password.
+  loki_tenant_id:
+    name: Loki tenant ID
+    description: >-
+      Value for the X-Scope-OrgID header.
+  debug:
+    name: Debug logging
+    description: >-
+      Log every request. Verbose.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Any other UP_* variable, for example UP_UNIFI_DEFAULT_SAVE_TRAFFIC=true or a second controller with UP_UNIFI_CONTROLLER_0_URL.
+network:
+  9130/tcp: Prometheus metrics (/metrics)
