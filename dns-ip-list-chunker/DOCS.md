@@ -5,7 +5,7 @@ custom lists), merges and deduplicates them, and re-serves them as plain-text
 chunks sized for DNS servers and routers that reject oversized external
 blocklists or allowlists. This app wraps
 [dns-ip-list-chunker](https://github.com/charlestephen/dns-ip-list-chunker)
-`1.4.0`.
+`1.5.0`.
 
 Formerly **UniFi Blocklist Chunker** — same engine, generic naming. Works with
 UniFi, Technitium, Pi-hole-style subscribers, NextDNS-compatible URL feeds, or
