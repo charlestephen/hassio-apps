@@ -191,6 +191,38 @@ Or add it manually:
 - Remote-host companion for Traefik Manager, letting it manage a Traefik
   instance running elsewhere on the network.
 
+### &#10003; [Dockhand](dockhand/)
+
+- Docker management UI for containers, Compose stacks, images and volumes. Thin wrapper on `fnsys/dockhand`, using the PostgreSQL app for its database.
+
+### &#10003; [Speedtest Tracker](speedtest-tracker/)
+
+- Scheduled internet speed tests with history and charts. Thin wrapper on the LinuxServer.io image, using the PostgreSQL app for its database.
+
+### &#10003; [Traefik Certs Dumper](traefik-cert-dumper/)
+
+- Extracts the certificates from Traefik's `acme.json` into PEM files under `/ssl` and keeps them up to date.
+
+### &#10003; [UniFi Access MCP](unifi-access-mcp/)
+
+- MCP server for UniFi Access (doors, users, credentials, visitors) over Streamable HTTP with a bearer token.
+
+### &#10003; [UniFi API Server](unifi-api-server/)
+
+- REST and read-only GraphQL API in front of UniFi Network, Protect and Access.
+
+### &#10003; [UniFi Network MCP](unifi-network-mcp/)
+
+- MCP server for UniFi Network (devices, clients, firewall, VPN, WiFi) over Streamable HTTP with a bearer token.
+
+### &#10003; [UniFi Protect MCP](unifi-protect-mcp/)
+
+- MCP server for UniFi Protect (cameras, recordings, sensors) over Streamable HTTP with a bearer token.
+
+### &#10003; [UnPoller](unpoller/)
+
+- UniFi controller metrics for Prometheus, InfluxDB and Loki. Thin wrapper on the official image.
+
 [//]: # "ADDONLIST_END"
 
 [instructions]: https://home-assistant.io/hassio/installing_third_party_addons
