@@ -24,7 +24,8 @@ if [[ "${PGDATA}" != "${DEFAULT_PGDATA}" ]]; then
     # Remove only a folder created just now; an existing one may be waiting for a mount.
     if [[ "${base_existed}" == "false" ]]; then rmdir "${PGBASE}" 2>/dev/null || true; fi
     bashio::log.fatal "${PGBASE} is on the same filesystem as the app data."
-    bashio::log.fatal "Mount the external drive under the Supervisor media folder first."
+    bashio::log.fatal "Mount the drive at <Supervisor data folder>/media/${PGBASE#/media/} on the host, then restart this app."
+    bashio::log.fatal "The Supervisor data folder is often /var/lib/homeassistant or /usr/share/hassio; the app documentation shows how to find it."
     bashio::exit.nok
   fi
   case "$(stat -f -c %T "${PGBASE}")" in

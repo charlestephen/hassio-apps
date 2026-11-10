@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.6-7
+
+- The message shown when the Data directory is not on a mounted drive now says where to mount it on the host, and the documentation explains that the app's `/media` is the Supervisor's media folder, not the host's.
+
 ## 18.6-6
 
 - When the Data directory is on the system disk because a drive is not mounted yet, the app no longer deletes the empty mount-point folder it finds there. It removes only a folder it created itself.
