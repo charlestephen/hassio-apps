@@ -1,0 +1,61 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "Speedtest Tracker"
+version: "1.15.1"
+slug: speedtest-tracker
+description: >-
+  Scheduled internet speed tests with history and charts, stored in the PostgreSQL app.
+  Thin wrapper on the LinuxServer.io image.
+url: https://github.com/charlestephen/hassio-apps/tree/main/speedtest-tracker
+homeassistant: "2026.6.0"
+stage: stable
+image: ghcr.io/charlestephen/hassio-addons-speedtest-tracker-{arch}
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: application
+boot: auto
+apparmor: true
+panel_icon: mdi:speedometer
+webui: http://[HOST]:[PORT:80]/
+watchdog: tcp://[HOST]:[PORT:80]
+map:
+  - type: app_config
+    read_only: false
+ports:
+  80/tcp: 8088
+ports_description:
+  80/tcp: Speedtest Tracker web UI
+backup: cold
+
+options:
+  db_host: "dd815a57-postgres"
+  db_port: 5432
+  db_name: "speedtest"
+  db_user: "speedtest"
+  db_password: ""
+  db_admin_user: "postgres"
+  db_admin_password: ""
+  app_url: ""
+  app_key: ""
+  speedtest_schedule: "0 */6 * * *"
+  speedtest_servers: ""
+  app_timezone: "UTC"
+  env_vars: []
+schema:
+  db_host: str
+  db_port: port
+  db_name: str
+  db_user: str
+  db_password: password
+  db_admin_user: str?
+  db_admin_password: password?
+  app_url: str?
+  app_key: password?
+  speedtest_schedule: str
+  speedtest_servers: str?
+  app_timezone: str
+  env_vars:
+    - name: str
+      value: password?
+      secret: bool?

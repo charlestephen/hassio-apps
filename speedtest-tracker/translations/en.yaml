@@ -1,0 +1,56 @@
+---
+configuration:
+  db_host:
+    name: Database host
+    description: >-
+      Hostname of the PostgreSQL server. The PostgreSQL app is reachable as dd815a57-postgres.
+  db_port:
+    name: Database port
+    description: >-
+      PostgreSQL port.
+  db_name:
+    name: Database name
+    description: >-
+      Database the app uses. Created on start when the admin password below is set.
+  db_user:
+    name: Database user
+    description: >-
+      Login the app uses. Created or updated on start when the admin password below is set.
+  db_password:
+    name: Database password
+    description: >-
+      Password for the database user. Required.
+  db_admin_user:
+    name: PostgreSQL admin user
+    description: >-
+      Superuser used to create the database and login.
+  db_admin_password:
+    name: PostgreSQL admin password
+    description: >-
+      Optional. When set, the app creates the database and login on every start. Leave empty if they already exist.
+  app_url:
+    name: App URL
+    description: >-
+      Optional. Public URL the app is reached at, for example https://speedtest.example.com. Set it when the app sits behind a reverse proxy.
+  app_key:
+    name: App key
+    description: >-
+      Optional. Laravel encryption key (base64:...). Leave empty to generate one on first start and keep it in the app config folder.
+  speedtest_schedule:
+    name: Test schedule
+    description: >-
+      Cron expression for scheduled tests, for example 0 */6 * * * for every six hours.
+  speedtest_servers:
+    name: Test servers
+    description: >-
+      Optional. Comma-separated Ookla server IDs to pick from. Empty lets Ookla choose the closest server.
+  app_timezone:
+    name: Timezone
+    description: >-
+      Timezone used for the schedule and the dates shown, for example America/New_York.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Any other Speedtest Tracker variable, for example PRUNE_RESULTS_OLDER_THAN=30 or DISPLAY_TIMEZONE=America/New_York.
+network:
+  80/tcp: Speedtest Tracker web UI
