@@ -100,49 +100,11 @@ while IFS= read -r line; do
     fi
 done < <(jq -r '(.extra_env // [])[]' "${OPTIONS}")
 
-# ---- DNS listen mode ------------------------------------------------------------
-# Upstream listens on every address, which follows address changes by itself.
-# That fails when a host service already holds port 53 on one address, for
-# example systemd-resolved's stub on 127.0.0.53, so "auto" restricts the
-# listeners only in that case.
-RESTRICT=false
-listen_mode="$(get dns_listen_mode)"
-case "${listen_mode:-auto}" in
-    host-addresses) RESTRICT=true ;;
-    auto)
-        if ss -lntu 2>/dev/null | awk 'NR>1 && $5 ~ /:53$/' | grep -q .; then
-            RESTRICT=true
-            log "port 53 is already in use on this host; DNS will listen on the host addresses only"
-        fi
-        ;;
-esac
-
 # ---- Setup that needs the running server --------------------------------------
 api() { # method path [curl args...]
     local method="$1" path="$2"
     shift 2
     curl -sf --max-time 20 -X "${method}" -H "Authorization: Bearer ${TOKEN}" "$@" "${API}${path}"
-}
-
-restrict_dns_listeners() {
-    # Bind DNS to the host's own addresses instead of every address, so a host
-    # service that already holds port 53 on one address does not block it.
-    local -a endpoints=("127.0.0.1:53" "[::1]:53")
-    local addr family list
-    while read -r _ _ family addr _; do
-        addr="${addr%%/*}"
-        case "${family}" in
-            inet) endpoints+=("${addr}:53") ;;
-            inet6) case "${addr}" in fe80*|::1) ;; *) endpoints+=("[${addr}]:53") ;; esac ;;
-        esac
-    done < <(ip -o addr show scope global up 2>/dev/null | awk '$2 !~ /^(docker|hassio|br-|veth|lo)/')
-    list="$(IFS=','; echo "${endpoints[*]}")"
-    log "restricting DNS listeners to ${list}"
-    if api POST /settings/set --data-urlencode "dnsServerLocalEndPoints=${list}" | jq -e '.status == "ok"' >/dev/null; then
-        log "DNS listeners updated"
-    else
-        warn "could not update the DNS listeners"
-    fi
 }
 
 configure_query_logs() {
@@ -251,7 +213,6 @@ post_start() {
         announce_discovery
         return 0
     fi
-    if [ "${RESTRICT}" = "true" ]; then restrict_dns_listeners; fi
     if is_true postgres_query_logs; then configure_query_logs; fi
     announce_discovery
     api GET /user/logout >/dev/null || true

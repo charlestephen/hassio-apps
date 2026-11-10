@@ -6,11 +6,11 @@ ARG BUILD_FROM=docker.io/technitium/dns-server:15.6.2
 # variables, and runs upstream's own command.
 FROM ${BUILD_FROM}
 
-# jq reads the app options, iproute2 lists the host addresses, and the
-# PostgreSQL client prepares the query log database.
+# jq reads the app options and the PostgreSQL client prepares the query log
+# database.
 # hadolint ignore=DL3008
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends jq iproute2 postgresql-client \
+    && apt-get install -y --no-install-recommends jq postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Home Assistant OS shares fs.inotify.max_user_instances (often 128) across
