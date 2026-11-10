@@ -4,7 +4,10 @@
 # Start the PostgreSQL server
 # ==============================================================================
 
-readonly PGDATA="/data/postgres"
+# shellcheck source=/dev/null
+source /usr/local/lib/pgdata.sh
+resolve_pgdata
+readonly PGDATA
 declare max_connections
 max_connections="$(bashio::config 'max_connections')"
 

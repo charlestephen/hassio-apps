@@ -5,6 +5,18 @@ configuration:
   database:
     name: Database
     description: Name of a database to create on first start.
+  data_directory:
+    name: Data directory
+    description: >-
+      Optional. Folder inside /media to keep the database on an external drive
+      instead of the system disk, for example /media/pgdata. Tested only on
+      Home Assistant Supervised. Leave empty to use the app's own storage.
+  migrate_existing_data:
+    name: Migrate existing data
+    description: >-
+      Turn on once when you set a Data directory and already have a database in
+      the app's own storage. The data is copied and verified; the original is
+      left in place. Safe to leave on.
   max_connections:
     name: Maximum connections
     description: Maximum number of concurrent client connections.
