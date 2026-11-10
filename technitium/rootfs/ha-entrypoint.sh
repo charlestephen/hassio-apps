@@ -15,7 +15,6 @@ set -euo pipefail
 OPTIONS="/data/options.json"
 CONFIG_DIR="/data/technitium"
 API="http://127.0.0.1:5380/api"
-SUPERVISOR_DNS="172.30.32.2"
 APP_NAME="Query Logs (PostgreSQL)"
 PG_PASSWORD_FILE="/data/.postgres_password"
 
@@ -101,6 +100,23 @@ while IFS= read -r line; do
     fi
 done < <(jq -r '(.extra_env // [])[]' "${OPTIONS}")
 
+# ---- DNS listen mode ------------------------------------------------------------
+# Upstream listens on every address, which follows address changes by itself.
+# That fails when a host service already holds port 53 on one address, for
+# example systemd-resolved's stub on 127.0.0.53, so "auto" restricts the
+# listeners only in that case.
+RESTRICT=false
+listen_mode="$(get dns_listen_mode)"
+case "${listen_mode:-auto}" in
+    host-addresses) RESTRICT=true ;;
+    auto)
+        if ss -lntu 2>/dev/null | awk 'NR>1 && $5 ~ /:53$/' | grep -q .; then
+            RESTRICT=true
+            log "port 53 is already in use on this host; DNS will listen on the host addresses only"
+        fi
+        ;;
+esac
+
 # ---- Setup that needs the running server --------------------------------------
 api() { # method path [curl args...]
     local method="$1" path="$2"
@@ -109,20 +125,17 @@ api() { # method path [curl args...]
 }
 
 restrict_dns_listeners() {
-    # The Supervisor's own resolver listens on 172.30.32.2:53 and answers the
-    # *.local.hass.io names. Bind to the real host addresses instead of every
-    # address so both can coexist.
+    # Bind DNS to the host's own addresses instead of every address, so a host
+    # service that already holds port 53 on one address does not block it.
     local -a endpoints=("127.0.0.1:53" "[::1]:53")
-    local addr family
+    local addr family list
     while read -r _ _ family addr _; do
         addr="${addr%%/*}"
         case "${family}" in
-            inet) [ "${addr}" = "${SUPERVISOR_DNS}" ] || endpoints+=("${addr}:53") ;;
+            inet) endpoints+=("${addr}:53") ;;
             inet6) case "${addr}" in fe80*|::1) ;; *) endpoints+=("[${addr}]:53") ;; esac ;;
         esac
-    done < <(ip -o addr show scope global up 2>/dev/null \
-        | awk '$2 !~ /^(docker|hassio|br-|veth|lo)/' )
-    local list
+    done < <(ip -o addr show scope global up 2>/dev/null | awk '$2 !~ /^(docker|hassio|br-|veth|lo)/')
     list="$(IFS=','; echo "${endpoints[*]}")"
     log "restricting DNS listeners to ${list}"
     if api POST /settings/set --data-urlencode "dnsServerLocalEndPoints=${list}" | jq -e '.status == "ok"' >/dev/null; then
@@ -220,8 +233,7 @@ post_start() {
     password="$(get dns_server_admin_password)"
     if [ -z "${password}" ]; then
         warn "no admin password is set, so the setup that uses the API is skipped."
-        warn "Technitium listens on every address, including ${SUPERVISOR_DNS}, which the Supervisor's resolver uses."
-        warn "Set the admin password in the app options."
+        warn "Set the admin password in the app options to enable it."
         announce_discovery
         return 0
     fi
@@ -239,7 +251,7 @@ post_start() {
         announce_discovery
         return 0
     fi
-    if is_true restrict_dns_listeners; then restrict_dns_listeners; fi
+    if [ "${RESTRICT}" = "true" ]; then restrict_dns_listeners; fi
     if is_true postgres_query_logs; then configure_query_logs; fi
     announce_discovery
     api GET /user/logout >/dev/null || true

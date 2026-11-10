@@ -91,6 +91,11 @@ has a SQLite database, UCM keeps using SQLite.
 | `postgres` | Always PostgreSQL. The app stops with a message if the admin password is missing. |
 | `sqlite` | Always SQLite. |
 
+The PKI store in the host's `/ssl/ucm` folder survives uninstalling the app, so
+reinstalling finds an earlier SQLite database there and keeps using it. To start
+over on PostgreSQL, set **Database** to `postgres` (the old data is left
+untouched in `/ssl/ucm`).
+
 A **Database URL** overrides everything above. Switching an install that
 already holds a CA from SQLite to PostgreSQL starts with an empty database; the
 data is not migrated. The login password is generated and kept in
