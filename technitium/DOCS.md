@@ -4,7 +4,7 @@
 
 Technitium DNS Server is an open source authoritative and recursive DNS server. It features a web-based management interface, DNSSEC validation, DNS-over-HTTPS (DoH), **DNS-over-HTTPS/3 (DoH3)**, DNS-over-TLS (DoT), **DNS-over-QUIC (DoQ)**, and advanced DNS filtering.
 
-This app tracks upstream Technitium DNS Server `15.6.2` (image `technitium/dns-server`, source `TechnitiumSoftware/DnsServer`) and adds Microsoft's `libmsquic` library so QUIC-based DNS protocols (DoQ and DoH3) are available out of the box.
+This app is a thin wrapper on the official `technitium/dns-server` image, `15.6.2`. The image already includes .NET and `libmsquic`, so QUIC-based DNS protocols (DoQ and DoH3) work out of the box. The wrapper maps the app options to Technitium's environment variables, runs upstream's own command, and does the Home Assistant specific setup through Technitium's REST API once the server is up.
 
 On Home Assistant OS the kernel inotify instance limit is shared by every add-on and is often 128. This image sets `DOTNET_USE_POLLING_FILE_WATCHER=1` and disables appsettings reload so Technitium does not consume that pool. It also runs workstation GC (`DOTNET_gcServer=0`) with `DOTNET_GCConserveMemory=5`.
 
@@ -13,7 +13,6 @@ On Home Assistant OS the kernel inotify instance limit is shared by every add-on
 Example app configuration:
 
 ```yaml
-log_level: info
 web_service_local_addresses: "0.0.0.0"
 reset_webservice_config: false
 
@@ -41,19 +40,6 @@ extra_env:
 > `reset_webservice_config: true` once.
 
 ### Core options
-
-#### `log_level`
-
-The `log_level` option controls the level of log output by the addon and can
-be changed to be more or less verbose, which might be useful when you are
-dealing with an unknown issue. Possible values are:
-
-- `trace`: Show every detail, like all called internal functions.
-- `debug`: Shows detailed debug information.
-- `info`: Normal (usually sufficient) messages.
-- `warning`: Only shows warning and error messages.
-- `error`: Only shows error messages.
-- `fatal`: Only very severe error messages.
 
 #### `web_service_local_addresses`
 
@@ -132,6 +118,34 @@ Docker's userland NAT. Two practical consequences:
 | 8053 | TCP | DNS-over-HTTP (alternate port, reverse-proxy only) |
 | 67 | UDP | DHCP server (optional) |
 
-> The server itself runs on the bundled **.NET 10** runtime. `libmsquic` is
-> bundled via Alpine's `libmsquic` package (maintained by Microsoft's QUIC team
-> for musl libc), so DoQ and DoH3 work without extra setup.
+> The server runs on the .NET 10 runtime and `libmsquic` that ship in the
+> official image, so DoQ and DoH3 work without extra setup.
+
+## Home Assistant specifics
+
+These steps use the Technitium REST API with the admin password from the app
+options, so they run only when that password is set and still matches the one in
+the web console.
+
+- **Listeners.** The Supervisor's own resolver listens on `172.30.32.2:53` and
+  answers the `*.local.hass.io` names. Unless you turn off *Keep the Supervisor's
+  DNS address free*, Technitium is told to listen on the host's real addresses
+  and the loopback address instead of every address.
+- **Query logs in PostgreSQL.** By default the app installs Technitium's
+  *Query Logs (PostgreSQL)* app and points it at the PostgreSQL app from this
+  repository, creating the database and login first. Set the *PostgreSQL admin
+  password* to switch it on; until then nothing happens. The app talks to
+  PostgreSQL on `127.0.0.1` because this app uses the host network. DNS never
+  waits for the database: if PostgreSQL is unreachable the step is skipped with a
+  warning. Records older than *Keep query logs for (days)* are deleted (30 by
+  default). Settings you changed in the web console for that app are kept; only
+  the connection and retention values are set.
+- **Discovery.** Home Assistant is told where the Technitium API is.
+
+## Upgrading from earlier versions
+
+The `log_level` option is gone. It only controlled the log level of the Home
+Assistant base image, which this app no longer uses. The app also no longer asks
+for the `manager` role or the Home Assistant authentication API, and it no longer
+deletes a leftover `local.hass.io` zone. Your Technitium data and settings are
+untouched.

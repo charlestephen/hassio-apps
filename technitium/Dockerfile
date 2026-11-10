@@ -1,57 +1,31 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
-ARG TECHNITIUM_VERSION=15.6.2
+ARG BUILD_FROM=docker.io/technitium/dns-server:15.6.2
 
-# Stage 1: Pull the Technitium DNS Server app from the upstream image so the
-# final image stays in lockstep with the primary developer's build.
-# TECHNITIUM_VERSION is filled by scripts/update-upstream-version.py.
-FROM technitium/dns-server:${TECHNITIUM_VERSION} AS technitium
-
-# Stage 2: Build final image on HA base (Alpine 3.23, bashio + s6-overlay v3)
+# Thin Home Assistant wrapper on Technitium's official image. The image already
+# carries .NET and libmsquic (DNS-over-QUIC and HTTP/3). This layer adds the
+# tools the wrapper needs, maps app options to Technitium's environment
+# variables, and runs upstream's own command.
 FROM ${BUILD_FROM}
 
-# Runtime dependencies:
-#   - aspnetcore10-runtime: Technitium 15.x targets .NET 10
-#   - icu-libs: required by .NET globalization
-#   - libmsquic: enables DNS-over-QUIC (DoQ) and DNS-over-HTTP/3 (DoH3);
-#     packaged for Alpine/musl by the Microsoft QUIC Team in
-#     v3.23/community, so no Microsoft apt repo is needed on this base.
-RUN apk upgrade --no-cache \
-    && apk add --no-cache \
-      aspnetcore10-runtime \
-      icu-libs \
-      libmsquic
-
-# Copy Technitium app from official upstream image. Drop compiler
-# symbol files; they are not used at runtime.
-COPY --from=technitium /opt/technitium/dns /opt/technitium/dns
-RUN find /opt/technitium/dns -type f -name '*.pdb' -delete
+# jq reads the app options, iproute2 lists the host addresses, and the
+# PostgreSQL client prepares the query log database.
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends jq iproute2 postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
 # Home Assistant OS shares fs.inotify.max_user_instances (often 128) across
-# every add-on. .NET's default file watchers take an instance each and the
-# log then reports that inotify places are exhausted. Poll instead, and do
-# not reload appsettings on change. Workstation GC keeps the heap smaller
-# than server GC on a multi-core host.
+# every app. .NET's default file watchers take an instance each, so poll
+# instead, and do not reload appsettings on change. Workstation GC keeps the
+# heap smaller than server GC on a multi-core host.
 ENV DOTNET_USE_POLLING_FILE_WATCHER=1 \
     DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false \
     DOTNET_gcServer=0 \
     DOTNET_GCConserveMemory=5
 
-# Create state directory
-RUN mkdir -p /etc/dns
+ARG TECHNITIUM_VERSION=15.6.2
+ENV TECHNITIUM_VERSION=${TECHNITIUM_VERSION}
 
-# Copy local files
-COPY rootfs/ /
-
-# Make all s6-rc.d scripts executable
-RUN find /etc/s6-overlay/s6-rc.d -type f \( -name "up" -o -name "run" -o -name "finish" \) \
-    -exec chmod 755 {} \;
-
-# Ports follow upstream technitium/dns-server, plus the Technitium web console.
-EXPOSE 53/tcp 53/udp \
-       853/tcp 853/udp \
-       8053/tcp \
-       5380/tcp 53443/tcp \
-       67/udp
+COPY --chmod=755 rootfs/ha-entrypoint.sh /ha-entrypoint.sh
 
 ARG BUILD_ARCH
 ARG BUILD_DATE
@@ -72,10 +46,12 @@ LABEL \
     org.opencontainers.image.description="${BUILD_DESCRIPTION}" \
     org.opencontainers.image.vendor="Home Assistant Apps" \
     org.opencontainers.image.authors="CharleStephen (https://github.com/charlestephen)" \
-    org.opencontainers.image.licenses="MIT" \
+    org.opencontainers.image.licenses="GPL-3.0-only" \
     org.opencontainers.image.url="https://github.com/charlestephen" \
     org.opencontainers.image.source="https://github.com/charlestephen/hassio-apps" \
     org.opencontainers.image.documentation="https://github.com/${BUILD_REPOSITORY}/blob/main/README.md" \
     org.opencontainers.image.created=${BUILD_DATE} \
     org.opencontainers.image.revision=${BUILD_REF} \
     org.opencontainers.image.version=${BUILD_VERSION}
+
+ENTRYPOINT ["/ha-entrypoint.sh"]

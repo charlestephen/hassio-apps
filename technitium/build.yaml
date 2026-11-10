@@ -1,9 +1,12 @@
 ---
-# https://github.com/hassio-addons/addon-base
+# Thin wrapper on Technitium's official multi-arch image (Docker Hub:
+# technitium/dns-server).
 build_from:
-  aarch64: ghcr.io/hassio-addons/base:stable
-  amd64: ghcr.io/hassio-addons/base:stable
+  aarch64: docker.io/technitium/dns-server:15.6.2
+  amd64: docker.io/technitium/dns-server:15.6.2
 upstream_repo: "TechnitiumSoftware/DnsServer"
+upstream_build_from: true
+upstream_docker_image: "technitium/dns-server"
 upstream_version_arg: TECHNITIUM_VERSION
 args:
   TECHNITIUM_VERSION: "15.6.2"
