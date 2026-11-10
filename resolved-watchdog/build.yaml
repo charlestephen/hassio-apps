@@ -1,5 +1,0 @@
----
-# Thin Alpine wrap (no s6/bashio). First-party; no upstream_repo.
-build_from:
-  aarch64: docker.io/library/alpine:3.24
-  amd64: docker.io/library/alpine:3.24
