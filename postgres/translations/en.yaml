@@ -18,6 +18,17 @@ configuration:
     description: >-
       Gives a login full access to a database. Both must exist, from the lists
       above or from before.
+  ssl:
+    name: TLS
+    description: >-
+      auto turns TLS on when the certificate and key are found in /ssl and leaves
+      it off otherwise. on stops the app if they are missing. off never uses TLS.
+  certfile:
+    name: Certificate file
+    description: Certificate chain, relative to /ssl, for example fullchain.pem.
+  keyfile:
+    name: Private key file
+    description: Private key, relative to /ssl, for example privkey.pem.
   data_directory:
     name: Data directory
     description: >-

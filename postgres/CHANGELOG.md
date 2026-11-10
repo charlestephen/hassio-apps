@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.6-5
+
+- TLS from Home Assistant's `/ssl` folder. The new `ssl` option defaults to `auto`: TLS is used when `fullchain.pem` and `privkey.pem` exist and skipped otherwise. `on` and `off` force the choice, and `certfile` and `keyfile` choose the files. The key is copied to memory with the ownership PostgreSQL requires.
+
 ## 18.6-4
 
 - Databases from the `databases` list are closed to every login without a right, so a login can connect only to the databases it was given rights on.
