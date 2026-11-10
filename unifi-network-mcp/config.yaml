@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "UniFi Network MCP"
-version: "0.45.0"
+version: "0.45.0-1"
 slug: unifi-network-mcp
 description: >-
   MCP server that lets AI assistants manage UniFi Network: devices, clients, firewall, VPN, routing and WiFi.
@@ -46,7 +46,7 @@ schema:
   unifi_password: password?
   verify_ssl: bool
   ssl_fingerprint: str?
-  http_auth_token: password?
+  http_auth_token: password
   allowed_hosts: str?
   permission_mode: list(confirm|bypass)
   read_only: bool

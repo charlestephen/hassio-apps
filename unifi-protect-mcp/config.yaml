@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "UniFi Protect MCP"
-version: "0.12.0"
+version: "0.12.0-1"
 slug: unifi-protect-mcp
 description: >-
   MCP server that lets AI assistants manage UniFi Protect: cameras, recordings, sensors and smart detections.
@@ -46,7 +46,7 @@ schema:
   unifi_password: password?
   verify_ssl: bool
   ssl_fingerprint: str?
-  http_auth_token: password?
+  http_auth_token: password
   allowed_hosts: str?
   permission_mode: list(confirm|bypass)
   read_only: bool
