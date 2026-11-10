@@ -1,0 +1,9 @@
+---
+build_from:
+  aarch64: ghcr.io/kereis/traefik-certs-dumper:1.8.32
+  amd64: ghcr.io/kereis/traefik-certs-dumper:1.8.32
+upstream_repo: "kereis/traefik-certs-dumper"
+upstream_build_from: true
+upstream_version_arg: TRAEFIK_CERTS_DUMPER_VERSION
+args:
+  TRAEFIK_CERTS_DUMPER_VERSION: "1.8.32"
