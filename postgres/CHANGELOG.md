@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.6-6
+
+- When the Data directory is on the system disk because a drive is not mounted yet, the app no longer deletes the empty mount-point folder it finds there. It removes only a folder it created itself.
+
 ## 18.6-5
 
 - TLS from Home Assistant's `/ssl` folder. The new `ssl` option defaults to `auto`: TLS is used when `fullchain.pem` and `privkey.pem` exist and skipped otherwise. `on` and `off` force the choice, and `certfile` and `keyfile` choose the files. The key is copied to memory with the ownership PostgreSQL requires.
