@@ -1,7 +1,4 @@
 configuration:
-  log_level:
-    name: Log level
-    description: Verbosity of the app log.
   web_service_local_addresses:
     name: Web console addresses
     description: Comma separated addresses the web console listens on. 0.0.0.0 listens on all addresses.
@@ -35,6 +32,44 @@ configuration:
   dns_server_optional_protocol_dns_over_http:
     name: DNS over HTTP
     description: Accept DNS over plain HTTP on port 80, for use behind a TLS-terminating reverse proxy. Applied on first start only; change it later in the web console.
+  restrict_dns_listeners:
+    name: Keep the Supervisor's DNS address free
+    description: >-
+      Bind DNS to the host's real addresses instead of every address, so Home
+      Assistant's own resolver on 172.30.32.2 keeps working. Needs the admin
+      password. Leave on unless you know you do not need it.
+  postgres_query_logs:
+    name: Log queries to PostgreSQL
+    description: >-
+      Install and configure Technitium's Query Logs (PostgreSQL) app to log DNS
+      queries to the PostgreSQL app from this repository. Does nothing until the
+      PostgreSQL admin password and the Technitium admin password are set.
+  postgres_host:
+    name: PostgreSQL host
+    description: >-
+      Address of the PostgreSQL server. This app uses the host network, so the
+      PostgreSQL app is reached on 127.0.0.1.
+  postgres_port:
+    name: PostgreSQL port
+    description: Port of the PostgreSQL server.
+  postgres_db:
+    name: Database name
+    description: Database for the query logs. Created if missing.
+  postgres_user:
+    name: Database user
+    description: Login for the query logs. Created if missing.
+  postgres_password:
+    name: Database password
+    description: Optional. Leave empty to generate one, kept in /data/.postgres_password.
+  postgres_admin_user:
+    name: PostgreSQL admin user
+    description: Superuser used to create the database and login.
+  postgres_admin_password:
+    name: PostgreSQL admin password
+    description: The PostgreSQL superuser's password. Needed to create the database and login.
+  query_log_days:
+    name: Keep query logs for (days)
+    description: Older query log records are deleted. 0 keeps them forever.
   extra_env:
     name: Extra DNS server variables
     description: Additional DNS_SERVER_* variables, one per entry in the form NAME=value. Applied on first start only; change it later in the web console.

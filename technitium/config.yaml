@@ -1,7 +1,7 @@
 name: Technitium DNS
 description: Technitium DNS Server is an open source authoritative and recursive DNS server with a web-based management UI.
-url: https://github.com/charlestephen/tree/main/technitium
-version: "15.6.2"
+url: https://github.com/charlestephen/hassio-apps/tree/main/technitium
+version: "15.6.2-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: technitium
@@ -9,9 +9,7 @@ image: ghcr.io/charlestephen/hassio-addons-technitium-{arch}
 startup: services
 init: false
 boot: auto
-auth_api: true
 hassio_api: true
-hassio_role: manager
 discovery:
   - technitium
 # host_network lets Technitium bind directly to host ports so it can serve as
@@ -39,6 +37,7 @@ ports:
 # host_network: true the port equals the listening port (no NAT remap), but
 # the [PORT:NNNN] template is still required by Supervisor's webui validator.
 webui: http://[HOST]:[PORT:5380]
+watchdog: tcp://[HOST]:[PORT:5380]
 panel_icon: mdi:dns
 arch:
 - aarch64
@@ -49,7 +48,6 @@ map:
 - type: ssl
   read_only: true
 options:
-  log_level: info
   web_service_local_addresses: "0.0.0.0"
   reset_webservice_config: false
   dns_server_domain: ""
@@ -61,9 +59,18 @@ options:
   dns_server_enable_blocking: true
   dns_server_block_list_urls: ""
   dns_server_optional_protocol_dns_over_http: false
+  restrict_dns_listeners: true
+  postgres_query_logs: true
+  postgres_host: "127.0.0.1"
+  postgres_port: 5432
+  postgres_db: DnsQueryLogs
+  postgres_user: technitium
+  postgres_password: ""
+  postgres_admin_user: postgres
+  postgres_admin_password: ""
+  query_log_days: 30
   extra_env: []
 schema:
-  log_level: list(trace|debug|info|warning|error|fatal)
   web_service_local_addresses: str
   reset_webservice_config: bool
   dns_server_domain: str?
@@ -75,5 +82,15 @@ schema:
   dns_server_enable_blocking: bool?
   dns_server_block_list_urls: str?
   dns_server_optional_protocol_dns_over_http: bool?
+  restrict_dns_listeners: bool
+  postgres_query_logs: bool
+  postgres_host: str
+  postgres_port: port
+  postgres_db: str
+  postgres_user: str
+  postgres_password: password?
+  postgres_admin_user: str
+  postgres_admin_password: password?
+  query_log_days: int(0,3650)
   extra_env:
     - match(^DNS_SERVER_[A-Z0-9_]+=.*$)

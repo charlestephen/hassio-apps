@@ -27,6 +27,15 @@
 
 # Changelog
 
+## 15.6.2-1
+
+- Rebuilt as a thin wrapper on the official `technitium/dns-server` image instead of the Home Assistant base image with a hand-copied runtime. Upstream's .NET and `libmsquic` are used as shipped, and upstream's own command runs the server.
+- One entrypoint script replaces the four s6 services. The admin password is passed to Technitium as a file, not as an environment variable.
+- Removed the `log_level` option (it only set the base image's log level), the `manager` role and the authentication API permission, and the automatic removal of a leftover `local.hass.io` zone.
+- New: query logs go to the PostgreSQL app from this repository through Technitium's Query Logs (PostgreSQL) app, created and configured automatically once the PostgreSQL admin password is set. Records are kept for 30 days by default.
+- New optional watchdog on the web console port.
+- Fixed the app URL in the store.
+
 > Upstream v15.6.1: https://github.com/TechnitiumSoftware/DnsServer/releases/tag/v15.6.1
 >
 > Release Date: 11 October 2026
