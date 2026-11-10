@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Dockhand"
-version: "1.0.57"
+version: "1.0.57-1"
 slug: dockhand
 description: >-
   Docker management UI for containers, Compose stacks, images and volumes, stored in the PostgreSQL app.
