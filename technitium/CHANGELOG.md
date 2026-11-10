@@ -27,6 +27,10 @@
 
 # Changelog
 
+## 15.6.2-2
+
+- The DNS listeners are now restricted to the host's addresses only when another service on the host already holds port 53 (`DNS listen mode` `auto`), instead of always. The earlier reason, a resolver on `172.30.32.2`, does not apply: the Supervisor's DNS plugin is a separate container. Upstream's default of listening on every address follows address changes, so it is kept unless a conflict is found. `host-addresses` and `all-addresses` force either behaviour. Replaces the `restrict_dns_listeners` option from 15.6.2-1.
+
 ## 15.6.2-1
 
 - Rebuilt as a thin wrapper on the official `technitium/dns-server` image instead of the Home Assistant base image with a hand-copied runtime. Upstream's .NET and `libmsquic` are used as shipped, and upstream's own command runs the server.

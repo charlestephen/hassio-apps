@@ -127,10 +127,14 @@ These steps use the Technitium REST API with the admin password from the app
 options, so they run only when that password is set and still matches the one in
 the web console.
 
-- **Listeners.** The Supervisor's own resolver listens on `172.30.32.2:53` and
-  answers the `*.local.hass.io` names. Unless you turn off *Keep the Supervisor's
-  DNS address free*, Technitium is told to listen on the host's real addresses
-  and the loopback address instead of every address.
+- **Listeners.** Technitium listens on every address by default, which follows
+  address changes by itself. That fails when another service on the host already
+  holds port 53 on one address, for example `systemd-resolved`'s stub on
+  `127.0.0.53`. *DNS listen mode* `auto` (the default) checks for that at start
+  and only then tells Technitium to listen on the loopback and the host's real
+  addresses, leaving out the Docker and Supervisor bridges. Use `host-addresses`
+  to always do this, or `all-addresses` to never do it. If the host's address
+  changes while the app uses `host-addresses`, restart the app.
 - **Query logs in PostgreSQL.** By default the app installs Technitium's
   *Query Logs (PostgreSQL)* app and points it at the PostgreSQL app from this
   repository, creating the database and login first. Set the *PostgreSQL admin
