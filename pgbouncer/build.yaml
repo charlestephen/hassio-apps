@@ -6,4 +6,4 @@ build_from:
 upstream_repo: "pgbouncer/pgbouncer"
 upstream_version_arg: PGBOUNCER_VERSION
 args:
-  PGBOUNCER_VERSION: "pgbouncer_1_23_1-fixed"
+  PGBOUNCER_VERSION: "1.26.1"
