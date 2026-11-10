@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "UnPoller"
-version: "5.9.4-1"
+version: "5.9.4-2"
 slug: unpoller
 description: >-
   Collects UniFi controller metrics and exports them to Prometheus, InfluxDB and Loki.

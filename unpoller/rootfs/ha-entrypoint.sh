@@ -112,4 +112,16 @@ $(jq -r '(.env_vars // [])[] | select((.name // "") != "") | .name + "=" + (.val
 EOF
 
 log "starting UnPoller ${UNPOLLER_VERSION:-}"
-exec /usr/bin/unpoller "$@"
+# Forward SIGTERM and exit 0 once it stops: the Supervisor reports an app that
+# exits 143 on stop as an error.
+/usr/bin/unpoller "$@" &
+child=$!
+stopping=0
+trap 'stopping=1; kill -TERM "${child}" 2>/dev/null' TERM INT
+code=0
+wait "${child}" || code=$?
+if [ "${stopping}" = 1 ]; then
+    wait "${child}" 2>/dev/null || true
+    exit 0
+fi
+exit "${code}"
