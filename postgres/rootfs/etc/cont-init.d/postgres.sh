@@ -17,9 +17,12 @@ chown postgres:postgres /run/postgresql
 if [[ "${PGDATA}" != "${DEFAULT_PGDATA}" ]]; then
   # An unmounted drive leaves an empty folder on the system disk. Refuse to
   # start there, or a new cluster would be created on the wrong disk.
+  base_existed=true
+  [[ -d "${PGBASE}" ]] || base_existed=false
   mkdir -p "${PGBASE}"
   if [[ "$(stat -c %d /data)" == "$(stat -c %d "${PGBASE}")" ]]; then
-    rmdir "${PGBASE}" 2>/dev/null || true
+    # Remove only a folder created just now; an existing one may be waiting for a mount.
+    if [[ "${base_existed}" == "false" ]]; then rmdir "${PGBASE}" 2>/dev/null || true; fi
     bashio::log.fatal "${PGBASE} is on the same filesystem as the app data."
     bashio::log.fatal "Mount the external drive under the Supervisor media folder first."
     bashio::exit.nok
