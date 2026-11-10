@@ -125,11 +125,6 @@ Or add it manually:
 - Headless BitTorrent ratio-farming daemon (tracker announces + simulated
   upload). Thin wrapper on `ghcr.io/charlestephen/ratioreign`.
 
-### &#10003; [Resolved Watchdog](resolved-watchdog/)
-
-- Auto-restarts the host's `systemd-resolved` when it hangs, so a node that
-  resolves through its own on-node DNS self-heals instead of wedging.
-
 ### &#10003; [Semaphore](semaphore/)
 
 - Modern web UI for Ansible, Terraform, OpenTofu, and other DevOps automation.
