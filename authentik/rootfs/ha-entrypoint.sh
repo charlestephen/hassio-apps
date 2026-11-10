@@ -52,6 +52,8 @@ if o.get("use_pgbouncer"):
     put("AUTHENTIK_POSTGRESQL__HOST", bouncer)
     put("AUTHENTIK_POSTGRESQL__PORT", 6432)
     put("AUTHENTIK_POSTGRESQL__DISABLE_SERVER_SIDE_CURSORS", "true")
+    # authentik defaults to no TLS; prefer uses it when PgBouncer or PostgreSQL offers it.
+    put("AUTHENTIK_POSTGRESQL__SSLMODE", "prefer")
     put("AUTHENTIK_POSTGRESQL__DIRECT__HOST", o.get("db_host"))
     put("AUTHENTIK_POSTGRESQL__DIRECT__PORT", o.get("db_port"))
 else:
