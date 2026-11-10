@@ -101,6 +101,35 @@ LOG_CONN=0
 if is_true log_connections; then LOG_CONN=1; fi
 ADMIN_CONSOLE_PW="$(get admin_password)"
 
+# --- TLS for clients ----------------------------------------------------------
+TLS_LINES=""
+if is_true ssl; then
+    CERTFILE="$(get certfile)"
+    KEYFILE="$(get keyfile)"
+    for f in "${CERTFILE}" "${KEYFILE}"; do
+        case "${f}" in
+            ''|/*|*..*)
+                log "ERROR: the certificate and key file names must be relative paths inside /ssl."
+                exit 1
+                ;;
+        esac
+        if [ ! -r "/ssl/${f}" ]; then
+            log "ERROR: /ssl/${f} was not found or is not readable."
+            exit 1
+        fi
+    done
+    # PgBouncer runs unprivileged and the /ssl copy may only be readable by root.
+    cp "/ssl/${CERTFILE}" "${CONF_DIR}/server.crt"
+    cp "/ssl/${KEYFILE}" "${CONF_DIR}/server.key"
+    chown pgbouncer:pgbouncer "${CONF_DIR}/server.crt" "${CONF_DIR}/server.key"
+    chmod 644 "${CONF_DIR}/server.crt"
+    chmod 600 "${CONF_DIR}/server.key"
+    TLS_LINES="client_tls_sslmode = $(get ssl_mode)
+client_tls_cert_file = ${CONF_DIR}/server.crt
+client_tls_key_file = ${CONF_DIR}/server.key"
+    log "TLS is on for clients (mode: $(get ssl_mode)), certificate /ssl/${CERTFILE}"
+fi
+
 {
     echo
     echo "[pgbouncer]"
@@ -120,6 +149,9 @@ ADMIN_CONSOLE_PW="$(get admin_password)"
     echo "log_disconnections = ${LOG_CONN}"
     if [ -n "${ADMIN_CONSOLE_PW}" ]; then
         echo "admin_users = pgbouncer"
+    fi
+    if [ -n "${TLS_LINES}" ]; then
+        echo "${TLS_LINES}"
     fi
     jq -r '(.extra_settings // [])[] | select(. != "")' "${OPTIONS}" | while IFS= read -r line; do
         case "${line}" in
