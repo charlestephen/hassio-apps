@@ -39,7 +39,10 @@ configuration:
       open /if/flow/initial-setup/ in the browser to set it.
   log_level:
     name: Log level
-    description: authentik log verbosity.
+    description: >-
+      authentik log verbosity. The default, warning, keeps logging low for
+      SD-card installs: at info every request is logged as one line. Use info
+      or debug only while troubleshooting.
   env_vars:
     name: Extra environment variables
     description: Any other AUTHENTIK_* variable, for example AUTHENTIK_DISABLE_UPDATE_CHECK=true.
