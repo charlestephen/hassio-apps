@@ -9,7 +9,7 @@ Fetches any number of upstream IP and DNS blocklists (plus optional inline
 custom lists), merges and deduplicates them, and re-serves them as plain-text
 chunks sized for DNS servers and routers that reject oversized external
 blocklists or allowlists. Powered by
-[charlestephen/dns-ip-list-chunker][upstream] `1.4.0`.
+[charlestephen/dns-ip-list-chunker][upstream] `1.5.0`.
 
 Formerly **UniFi Blocklist Chunker** — same engine, generic naming. Paste list
 URLs (and/or custom textareas) in the config UI, open `/` for chunk links to

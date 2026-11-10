@@ -1,12 +1,12 @@
 ARG BUILD_FROM=alpine:3.24
 # renovate: datasource=docker depName=ghcr.io/charlestephen/dns-ip-list-chunker
-ARG DNS_IP_LIST_CHUNKER_VERSION=1.4.0
+ARG DNS_IP_LIST_CHUNKER_VERSION=1.5.0
 
 FROM ghcr.io/charlestephen/dns-ip-list-chunker:${DNS_IP_LIST_CHUNKER_VERSION} AS upstream
 
 FROM ${BUILD_FROM}
 
-ARG DNS_IP_LIST_CHUNKER_VERSION=1.4.0
+ARG DNS_IP_LIST_CHUNKER_VERSION=1.5.0
 ENV DNS_IP_LIST_CHUNKER_VERSION=${DNS_IP_LIST_CHUNKER_VERSION}
 
 # hadolint ignore=DL3018

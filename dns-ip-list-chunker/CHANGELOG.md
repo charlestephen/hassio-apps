@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.0
+
+- Wrap upstream `dns-ip-list-chunker` `1.5.0`: refreshes use roughly a sixth of the
+  CPU and a fraction of the memory, and a refresh where no list changed upstream does no
+  work at all (conditional requests). Served lists are identical to 1.4.0.
+- `POST /refresh` answers `409` while a refresh is already running; chunk responses now
+  carry content-hash `ETag`s and honour `If-None-Match`.
+
 ## 1.4.0-4
 
 - Default host port is now `8180` (was `8080`, which Traefik, Error Pages and Ultimate CA
