@@ -1,1 +1,1 @@
-pgbouncer_1_23_1-fixed
+pgbouncer_1_26_1

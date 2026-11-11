@@ -2,7 +2,7 @@
 
 Thin Home Assistant wrapper around the official
 [`homebridge/homebridge`](https://github.com/homebridge/docker-homebridge)
-Docker image (`2026-11-02`). Same layout as upstream Docker: persistent
+Docker image (`2026-11-10`). Same layout as upstream Docker: persistent
 data is mounted at **`/homebridge`**, then the image’s own `/init` runs.
 Host networking is required for HomeKit / mDNS.
 

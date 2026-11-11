@@ -1,4 +1,4 @@
-ARG BUILD_FROM=docker.io/homebridge/homebridge:2026-11-02
+ARG BUILD_FROM=docker.io/homebridge/homebridge:2026-11-10
 
 # Thin Home Assistant wrapper on the official Homebridge Docker image.
 # Supervisor mounts app data at /homebridge (upstream path); map options →
@@ -8,7 +8,7 @@ FROM ${BUILD_FROM}
 # hadolint ignore=DL3002
 USER root
 
-ARG HOMEBRIDGE_DOCKER_VERSION=2026-11-02
+ARG HOMEBRIDGE_DOCKER_VERSION=2026-11-10
 ENV HOMEBRIDGE_DOCKER_VERSION=${HOMEBRIDGE_DOCKER_VERSION}
 
 COPY rootfs/ /
