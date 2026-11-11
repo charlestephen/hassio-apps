@@ -8,4 +8,4 @@ upstream_tag_prefix: "REL_18_"
 upstream_tag_pattern: '^REL_18_[0-9]+$'
 upstream_version_arg: POSTGRES_VERSION
 args:
-  POSTGRES_VERSION: "18.6"
+  POSTGRES_VERSION: "18.7"

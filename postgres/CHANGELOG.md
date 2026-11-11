@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.7
+
+- Upgrading from upstream version 18.6-7 -> 18.7
+
 ## 18.6-7
 
 - The message shown when the Data directory is not on a mounted drive now says where to mount it on the host, and the documentation explains that the app's `/media` is the Supervisor's media folder, not the host's.

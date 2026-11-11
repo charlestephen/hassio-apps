@@ -2,12 +2,12 @@
 # Thin wrapper on the official Homebridge Docker image.
 # Stable stream uses dated tags (YYYY-MM-DD); exclude beta/alpha/legacy/synology.
 build_from:
-  aarch64: docker.io/homebridge/homebridge:2026-11-02
-  amd64: docker.io/homebridge/homebridge:2026-11-02
+  aarch64: docker.io/homebridge/homebridge:2026-11-10
+  amd64: docker.io/homebridge/homebridge:2026-11-10
 upstream_repo: "homebridge/docker-homebridge"
 upstream_tag_pattern: "^\\d{4}-\\d{2}-\\d{2}$"
 upstream_build_from: true
 upstream_docker_image: "homebridge/homebridge"
 upstream_version_arg: HOMEBRIDGE_DOCKER_VERSION
 args:
-  HOMEBRIDGE_DOCKER_VERSION: "2026-11-02"
+  HOMEBRIDGE_DOCKER_VERSION: "2026-11-10"
