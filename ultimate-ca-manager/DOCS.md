@@ -2,7 +2,7 @@
 
 Thin Home Assistant wrapper around
 [Ultimate CA Manager](https://github.com/NeySlim/ultimate-ca-manager)
-(`2.252`). UCM is a web Certificate Authority with ACME, SCEP, EST, OCSP,
+(`2.253`). UCM is a web Certificate Authority with ACME, SCEP, EST, OCSP,
 CRL/CDP, TSA, SSH CA, and more.
 
 ## Quick start

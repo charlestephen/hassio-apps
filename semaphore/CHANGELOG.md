@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.20.24
+
+- Upgrading from upstream version 2.20.23 -> 2.20.24
+
 ## 2.20.23
 
 - Upgrading from upstream version 2.19.17-1 -> 2.20.23
