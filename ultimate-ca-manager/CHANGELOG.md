@@ -1,5 +1,110 @@
 # Changelog
 
+## 2.253
+
+- Upgrading from upstream version 2.252-1 -> 2.253
+
+> Upstream v2.253: https://github.com/NeySlim/ultimate-ca-manager/releases/tag/v2.253
+>
+> ## What's Changed
+>
+> ### Fixed
+> - Certificate Transparency: `POST /api/v2/certificates/<id>/submit-ct` always failed with a server error, as it read an attribute the certificate model does not have, and the chain it built stopped at the direct issuer; the submission now sends the leaf with its full issuer chain up to the root, or the chain stored inline with the certificate, one element per certificate (RFC 6962 §4.1). Reported by Chris by e-mail.
+> - Users: deleting a user, alone or in bulk, dropped its mTLS enrolments without revoking their certificates, which stayed valid for anything else trusting the CA; each is now revoked (cessationOfOperation) and deleted as when removing the enrolment, and a certificate that cannot be revoked no longer blocks the deletion but is named in the answer and the audit log.
+> - mTLS: the self-service routes that list, assign and enrol a user's own certificates relied on the username alone; a certificate recorded before the current account was created is no longer treated as its own, and an administrator can still assign it.
+> - Sessions: a session is now bound to the account it was opened for, not only to its id, so it no longer outlives that account on SQLite; sessions opened before the update stay open, but a login waiting on its second factor at the update has to enter the password again.
+> - Import: re-importing a certificate under a new serial updated the stored one but left its deploy bindings idle; it now counts as a renewal and queues them, while re-importing the same serial stays silent (discussion #440).
+>
+> ---
+>
+> <details>
+> <summary><strong>📜 Recent release history (last 2 versions)</strong></summary>
+>
+> ## [2.252] - 2026-11-08
+>
+> ### Added
+>
+> - LDAP: a StartTLS option switches a plain LDAP connection to TLS before the service and user binds, with the existing certificate verification; it was documented but never sent, so passwords crossed in clear (RFC 4513 §3, migration 137).
+> - SAML: the Single Logout endpoint announced in the SP metadata ignored LogoutRequests. A LogoutRequest signed by the IdP, naming its Destination, issued within the clock window and not seen before, now closes the session of its NameID in that browser and gets a LogoutResponse signed with the SP RSA key, unsigned with a warning when the SP key is not RSA (SAML Profiles §4.4).
+> - Deployment: a deploy target can be an HTTP API instead of an SSH host, with a URL, a method, encrypted request headers and a body template rendered from the certificate (`{{cert_pem|json}}`, `{{fullchain_pem}}`, `{{cn}}`, `{{serial}}`...), through the same delivery queue; the private key is sent only with an explicit opt-in over verified HTTPS, with an optional pasted trust anchor for a self-signed appliance (discussion #428, requested by @gjarassier, migration 131).
+> - EST: the encrypted `serverkeygen` key can now go to an EC client certificate by key agreement (ephemeral-static ECDH, RFC 5753), and the key transport or key agreement and the content cipher follow the CSR's SMIMECapabilities in the client's order of preference, with AES-CBC when no listed content cipher is available. A list naming only key transport or agreement algorithms UCM lacks is refused with the supported ones named, as is an RSA client key under 2048 bits (RFC 7030 section 4.4.2).
+> - EST: with the `allow_empty_username` setting of `PATCH /api/v2/est/config`, Basic authentication accepts an empty username and the password alone (RFC 7030 §3.2.3).
+> - SCEP: a "Serve on plain HTTP" setting, off by default, also answers SCEP on the HTTP protocol port (8080 by default) for clients such as sscep that cannot use HTTPS; RFC 8894 §7.10 needs no TLS, as the CMS envelope protects the messages.
+>
+> ### Changed
+>
+> - AD Connector: saving a base DN without DC components, which names no domain, is refused with 400; saving or testing a Global Catalog port (3268, 3269) or a server written with a port or an `ldap://` scheme is refused too, and a Kerberos realm must match the base DN's in capitals exactly (RFC 4120 §6.1).
+> - SSO providers: an unknown `default_role` is refused instead of being stored as viewer, and an empty one, "None" in the form, gives no implicit role; an existing provider whose default role is empty or unknown keeps viewer (migration 137).
+> - LDAP: a new provider without SSL/TLS uses StartTLS by default, so passwords do not cross in clear (RFC 4513 §6.3.3); existing providers keep their setting.
+> - ACME server: revokeCert refused an account other than the one that ordered the certificate even when it held valid authorizations for all its identifiers. Such an account may now revoke a certificate this ACME server issued, as RFC 8555 §7.6 requires; an authorization granted by auto-approval does not count.
+> - ACME server: the `notBefore` and `notAfter` of a newOrder were echoed, then ignored, so the certificate got the profile's 90 days. They are now issued exactly: a window longer than the profile allows, outside the issuing CA's, already past or unreadable is refused as `malformed`, one a policy forbids as `badCSR` at finalize (RFC 8555 §7.4).
+> - WSTEP: a certificate issued under a template carries that template's EKUs instead of the ones the request asks for, as on renewal and in AD CS.
+> - WSTEP: a request without Key Usage gets the one its template configures, else the one of its template's kind, at issuance and renewal: digitalSignature, keyEncipherment and nonRepudiation for an emailProtection or EFS template, digitalSignature and keyEncipherment for Smartcard Logon, digitalSignature alone for clientAuth, instead of the server pair for all.
+> - XCEP: the Username/Password policy endpoint announces a client-supplied subject for every template, machine templates included, since that binding carries no directory identity to build one from.
+> - PostgreSQL: UCM connects with psycopg 3, which sends values apart from the statement, so a database error that quotes the statement no longer carries them. psycopg2 is no longer shipped, and a `postgresql+psycopg2://` URL now uses psycopg 3.
+> - Dependencies: SQLAlchemy 2.1 is accepted, now that every PostgreSQL URL reaches psycopg 3.
+> - EST, SCEP and TSA share one CMS SignedData builder; no wire change.
+> - EST: `/csrattrs` lists keyUsage, subjectAltName and extKeyUsage as bare OIDs instead of inside an extensionRequest, a form RFC 9908 §5.2 declares incorrect; the `csrattrs_legacy_encoding` setting of `PATCH /api/v2/est/config` restores the former shape.
+> - EST: enrollment refusals are sent as `text/plain` with the reason, such as a body that is not base64 or not a PKCS#10 CSR, a CA name constraint or the rate limit, instead of an HTML page saying "Enrollment failed" or JSON (RFC 8951 §5).
+> - EST: `simplereenroll` without a client certificate answers 403 instead of a 401 offering Basic authentication, which that route refuses (RFC 7030 §3.2.3), and `/fullcmc` answers 501 instead of 405 (RFC 7030 §3.2.2).
+> - EST: a CSR whose `challengePassword` is not the `tls-unique` value of its TLS 1.2 connection to UCM, or that arrives over TLS 1.3 or through a proxy where none can be checked, is refused with 400 on `simpleenroll`, `simplereenroll` and `serverkeygen` instead of being certified unchecked (RFC 7030 §3.5).
+> - SCEP: a RenewalReq signed by a certificate issued through the same endpoint is authenticated by that certificate, so its challenge password is no longer compared and a rotated secret no longer blocks renewal; a certificate from another profile or protocol still needs the endpoint's challenge.
+> - SCEP: every FAILURE reply now carries a failInfoText attribute giving the reason (RFC 8894 §3.2.1.4).
+> - ACME proxy: the directory no longer advertises `keyChange`, which the proxy refuses, and a challenge none of the requesting account's orders lists is now answered 404 instead of 403.
+> - ACME proxy: a client's `profile`, `notBefore` and `notAfter` are now passed to the upstream CA, so a CA that does not accept them refuses the order with its own error instead of silently applying its defaults.
+> - SSH: certificates are valid from 5 minutes before issuance, so a server whose clock lags accepts them at once, and the KRL version now grows with each generation instead of staying 0 (PROTOCOL.krl).
+> - mTLS: the trusted CA is now the only trust anchor of the HTTPS port. A client certificate from its parent or from a sibling intermediate passed the TLS handshake, and with it EST enrollment; it is now refused (RFC 5280 §6.1).
+> - Dashboard: the Recent Activity feed shows the whole audit trail only with `read:audit`, as the Audit Logs page does; without it, a user sees their own events.
+> - TOTP: the account actions that ask for a code (confirm, disable, regenerate recovery codes) accept one time step of clock drift either way, as the login does.
+> - Access Control: the API no longer lets a custom role inherit from a built-in role, which the page never offered; a role that already does keeps its parent.
+> - TSA: a request carrying any extension, critical or not, is now refused with unacceptedExtension, and a malformed one, trailing bytes included, with badDataFormat instead of systemFailure (RFC 3161 §2.4.1).
+> - TSA: tokens carry genTime in whole seconds with a declared accuracy of one second, and `/tsa` matches `application/timestamp-query` or `application/octet-stream` exactly, ignoring case, instead of any type containing `timestamp-query`.
+> - CRL: with delta CRLs enabled, each complete CRL is now followed by a delta on it, so the shared CRL number advances by two per regeneration.
+> - Approvals: a revocation request approved while its certificate is on hold now revokes it for good with the requested reason, instead of waiting for the hold to be lifted.
+> - Sign CSR, EST, SCEP, WSTEP and ACME: a subject beyond the RFC 5280 bounds (CN over 64 characters, a country that is not two letters in a PrintableString) was signed as received; it is now refused with the reason, as on the issue form. An EST, SCEP, WSTEP or in-place renewal that keeps its certificate's subject is not affected; an ACME renewal is.
+> - Sign CSR (single, bulk and approval): a request without Key Usage signed as client, code signing or S/MIME got none, so the key was unrestricted; it now gets its type's Key Usage, as on the issue form.
+> - Certificates: on the issue form, Sign CSR, EST and WSTEP, a valid emailAddress in the subject is now also an rfc822Name in the SAN for every certificate type, not only email and combined (RFC 5280 §4.1.2.6); SCEP keeps the request's SAN as sent.
+> - Certificates and ACME: a DNS name holding an underscore (`my_host.example`, `_sip._tcp.example.com`, also as the CN of a server or device certificate without SAN whose template allows DNS names) or in IP-address form is now refused, as RFC 5280 §4.2.1.6 requires. An EST, SCEP, WSTEP or in-place renewal keeps the names its certificate already carries; an ACME order does not.
+> - EST, WSTEP and SCEP: every certificate was recorded as a server certificate, so an S/MIME or client one showed as "Server" in its details and in the API of a renewal approval request. Each now records the type it is signed as (EST: device; SCEP and WSTEP: from its EKUs, by one rule); certificates issued earlier keep their recorded type.
+>
+> ### Fixed
+> - Account: a wrong current password on the password change form answered 401, which logged the user out; it now answers 403 and the form shows the error.
+>
+> - AD Connector: an LDAP search that the domain controller answered with an error (busy, unavailable, time limit, a base DN it does not hold, missing read rights) read as "account not found", so WSTEP refused the requester with 400. It now counts as a directory failure, answered 500 like an unreachable DC.
+> - mTLS: a static file request sent without the session cookie, as browsers fetch the favicon, opened a new certificate session and wrote a `login_success` audit event, several per page refresh. Static files no longer open a session, so a page load logs in once.
+> - mTLS: once a session expired, opened by password or by certificate, each of the parallel calls still carrying its cookie logged in again with the client certificate, opening one session and one `login_success` event per call. They now share a single new session, and the web interface redirects to the login page once for a burst of 401 answers.
+> - ACME proxy: every upstream CA error reached the client as a 500 `serverInternal`, so a rate limit, a refused name or a refused CSR looked like a proxy failure. The upstream type, status, subproblems and Retry-After now reach the client, revocation included (RFC 8555 §6.6, §6.7).
+> - ACME proxy: when the DNS provider refused the TXT record, the challenge was still submitted and failed on the shared upstream account. The order now turns invalid without any upstream request, its other challenges are not submitted either, a retried order on the same authorizations is validated, and the TXT records of invalid or deactivated orders are removed.
+> - ACME proxy: an upstream error on a certificate download reached the client as a 200 carrying the error body. It is now relayed as an ACME problem with its status.
+> - ACME proxy: when the upstream CA refused or did not take the challenge response, the order stayed pending with its TXT records published and no later order could validate the name. The order now turns invalid for good with the upstream error, its records are removed, a retried order is validated, and a refused nonce is retried up to three times by the proxy and the ACME client (RFC 8555 §6.5, §7.1.6).
+> - ACME proxy: a CSR that did not name exactly the order's identifiers reached the client as a 500 `serverInternal` when the upstream CA refused it as `unauthorized`. It is now refused with `badCSR` before reaching the upstream CA (RFC 8555 §7.4).
+> - ACME server and proxy: proxy responses other than newNonce and revocation carried no `Link: rel="index"`, and a successful revocation answered with an empty `text/html` body. Every proxy response but the directory now links it, and a revocation answers 200 with no body and no media type (RFC 8555 §7.1, §7.6).
+> - ACME proxy: the directory listed the upstream profiles but `profile` and `notAfter` were never passed upstream, so a client got the default profile and validity. Both are now passed, a retried request reuses a pending order only if it carries the requested dates and the same `replaces`, and a profile the upstream CA does not offer is refused with `invalidProfile`.
+> - ACME proxy: the challenge was read upstream with a POST-as-GET before the TXT record was published, which starts the validation on some CAs. It is now read through its authorization (RFC 8555 §7.5.1, erratum 5729).
+> - ACME proxy: the upstream Retry-After of an order, authorization or finalization was dropped, and upstream requests carried the HTTP library's User-Agent. Both are now relayed and set (RFC 8555 §6.1, §7.1.3).
+> - RFC 2136 DNS provider: a server given by host name always failed with an empty message, and a filled-in zone was overridden by the zone the system resolver saw. The name is now resolved and each of its addresses tried, the configured zone is used for the names inside it, and otherwise the zone is read from the configured server's SOA.
+> - ACME client: with ARI, a certificate renewed at the very start of the suggested window, an expired certificate was still checked and any Retry-After was taken as is. It now renews at a random moment drawn once inside the window, skips expired certificates and keeps the checking interval between one minute and one day (RFC 9773 §4.2, §4.3).
+> - ACME client: an HTML error page from the CA was reported as a JSON parse error, an RSA account key with an exponent other than 65537 got a padded JWK exponent, and an unquoted `rel=alternate` link was ignored. The status and Retry-After are now reported, the exponent is minimal (RFC 7518 §6.3.1.2) and every RFC 8288 form is read.
+> - DNS providers: Cloudflare, OVH, Bunny, DNS Made Easy, IONOS, NS1, Rackspace, Scaleway, Tencent Cloud, Dynu, Porkbun, Netcup, ClouDNS and INWX followed redirects with their credentials, and a Cloudflare delete the API refused was reported as a success. Redirects are no longer followed and the refusal is reported.
+> - Approval e-mails: without a Base URL or server FQDN, the link to the request followed the Host header the requester sent; the e-mail now goes without a link.
+> - Password reset: the e-mailed link pointed at `https://localhost:8443`. It now uses the Base URL, else the server FQDN, never the request's Host; when neither is set, Forgot password is hidden and the reset is refused with a warning in the log.
+> - OIDC: an ID token whose `azp` named another client was accepted when it had a single audience; it is now refused (OpenID Connect Core §3.1.3.7).
+> - LDAP: a second factor the user had enrolled, even one Enforce 2FA required, was never asked at sign-in. LDAP sign-ins now ask for it, as local ones do.
+> - Certificates: a DNS name with a space, a trailing dot, a wildcard past the first label, a lone `*`, an all-digit last label or an `xn--` label that is no A-label was issued by the form, the API, Sign CSR, EST and SCEP. Such names are now refused with the reason, a 400 or a SCEP failure naming them (RFC 5280 §4.2.1.6), and an internationalized name is issued as its A-label instead of answering 500 (RFC 9549).
+> - Sign CSR, EST and WSTEP: a request without SAN got its CN as a DNS name whatever it held (`DNS:John Doe`, and on a sub-CA too), and a non-ASCII CN answered 500. Only a CN in DNS name syntax now gives one, a single label only on a server or device certificate and never on S/MIME or a sub-CA, with a notice when a host-like server CN gives none.
+> - WSTEP: a template without serverAuth signed its certificates as server ones, so a user CN (`jdoe`) became `DNS:jdoe`. A template with emailProtection or EFS now issues S/MIME certificates, one with clientAuth or Smartcard Logon (VPN Client included) client ones and one with code signing alone code-signing ones, which take no DNS name from a one-label CN.
+> - Sign CSR: a refusal for a parent CA with pathLen 0, a name outside the CA name constraints or an unacceptable key answered 500 "Failed to sign CSR". It now answers 400 with the reason; an empty subject takes as CN the first SAN name that fits in 64 characters.
+> - CAs: the error for a DNS name constraint with a leading dot suggested `.example.com`, the form it refuses.
+> - Rate limiting: a 429 from a login route's own limit carried the general limit in `X-RateLimit-Limit` (30 instead of 5) and no `Retry-After`. It now names the limit that refused the request and when to retry.
+> - ACME server: a body that was not JSON, a payload that was not an object or an unreadable date answered 500 `serverInternal`. They now answer 400 `malformed` (RFC 8555 §6.2, §7).
+> - ACME server: a missing nonce answered `malformed` and a nonce outside base64url `badNonce`, the reverse of RFC 8555 §6.5; HEAD on newNonce answered 204 without a link to the directory. Both errors now carry the right type, and newNonce, on the server and the ACME proxy, answers 200 to HEAD and 204 to GET with `Link: rel="index"` (§7.2).
+> - ACME server: every response stored a nonce that was never deleted, so the nonce table only grew. The 6-hourly ACME purge now also deletes expired and consumed nonces.
+> - ACME server: a CSR whose common name is one of the order's IP addresses, as lego v4 and the UCM ACME client send for an IP order, was refused as `badCSR`. Such a CN is now matched against the IP identifiers (RFC 8738).
+> - ACME server: the directory advertised the public host as `caaIdentities` even when CAA identifiers were configured, while finalize checked CAA against the configured ones. Both now use the same list (RFC 8555 §7.1.1).
+> - ACME server: an order past its expiry, or one whose valid authorization had expired, could still be finalized. Finalize now answers 403 `orderNotReady` and the order becomes invalid, and an expired valid authorization reads `expired` (RFC 8555 §7.1.6, §7.4).
+> - ACME server: an account created with External Account Binding was returned without its `externalAccountBinding` field. The new account object, on the server and the ACME proxy, now carries it with the value of the request (RFC 8555 §7.3.4).
+> …
+
 ## 2.252-1
 
 - New **Database** option. A new install uses the PostgreSQL app from this repository when the PostgreSQL admin password is set; the database and login are created on start. An install that already has a SQLite database keeps it, and **Database URL** still overrides everything. The Database URL is no longer written to the log, because it can contain a password.

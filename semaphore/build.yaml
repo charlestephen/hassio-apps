@@ -9,6 +9,6 @@ upstream_repo: "semaphoreui/semaphore"
 upstream_docker_image: "semaphoreui/semaphore"
 upstream_version_arg: SEMAPHORE_VERSION
 args:
-  SEMAPHORE_VERSION: "2.20.23"
+  SEMAPHORE_VERSION: "2.20.24"
   TERRAFORM_VERSION: "1.17.1"
   OPENTOFU_VERSION: "1.13.9"
