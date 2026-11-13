@@ -1,0 +1,43 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "VictoriaMetrics"
+version: "1.156.0-1"
+slug: victoria_metrics
+description: >-
+  VictoriaMetrics, a fast time-series database for metrics. Accepts Prometheus
+  remote write, OTLP and scrapes targets itself. Thin wrapper on the official
+  image.
+url: https://github.com/charlestephen/hassio-apps/tree/main/victoria-metrics
+stage: stable
+homeassistant: "2026.6.0"
+image: ghcr.io/charlestephen/hassio-addons-victoria-metrics-{arch}
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+boot: auto
+apparmor: true
+panel_icon: mdi:database-clock
+webui: http://[HOST]:[PORT:8428]/vmui/
+watchdog: http://[HOST]:[PORT:8428]/health
+map:
+  - type: data
+    read_only: false
+  - type: app_config
+    read_only: false
+ports:
+  8428/tcp: 8428
+ports_description:
+  8428/tcp: VictoriaMetrics HTTP API (remote write, OTLP, query, /vmui, /metrics)
+backup: cold
+
+options:
+  log_level: INFO
+  retention_period: "1y"
+  extra_args: ""
+
+schema:
+  log_level: list(INFO|WARN|ERROR|FATAL|PANIC)
+  retention_period: match(^[0-9]+[hdwy]?$)
+  extra_args: str?
+

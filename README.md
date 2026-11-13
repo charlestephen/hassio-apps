@@ -40,32 +40,6 @@ Or add it manually:
   UniFi OS). Each certificate lives in `/ssl/acme.sh/<domain>`. The client
   upgrades itself.
 
-### &#10003; [Grafana Alloy](alloy/)
-
-- Ships the logs of every host container to Loki (the supported Promtail
-  successor). Bring your own Alloy config, or use the built-in Docker → Loki
-  default.
-
-### &#10003; [Grafana](grafana/)
-
-- Dashboards and observability UI. Thin wrapper on `grafana/grafana`; version
-  tracks upstream releases.
-
-### &#10003; [Grafana Loki](loki/)
-
-- Log aggregation, single-binary with local storage. Official `grafana/loki`
-  binary; version tracks upstream releases.
-
-### &#10003; [Grafana Mimir](mimir/)
-
-- Long-term Prometheus metrics storage, monolithic with local storage.
-  Official `grafana/mimir` binary; version tracks upstream releases.
-
-### &#10003; [Grafana Tempo](tempo/)
-
-- Distributed tracing backend with OTLP receivers, monolithic with local
-  storage. Official `grafana/tempo` binary; version tracks upstream releases.
-
 ### &#10003; [Authentik](authentik/)
 
 - Identity provider (OpenID Connect, OAuth 2.0, SAML, LDAP). Thin wrapper on
@@ -77,6 +51,23 @@ Or add it manually:
 - Dual-replica Cloudflare Tunnel for high availability - two connectors of one
   remotely-managed tunnel, with Prometheus metrics. Built on the stock
   cloudflared image.
+
+### &#10003; [DNS/IP List Chunker](dns-ip-list-chunker/)
+
+- Merge upstream DNS/IP blocklists into UniFi-sized domain, IPv4, and IPv6
+  chunks. Config UI for list URLs and exclusions; `/manage` UI for on-the-fly
+  removals behind a reverse proxy.
+
+### &#10003; [Docker Socket Proxy](docker-socket-proxy/)
+
+- Filtered TCP proxy for the host Docker socket
+  ([Tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy)).
+  Other apps set `DOCKER_HOST=tcp://dd815a57-docker-socket-proxy:2375` instead of mounting
+  the socket. Version tracks upstream releases.
+
+### &#10003; [Dockhand](dockhand/)
+
+- Docker management UI for containers, Compose stacks, images and volumes. Thin wrapper on `fnsys/dockhand`, using the PostgreSQL app for its database.
 
 ### &#10003; [Error Pages](error_pages/)
 
@@ -93,6 +84,54 @@ Or add it manually:
 - Multi-provider VPN client (OpenVPN / WireGuard) with HTTP and Shadowsocks
   proxies. Thin wrapper on the official `qmcgaw/gluetun` image.
 
+### &#10003; [Grafana](grafana/)
+
+- Dashboards and observability UI. Thin wrapper on `grafana/grafana`; version
+  tracks upstream releases.
+
+### &#10003; [Grafana Alloy](alloy/)
+
+- Ships the logs of every host container to Loki (the supported Promtail
+  successor). Bring your own Alloy config, or use the built-in Docker → Loki
+  default.
+
+### &#10003; [Grafana Loki](loki/)
+
+- Log aggregation, single-binary with local storage. Official `grafana/loki`
+  binary; version tracks upstream releases.
+
+### &#10003; [Grafana Mimir](mimir/)
+
+- Long-term Prometheus metrics storage, monolithic with local storage.
+  Official `grafana/mimir` binary; version tracks upstream releases.
+
+### &#10003; [Grafana Tempo](tempo/)
+
+- Distributed tracing backend with OTLP receivers, monolithic with local
+  storage. Official `grafana/tempo` binary; version tracks upstream releases.
+
+### &#10003; [Hawser Agent for Dockhand](dockhand-hawser/)
+
+- Runs the [Hawser](https://github.com/Finsys/hawser) agent so
+  [Dockhand](https://dockhand.pro) can manage this Home Assistant Docker host
+  (Edge or Standard mode). Version tracks upstream Hawser releases.
+
+### &#10003; [Homarr](homarr/)
+
+- [Homarr](https://homarr.dev) dashboard for your homelab with widgets,
+  integrations and SSO/OIDC. Web UI on port 7575; version tracks upstream
+  Homarr releases.
+
+### &#10003; [Homebridge](homebridge/)
+
+- Official `homebridge/homebridge` image with host networking for HomeKit.
+  Config UI on port 8581; version tracks dated docker-homebridge tags.
+
+### &#10003; [Linkding](linkding/)
+
+- Self-hosted bookmark manager (SQLite by default), with basic config plus
+  arbitrary environment-variable injection from the UI. Ingress + port 9090.
+
 ### &#10003; [Network Optimizer](network-optimizer/)
 
 - UniFi network optimization, monitoring, security audit, and Wi-Fi health.
@@ -105,10 +144,10 @@ Or add it manually:
 - OpenSpeedTest frontend that posts results to Network Optimizer. Thin wrapper
   on `ghcr.io/ozark-connect/speedtest`.
 
-### &#10003; [Linkding](linkding/)
+### &#10003; [OpenObserve](openobserve/)
 
-- Self-hosted bookmark manager (SQLite by default), with basic config plus
-  arbitrary environment-variable injection from the UI. Ingress + port 9090.
+- All-in-one logs, metrics and traces backend with a UI and OTLP ingestion.
+  Official `openobserve/openobserve` binary; version tracks upstream releases.
 
 ### &#10003; [OTLP Collector](otlp-collector/)
 
@@ -149,6 +188,10 @@ Or add it manually:
 
 - Modern web UI for Ansible, Terraform, OpenTofu, and other DevOps automation.
 
+### &#10003; [Speedtest Tracker](speedtest-tracker/)
+
+- Scheduled internet speed tests with history and charts. Thin wrapper on the LinuxServer.io image, using the PostgreSQL app for its database.
+
 ### &#10003; [Tang](tang/)
 
 - A Tang server for Network Bound Disk Encryption (NBDE) — automatic LUKS2
@@ -159,47 +202,15 @@ Or add it manually:
 - An authoritative + recursive DNS server with a web management UI, DNSSEC, and
   DNS-over-TLS / DNS-over-HTTPS.
 
-### &#10003; [DNS/IP List Chunker](dns-ip-list-chunker/)
-
-- Merge upstream DNS/IP blocklists into UniFi-sized domain, IPv4, and IPv6
-  chunks. Config UI for list URLs and exclusions; `/manage` UI for on-the-fly
-  removals behind a reverse proxy.
-
-### &#10003; [Docker Socket Proxy](docker-socket-proxy/)
-
-- Filtered TCP proxy for the host Docker socket
-  ([Tecnativa/docker-socket-proxy](https://github.com/Tecnativa/docker-socket-proxy)).
-  Other apps set `DOCKER_HOST=tcp://dd815a57-docker-socket-proxy:2375` instead of mounting
-  the socket. Version tracks upstream releases.
-
-### &#10003; [Hawser Agent for Dockhand](dockhand-hawser/)
-
-- Runs the [Hawser](https://github.com/Finsys/hawser) agent so
-  [Dockhand](https://dockhand.pro) can manage this Home Assistant Docker host
-  (Edge or Standard mode). Version tracks upstream Hawser releases.
-
-### &#10003; [Homebridge](homebridge/)
-
-- Official `homebridge/homebridge` image with host networking for HomeKit.
-  Config UI on port 8581; version tracks dated docker-homebridge tags.
-
-### &#10003; [Homarr](homarr/)
-
-- [Homarr](https://homarr.dev) dashboard for your homelab with widgets,
-  integrations and SSO/OIDC. Web UI on port 7575; version tracks upstream
-  Homarr releases.
-
 ### &#10003; [Traefik](traefik/)
 
 - [Traefik](https://traefik.io/) reverse proxy with file-based dynamic config,
   optional Let's Encrypt, and dashboard Ingress. Version tracks upstream
   Traefik releases.
 
-### &#10003; [Ultimate CA Manager](ultimate-ca-manager/)
+### &#10003; [Traefik Certs Dumper](traefik-cert-dumper/)
 
-- Self-hosted Certificate Authority (ACME, SCEP, EST, OCSP, CRL, TSA, SSH CA).
-  Thin wrapper on `neyslim/ultimate-ca-manager`; PKI under `/ssl/ucm/`. Version
-  tracks upstream releases.
+- Extracts the certificates from Traefik's `acme.json` into PEM files under `/ssl` and keeps them up to date.
 
 ### &#10003; [Traefik Manager](traefik-manager/)
 
@@ -211,17 +222,11 @@ Or add it manually:
 - Remote-host companion for Traefik Manager, letting it manage a Traefik
   instance running elsewhere on the network.
 
-### &#10003; [Dockhand](dockhand/)
+### &#10003; [Ultimate CA Manager](ultimate-ca-manager/)
 
-- Docker management UI for containers, Compose stacks, images and volumes. Thin wrapper on `fnsys/dockhand`, using the PostgreSQL app for its database.
-
-### &#10003; [Speedtest Tracker](speedtest-tracker/)
-
-- Scheduled internet speed tests with history and charts. Thin wrapper on the LinuxServer.io image, using the PostgreSQL app for its database.
-
-### &#10003; [Traefik Certs Dumper](traefik-cert-dumper/)
-
-- Extracts the certificates from Traefik's `acme.json` into PEM files under `/ssl` and keeps them up to date.
+- Self-hosted Certificate Authority (ACME, SCEP, EST, OCSP, CRL, TSA, SSH CA).
+  Thin wrapper on `neyslim/ultimate-ca-manager`; PKI under `/ssl/ucm/`. Version
+  tracks upstream releases.
 
 ### &#10003; [UniFi Access MCP](unifi-access-mcp/)
 
@@ -242,6 +247,21 @@ Or add it manually:
 ### &#10003; [UnPoller](unpoller/)
 
 - UniFi controller metrics for Prometheus, InfluxDB and Loki. Thin wrapper on the official image.
+
+### &#10003; [VictoriaLogs](victoria-logs/)
+
+- Lightweight log database with OTLP and Loki-compatible ingestion. Official
+  `victoriametrics/victoria-logs` binary; version tracks upstream releases.
+
+### &#10003; [VictoriaMetrics](victoria-metrics/)
+
+- Single-node Prometheus-compatible metrics database with OTLP, remote write and
+  scraping. Thin wrapper on `victoriametrics/victoria-metrics`.
+
+### &#10003; [VictoriaTraces](victoria-traces/)
+
+- Lightweight tracing database with OTLP ingestion and a Jaeger query API.
+  Official `victoriametrics/victoria-traces` binary; version tracks upstream.
 
 [//]: # "ADDONLIST_END"
 

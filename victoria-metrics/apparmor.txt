@@ -1,0 +1,56 @@
+#include <tunables/global>
+
+profile victoria_metrics flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  capability,
+  file,
+  signal,
+
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+  network netlink raw,
+
+  capability chown,
+  capability fowner,
+  capability setgid,
+  capability setuid,
+  capability dac_override,
+  capability dac_read_search,
+  capability net_bind_service,
+
+  /ha-entrypoint.sh rix,
+  /victoria-metrics-prod rix,
+  /usr/bin/** rix,
+  /bin/** rix,
+  /sbin/** rix,
+  /usr/sbin/** rix,
+
+  /data/** rwk,
+  /config/** r,
+  /tmp/** mrwk,
+  /var/run/{,**} mrwkl,
+  /run/{,**} rwk,
+  /dev/tty rw,
+  /dev/null rw,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
+  /etc/ssl/** r,
+  /usr/share/zoneinfo/** r,
+  /usr/share/ca-certificates/** r,
+  /proc/sys/net/** r,
+  /proc/sys/kernel/** r,
+  /proc/self/** r,
+  /proc/*/net/** r,
+  /sys/fs/cgroup/** r,
+  /sys/kernel/mm/transparent_hugepage/** r,
+}

@@ -1,0 +1,14 @@
+---
+configuration:
+  log_level:
+    name: Log level
+    description: >-
+      Log level.
+  retention_period:
+    name: Retention period
+    description: >-
+      How long traces are kept: a number or a number with h, d, w or y, for example 7d.
+  extra_args:
+    name: Extra flags
+    description: >-
+      Other upstream command-line flags, separated by spaces.
