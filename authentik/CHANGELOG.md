@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026.8.5-7
+
+- Fix start-up failure with `/certs` mapped from `/ssl`: the app now drops to the authentik user itself, so upstream no longer runs `chown -R` on `/certs`. Files in `/ssl` keep their ownership.
+
 ## 2026.8.5-6
 
 - Home Assistant `/ssl` is now mounted read-only at `/certs` in the container.
