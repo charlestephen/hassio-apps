@@ -125,6 +125,22 @@ PY
 fi
 
 echo "[authentik-app] Starting authentik ${AUTHENTIK_VERSION:-unknown}"
+# Copy only fullchain.pem and privkey.pem from the read-only /certs mount (HA
+# /ssl) to a private directory owned by the authentik user. Files in /ssl keep
+# their ownership and modes, and the private key needs no group or world read
+# access. Re-sync periodically to pick up renewals.
+CERTS_COPY=/data/certs
+sync_certs() {
+    mkdir -p "${CERTS_COPY}"
+    cp -Lu --preserve=mode,timestamps /certs/fullchain.pem /certs/privkey.pem "${CERTS_COPY}/" || return
+    chown -R authentik:authentik "${CERTS_COPY}"
+}
+if [[ -d /certs ]]; then
+    sync_certs || echo "[authentik-app] WARNING: could not copy fullchain.pem and privkey.pem from /ssl" >&2
+    ( while sleep 300; do sync_certs || true; done ) &
+    export AUTHENTIK_CERT_DISCOVERY_DIR="${CERTS_COPY}"
+fi
+
 # Drop to the authentik user here. Upstream's ak script chowns /certs when it
 # starts as root, which must not touch the mapped /ssl directory.
 chown -R authentik:authentik /data

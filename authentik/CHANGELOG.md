@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026.8.5-8
+
+- `fullchain.pem` and `privkey.pem` from `/ssl` (mounted read-only at `/certs`) are copied to `/data/certs`, owned by the authentik user, and re-synced every 5 minutes. authentik reads the copy, so `/ssl` ownership and permissions are never changed or loosened. The copy is excluded from backups.
+
 ## 2026.8.5-7
 
 - Fix start-up failure with `/certs` mapped from `/ssl`: the app now drops to the authentik user itself, so upstream no longer runs `chown -R` on `/certs`. Files in `/ssl` keep their ownership.
