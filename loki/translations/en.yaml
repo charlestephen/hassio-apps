@@ -1,0 +1,10 @@
+---
+configuration:
+  log_level:
+    name: Log level
+    description: >-
+      Loki log level.
+  retention_period:
+    name: Retention period
+    description: >-
+      How long logs are kept, for example 744h, 30d or 12w. Use 0 to keep logs forever. Ignored when /config/loki.yaml exists.

@@ -46,6 +46,26 @@ Or add it manually:
   successor). Bring your own Alloy config, or use the built-in Docker → Loki
   default.
 
+### &#10003; [Grafana](grafana/)
+
+- Dashboards and observability UI. Thin wrapper on `grafana/grafana`; version
+  tracks upstream releases.
+
+### &#10003; [Grafana Loki](loki/)
+
+- Log aggregation, single-binary with local storage. Official `grafana/loki`
+  binary; version tracks upstream releases.
+
+### &#10003; [Grafana Mimir](mimir/)
+
+- Long-term Prometheus metrics storage, monolithic with local storage.
+  Official `grafana/mimir` binary; version tracks upstream releases.
+
+### &#10003; [Grafana Tempo](tempo/)
+
+- Distributed tracing backend with OTLP receivers, monolithic with local
+  storage. Official `grafana/tempo` binary; version tracks upstream releases.
+
 ### &#10003; [Authentik](authentik/)
 
 - Identity provider (OpenID Connect, OAuth 2.0, SAML, LDAP). Thin wrapper on

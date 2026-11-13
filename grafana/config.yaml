@@ -1,0 +1,51 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "Grafana"
+version: "13.3.1-1"
+slug: grafana
+description: >-
+  Grafana, the dashboards and observability UI. Data lives on the app's /data
+  volume. Thin wrapper on the official image.
+url: https://github.com/charlestephen/hassio-apps/tree/main/grafana
+stage: stable
+homeassistant: "2026.6.0"
+image: ghcr.io/charlestephen/hassio-addons-grafana-{arch}
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: application
+boot: auto
+apparmor: true
+panel_icon: mdi:chart-areaspline
+webui: http://[HOST]:[PORT:3000]/
+watchdog: http://[HOST]:[PORT:3000]/api/health
+map:
+  - type: data
+    read_only: false
+  - type: app_config
+    read_only: false
+ports:
+  3000/tcp: 3030
+ports_description:
+  3000/tcp: Grafana web UI and API
+backup: cold
+
+options:
+  admin_user: admin
+  admin_password: ""
+  root_url: ""
+  plugins: ""
+  log_level: info
+  env_vars: []
+
+schema:
+  admin_user: str
+  admin_password: password?
+  root_url: str?
+  plugins: str?
+  log_level: list(debug|info|warn|error)
+  env_vars:
+    - name: str
+      value: password?
+      secret: bool?
+

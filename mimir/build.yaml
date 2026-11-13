@@ -1,0 +1,12 @@
+---
+# The binary is copied from the official image onto Alpine (the image has no
+# shell). The updater tracks upstream releases and the matching Docker Hub tag.
+build_from:
+  aarch64: docker.io/library/alpine:3.24
+  amd64: docker.io/library/alpine:3.24
+upstream_repo: "grafana/mimir"
+upstream_docker_image: "grafana/mimir"
+upstream_tag_pattern: 'mimir-\d+\.\d+\.\d+'
+upstream_version_arg: MIMIR_VERSION
+args:
+  MIMIR_VERSION: "3.2.5"
