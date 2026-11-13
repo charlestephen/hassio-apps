@@ -54,6 +54,7 @@ LOGS_EP="$(get otlp_logs_endpoint)"
 PRW_EP="$(get prometheus_remote_write_endpoint)"
 SCRAPE="$(get prometheus_scrape_targets)"
 HA_TOKEN="$(get ha_prometheus_token)"
+HA_PORT="$(get ha_port)"; HA_PORT="${HA_PORT:-80}"
 HOSTNAME="$(hostname 2>/dev/null || echo homeassistant)"
 
 # Per-signal endpoints fall back to the shared otlp_endpoint.
@@ -158,14 +159,14 @@ if is_true scrape_homeassistant; then
           metrics_path: /api/prometheus${AUTH_BLOCK}
           static_configs:
             - targets:
-                - homeassistant:8123
+                - homeassistant:${HA_PORT}
               labels:
                 instance: ${HOSTNAME}
 "
     if [ -n "${HA_TOKEN}" ]; then
-        log "scraping homeassistant:8123/api/prometheus (Bearer token set)"
+        log "scraping homeassistant:${HA_PORT}/api/prometheus (Bearer token set)"
     else
-        log "scraping homeassistant:8123/api/prometheus (no token — set ha_prometheus_token if scrapes 401)"
+        log "scraping homeassistant:${HA_PORT}/api/prometheus (no token — set ha_prometheus_token if scrapes 401)"
     fi
 fi
 

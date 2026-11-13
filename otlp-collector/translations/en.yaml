@@ -36,8 +36,13 @@ configuration:
   scrape_homeassistant:
     name: Scrape Home Assistant Prometheus
     description: >-
-      Scrape homeassistant:8123/api/prometheus (enable under Settings → System
+      Scrape homeassistant:<port>/api/prometheus (enable under Settings → System
       → Analytics). Use a long-lived access token below if the endpoint requires auth.
+  ha_port:
+    name: Home Assistant port
+    description: >-
+      Port Home Assistant serves on, used for the Prometheus scrape. Default 80;
+      use 8123 if Home Assistant has not been moved to port 80.
   ha_prometheus_token:
     name: Home Assistant access token
     description: >-
