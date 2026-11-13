@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Authentik"
-version: "2026.8.5-7"
+version: "2026.8.5-8"
 slug: authentik
 description: >-
   Open-source identity provider (OpenID Connect, OAuth 2.0, SAML, LDAP).
@@ -28,6 +28,8 @@ map:
     path: /certs
     read_only: true
 backup: cold
+backup_exclude:
+  - certs
 
 options:
   db_host: dd815a57-postgres
