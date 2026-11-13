@@ -2,8 +2,8 @@ configuration:
   blocklist_urls:
     name: Blocklist URLs
     description: >-
-      Upstream DNS/IP list URLs to fetch and merge (txt, hosts, adblock, JSON,
-      YAML, TOML, or CSV). Optional category tag before the URL, e.g.
+      Upstream DNS/IP list URLs to fetch and merge (txt, hosts, AdGuard/adblock,
+      JSON, YAML, TOML, or CSV). Optional category tag before the URL, e.g.
       threat:https://example.com/list.txt (untagged sources use default). Add
       one entry per line. Required unless you define Custom blocklists.
   custom_blocklists:
@@ -36,23 +36,28 @@ configuration:
   exclusions_urls:
     name: Exclusion list URLs
     description: >-
-      Remote text/JSON/YAML/TOML/CSV lists of domains and IPs to withhold from
-      block feeds (e.g. https://lists.example.com/excluded.txt). Re-fetched on
-      every refresh and unioned with /manage exclusions and Exclusion / allow
-      lists.
+      Remote text/AdGuard/JSON/YAML/TOML/CSV lists of domains and IPs to
+      withhold from block feeds (e.g. https://lists.example.com/excluded.txt).
+      AdGuard @@ allow rules count here. Re-fetched on every refresh, unioned
+      with /manage exclusions and Exclusion / allow lists, and published as the
+      "remote" allowlist.
   exclusion_lists:
     name: Exclusion / allow lists
     description: >-
-      Named inline lists. Without Output allowlist, entries are withheld from
-      block feeds. With Output allowlist enabled, entries publish under
+      Named lists. Without Output allowlist, entries are withheld from block
+      feeds. With Output allowlist enabled, entries publish under
       /allowlists/<category>/… for DNS/routers that subscribe to allowlists;
       they stay in block feeds unless Allowlist also excludes is on. Paste
-      domains, IPs, or CIDRs one per line. Optional category slug.
+      domains, IPs, or CIDRs one per line in entries (AdGuard @@ rules work),
+      and/or set url to a remote list in any supported format. Optional
+      category slug. All allowlists are also merged at /allowlists/dns-<n>.txt,
+      ipv4-<n>.txt and ipv6-<n>.txt.
   allowlist_also_excludes:
     name: Allowlist also excludes
     description: >-
-      Off by default. When on, entries from Output allowlist lists are also
-      stripped from exported block feeds. Leave off if only some clients should
+      Off by default. When on, entries from Output allowlist lists (inline or
+      url) are also stripped from exported block feeds. Exclusion list URLs
+      and /manage entries are always withheld. Leave off if only some clients should
       get the allow feeds while others keep the full blocklist.
 network:
   8080/tcp: Chunk lists, allowlists, stats, search, and management UI

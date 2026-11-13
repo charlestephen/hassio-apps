@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.6.0
+
+- Wrap upstream `dns-ip-list-chunker` `1.6.0`.
+- AdGuard syntax: `$important` blocks, other `$` modifiers drop the rule, cosmetic
+  rules (`site##.ad`) are ignored instead of blocking the site, and `@@` allow rules
+  count in **Exclusion / allow lists** and **Exclusion list URLs**.
+- `1.2.3.4`, `1.2.3.4/32` and `::ffff:1.2.3.4` deduplicate to one entry.
+- **Exclusion / allow lists** accept a `url` (any supported format) with or without
+  inline `entries`.
+- **Exclusion list URLs** and `/manage` entries are published as the `remote` and
+  `manual` allowlists, and all allowlists are merged at `/allowlists/dns-<n>.txt`
+  (also `ipv4` / `ipv6`).
+
 ## 1.5.0
 
 - Wrap upstream `dns-ip-list-chunker` `1.5.0`: refreshes use roughly a sixth of the

@@ -17,20 +17,26 @@ any device that accepts a plain-text URL of domains / IPs / CIDRs.
    (**Refresh interval**). Optional category tag: `category:https://…`
    (untagged → `default`). You can also add **Custom blocklists** (named
    inline textareas). Formats: **txt**, **hosts**, **adblock**, **JSON**,
-   **YAML**, **TOML**, **CSV**. Line comments (`#`, `//`, `--`, `;`) strip only
+   **YAML**, **TOML**, **CSV**, and AdGuard syntax (`||x^`, `$important`; other
+   `$` modifiers and cosmetic `##` rules are ignored; `@@` allow rules count only in
+   exclusion lists and allowlists). Line comments (`#`, `//`, `--`, `;`) strip only
    at line start or after whitespace so labels like `xn--…` and
    `o--o.example` survive; CIDRs keep a single `/`.
 2. Entries are normalized (lowercased, wildcards/schemes/hosts prefixes
    stripped, CIDRs masked) and classified as **domains**, **IPv4**, or
-   **IPv6** (IPv4-mapped IPv6 like `::ffff:a.b.c.d` counts as IPv4).
+   **IPv6**. `1.2.3.4`, `1.2.3.4/32` and `::ffff:1.2.3.4` are one IPv4 entry.
 3. Deduplicated entries join the global **all** feed and exactly **one**
    category (first source wins). Each feed is sorted and split into domain /
    IPv4 / IPv6 chunks of at most **Chunk size** entries.
 4. Pure **Exclusion / allow lists** (no Output allowlist) and **Exclusion list
    URLs** withhold matching entries from block feeds. Lists with **Output
    allowlist** publish `/allowlists/<category>/…`; those entries stay in the
-   blocklist unless **Allowlist also excludes** is enabled. `/manage` changes
-   persist on `/data` and re-apply every refresh.
+   blocklist unless **Allowlist also excludes** is enabled. An exclusion list
+   takes inline `entries`, a `url`, or both. Exclusion list URLs and `/manage`
+   entries are also published as the `remote` and `manual` allowlists and are
+   always withheld. Every allowlist is merged into `/allowlists/dns-<n>.txt`
+   (also `ipv4` / `ipv6`). `/manage` changes persist on `/data` and re-apply
+   every refresh.
 5. A failed source is skipped; other sources still apply. A refresh that yields
    zero entries keeps the previous snapshot.
 
@@ -100,8 +106,9 @@ allowlist_also_excludes: false
 | `/lists/ipv4-<n>.txt` | Global IPv4/CIDR chunk |
 | `/lists/ipv6-<n>.txt` | Global IPv6/CIDR chunk |
 | `/lists/<category>/dns-<n>.txt` | Category domain chunk (also `ipv4` / `ipv6`) |
+| `/allowlists/dns-<n>.txt` | All allowlists merged, deduplicated and sorted (also `ipv4` / `ipv6`) |
 | `/allowlists/<category>/dns-<n>.txt` | Allowlist domain chunk when `output_allowlist` is enabled (also `ipv4` / `ipv6`) |
-| `/stats` | JSON counts + URLs + `categories` + `allowlists` |
+| `/stats` | JSON counts + URLs + `categories` + `allowlists` + `allowlist_all` |
 | `/search?q=` | Look up a domain/IP (public); includes `category` |
 | `/manage` | Browser UI to search / remove / restore (needs `admin_token`) |
 | `/healthz` | Liveness |

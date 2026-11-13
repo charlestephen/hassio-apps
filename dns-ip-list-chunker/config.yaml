@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "DNS/IP List Chunker"
-version: "1.5.0"
+version: "1.6.0"
 slug: "dns_ip_list_chunker"
 description: "Merge DNS/IP blocklists (and optional allowlists), then serve sized plain-text chunks for DNS servers and routers"
 url: "https://github.com/charlestephen/hassio-apps/tree/main/dns-ip-list-chunker"
@@ -56,6 +56,7 @@ schema:
   exclusion_lists:
     - name: str
       category: str?
-      entries: str
+      entries: str?
+      url: str?
       output_allowlist: bool?
   allowlist_also_excludes: bool
