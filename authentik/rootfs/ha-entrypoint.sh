@@ -125,4 +125,9 @@ PY
 fi
 
 echo "[authentik-app] Starting authentik ${AUTHENTIK_VERSION:-unknown}"
-exec dumb-init -- ak allinone
+# Drop to the authentik user here. Upstream's ak script chowns /certs when it
+# starts as root, which must not touch the mapped /ssl directory.
+chown -R authentik:authentik /data
+chmod ug+rwx /data
+exec setpriv --reuid authentik --regid authentik --init-groups -- \
+    env HOME=/authentik dumb-init -- ak allinone

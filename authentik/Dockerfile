@@ -5,8 +5,8 @@ ARG BUILD_FROM=ghcr.io/goauthentik/server:2026.8.5
 # (server and worker in one process).
 FROM ${BUILD_FROM}
 
-# Start as root to read /data/options.json; the upstream entrypoint chowns
-# /data and drops to the authentik user.
+# Start as root to read /data/options.json; the wrapper chowns /data and drops
+# to the authentik user before running the upstream entrypoint.
 # hadolint ignore=DL3002
 USER root
 
