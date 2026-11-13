@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026.8.5-6
+
+- Home Assistant `/ssl` is now mounted read-only at `/certs` in the container.
+
 ## 2026.8.5-5
 
 - With **Use PgBouncer** on, connect with `sslmode=prefer`. authentik defaults to no TLS, so it could not connect when PgBouncer required TLS.
