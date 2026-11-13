@@ -1,0 +1,42 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "VictoriaTraces"
+version: "0.13.0-1"
+slug: victoria_traces
+description: >-
+  VictoriaTraces, a lightweight distributed tracing database. Accepts OTLP
+  traces and serves the Jaeger query API. Thin wrapper on the official image.
+url: https://github.com/charlestephen/hassio-apps/tree/main/victoria-traces
+stage: stable
+homeassistant: "2026.6.0"
+image: ghcr.io/charlestephen/hassio-addons-victoria-traces-{arch}
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+boot: auto
+apparmor: true
+panel_icon: mdi:chart-timeline
+webui: http://[HOST]:[PORT:10428]/
+watchdog: http://[HOST]:[PORT:10428]/health
+map:
+  - type: data
+    read_only: false
+  - type: app_config
+    read_only: false
+ports:
+  10428/tcp: 10428
+ports_description:
+  10428/tcp: VictoriaTraces HTTP API (OTLP ingestion, Jaeger query, /metrics)
+backup: cold
+
+options:
+  log_level: INFO
+  retention_period: "7d"
+  extra_args: ""
+
+schema:
+  log_level: list(INFO|WARN|ERROR|FATAL|PANIC)
+  retention_period: match(^[0-9]+[hdwy]?$)
+  extra_args: str?
+

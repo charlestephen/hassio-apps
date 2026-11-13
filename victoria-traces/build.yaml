@@ -1,0 +1,12 @@
+---
+# The binary is copied from the official image (FROM scratch) onto Alpine.
+build_from:
+  aarch64: docker.io/library/alpine:3.24
+  amd64: docker.io/library/alpine:3.24
+upstream_repo: "VictoriaMetrics/VictoriaTraces"
+upstream_docker_image: "victoriametrics/victoria-traces"
+upstream_tag_pattern: 'v\d+\.\d+\.\d+'
+upstream_version_arg: VICTORIA_TRACES_VERSION
+upstream_version_arg_prefix: v
+args:
+  VICTORIA_TRACES_VERSION: "v0.13.0"

@@ -1,0 +1,22 @@
+---
+configuration:
+  root_email:
+    name: Root email
+    description: >-
+      Required. Email address of the root account. Used when OpenObserve creates its database for the first time.
+  root_password:
+    name: Root password
+    description: >-
+      Required. Password of the root account.
+  retention_days:
+    name: Retention days
+    description: >-
+      How many days of logs, metrics and traces to keep.
+  web_url:
+    name: Web URL
+    description: >-
+      Public URL OpenObserve is served from, for example https://o2.example.com. Needed for correct links behind a reverse proxy.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Any other ZO_* variable. Mark a value secret to keep it masked.

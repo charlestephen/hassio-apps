@@ -1,0 +1,13 @@
+---
+# The binary is copied from the official image (distroless, glibc) onto Debian
+# slim. The image tags carry a leading v.
+build_from:
+  aarch64: docker.io/library/debian:trixie-slim
+  amd64: docker.io/library/debian:trixie-slim
+upstream_repo: "openobserve/openobserve"
+upstream_docker_image: "openobserve/openobserve"
+upstream_tag_pattern: 'v\d+\.\d+\.\d+'
+upstream_version_arg: OPENOBSERVE_VERSION
+upstream_version_arg_prefix: v
+args:
+  OPENOBSERVE_VERSION: "v1.1.2"
