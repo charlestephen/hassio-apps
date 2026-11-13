@@ -6,4 +6,4 @@ build_from:
 upstream_repo: "charlestephen/dns-ip-list-chunker"
 upstream_version_arg: DNS_IP_LIST_CHUNKER_VERSION
 args:
-  DNS_IP_LIST_CHUNKER_VERSION: "1.5.0"
+  DNS_IP_LIST_CHUNKER_VERSION: "1.6.0"

@@ -28,7 +28,7 @@ exclude entries on the fly.
    `10.0.0.0/8` are preserved.
 2. Entries are normalized (lowercased, wildcards/schemes/hosts prefixes
    stripped, CIDRs masked) and classified as **domains**, **IPv4**, or
-   **IPv6** (IPv4-mapped IPv6 addresses like `::ffff:a.b.c.d` count as IPv4).
+   **IPv6**. `1.2.3.4`, `1.2.3.4/32` and `::ffff:1.2.3.4` are one IPv4 entry.
 3. Entries are deduplicated across all sources. Each unique entry belongs to
    **one** category (first source wins) and also appears in the global **all**
    feed. Feeds are sorted and split into domain / IPv4 / IPv6 chunks of at most
@@ -37,7 +37,11 @@ exclude entries on the fly.
    list URLs** and `/manage`, withhold matches from block feeds. With **Output
    allowlist** enabled, entries publish `/allowlists/<category>/…` and stay in
    the blocklist unless **Allowlist also excludes** is on (so allow feeds can
-   target only some clients). `/manage` exclusions persist on `/data`.
+   target only some clients). A list can take inline `entries`, a `url`, or
+   both; AdGuard `@@` rules count in these lists. Exclusion list URLs and
+   `/manage` entries are also published as the `remote` and `manual`
+   allowlists, and every allowlist is merged at `/allowlists/dns-<n>.txt`.
+   `/manage` exclusions persist on `/data`.
 5. A failed source never takes the service down: other sources still apply,
    and a refresh yielding zero entries keeps the previous snapshot.
 
@@ -50,6 +54,7 @@ exclude entries on the fly.
 | `GET /lists/ipv4-<n>.txt` | Global IPv4/CIDR chunk `n` |
 | `GET /lists/ipv6-<n>.txt` | Global IPv6/CIDR chunk `n` |
 | `GET /lists/<category>/dns-<n>.txt` | Category domain chunk (same for `ipv4` / `ipv6`) |
+| `GET /allowlists/dns-<n>.txt` | All allowlists merged (same for `ipv4` / `ipv6`) |
 | `GET /allowlists/<category>/dns-<n>.txt` | Allowlist chunk when `output_allowlist` is enabled |
 | `GET /stats` | JSON: global counts/URLs plus `categories` and `allowlists` |
 | `GET /healthz` | `ok` once any snapshot is loaded, else 503 |
