@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.165.0-6
+
+- The Home Assistant Prometheus scrape now uses port `80` by default (was `8123`). The new
+  **Home Assistant port** option changes it; set `8123` if Home Assistant is on its default port.
+
 ## 0.165.0-5
 
 - Publish the collector's self-metrics on host port `8889` by default (was `8888`, shared with

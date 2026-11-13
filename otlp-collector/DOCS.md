@@ -57,7 +57,8 @@ OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
 | `otlp_*_endpoint` | *(empty)* | Optional per-signal overrides. |
 | `prometheus_remote_write_endpoint` | *(empty)* | Extra metrics sink (VictoriaMetrics / Mimir). |
 | `enable_docker_stats` | `true` | Container metrics via Docker socket. |
-| `scrape_homeassistant` | `true` | Scrape `homeassistant:8123/api/prometheus`. |
+| `scrape_homeassistant` | `true` | Scrape `homeassistant:<port>/api/prometheus`. |
+| `ha_port` | `80` | Port Home Assistant serves on for that scrape (`8123` for a default install). |
 | `ha_prometheus_token` | *(empty)* | Bearer token for that scrape. |
 | `prometheus_scrape_targets` | *(empty)* | Extra comma-separated scrape targets. |
 | `config_yaml` | *(empty)* | **Full collector YAML** — replaces the generated config every start. |
