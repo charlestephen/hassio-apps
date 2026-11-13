@@ -36,6 +36,9 @@ class NormalizeVersion(unittest.TestCase):
         self.assertEqual(uuv.normalize_version("pgbouncer_1_26_1"), "1.26.1")
         self.assertEqual(uuv.normalize_version("pgbouncer_1_23_1-fixed"), "1.23.1")
 
+    def test_strips_mimir_tag_prefix(self):
+        self.assertEqual(uuv.normalize_version("mimir-3.2.5"), "3.2.5")
+
     def test_leaves_plain_versions_alone(self):
         self.assertEqual(uuv.normalize_version("2026.10.7"), "2026.10.7")
 
