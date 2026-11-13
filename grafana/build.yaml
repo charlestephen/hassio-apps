@@ -1,0 +1,12 @@
+---
+# Thin wrapper: build directly on Grafana's official multi-arch image.
+build_from:
+  aarch64: docker.io/grafana/grafana:13.3.1
+  amd64: docker.io/grafana/grafana:13.3.1
+upstream_repo: "grafana/grafana"
+upstream_build_from: true
+upstream_docker_image: "grafana/grafana"
+upstream_tag_pattern: 'v\d+\.\d+\.\d+'
+upstream_version_arg: GRAFANA_VERSION
+args:
+  GRAFANA_VERSION: "13.3.1"

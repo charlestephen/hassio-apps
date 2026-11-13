@@ -1,0 +1,10 @@
+---
+configuration:
+  log_level:
+    name: Log level
+    description: >-
+      Mimir log level.
+  retention_period:
+    name: Retention period
+    description: >-
+      How long metrics blocks are kept, for example 90d or 1y. Use 0 to keep them forever. Ignored when /config/mimir.yaml exists.

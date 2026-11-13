@@ -1,0 +1,12 @@
+---
+# The binary is copied from the official image onto Alpine (the image has no
+# shell). The updater tracks upstream releases and the matching Docker Hub tag.
+build_from:
+  aarch64: docker.io/library/alpine:3.24
+  amd64: docker.io/library/alpine:3.24
+upstream_repo: "grafana/loki"
+upstream_docker_image: "grafana/loki"
+upstream_tag_pattern: 'v\d+\.\d+\.\d+'
+upstream_version_arg: LOKI_VERSION
+args:
+  LOKI_VERSION: "3.7.9"

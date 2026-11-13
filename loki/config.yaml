@@ -1,0 +1,39 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: "Grafana Loki"
+version: "3.7.9-1"
+slug: loki
+description: >-
+  Grafana Loki, the log aggregation system. Single-binary mode with local
+  filesystem storage. Thin wrapper on the official image.
+url: https://github.com/charlestephen/hassio-apps/tree/main/loki
+stage: stable
+homeassistant: "2026.6.0"
+image: ghcr.io/charlestephen/hassio-addons-loki-{arch}
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+boot: auto
+apparmor: true
+panel_icon: mdi:text-search
+watchdog: http://[HOST]:[PORT:3100]/ready
+map:
+  - type: data
+    read_only: false
+  - type: app_config
+    read_only: false
+ports:
+  3100/tcp: 3101
+ports_description:
+  3100/tcp: Loki HTTP API (push, query, /ready, /metrics)
+backup: cold
+
+options:
+  log_level: info
+  retention_period: "744h"
+
+schema:
+  log_level: list(debug|info|warn|error)
+  retention_period: match(^(0|[0-9]+[smhdwy])$)
+

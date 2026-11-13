@@ -1,0 +1,26 @@
+---
+configuration:
+  admin_user:
+    name: Admin user
+    description: >-
+      Name of the admin account. Used when Grafana creates its database for the first time.
+  admin_password:
+    name: Admin password
+    description: >-
+      Password of the admin account. Used only on first start; change it later in Grafana. Leave empty for the upstream default (admin), which Grafana makes you change at first sign-in.
+  root_url:
+    name: Root URL
+    description: >-
+      Public URL Grafana is served from, for example https://grafana.example.com/. Needed for correct links and OAuth callbacks behind a reverse proxy.
+  plugins:
+    name: Plugins
+    description: >-
+      Comma-separated plugin IDs to install on start, for example grafana-clock-panel,grafana-piechart-panel.
+  log_level:
+    name: Log level
+    description: >-
+      Grafana log level.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Any other GF_* variable, for example GF_DATABASE_TYPE. Mark a value secret to keep it masked.

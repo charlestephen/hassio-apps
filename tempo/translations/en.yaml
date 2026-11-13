@@ -1,0 +1,10 @@
+---
+configuration:
+  log_level:
+    name: Log level
+    description: >-
+      Tempo log level.
+  retention_period:
+    name: Retention period
+    description: >-
+      How long traces are kept, for example 336h or 14d. Ignored when /config/tempo.yaml exists.
