@@ -1,7 +1,7 @@
 # Grafana Loki
 
 Thin Home Assistant wrapper around the official
-[Loki](https://grafana.com/oss/loki/) image (`3.7.9`). It runs the single
+[Loki](https://grafana.com/oss/loki/) image (`3.7.10`). It runs the single
 binary with local filesystem storage under `/data/loki`, authentication off
 (one tenant) and usage reporting off.
 

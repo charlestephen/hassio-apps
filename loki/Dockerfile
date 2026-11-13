@@ -3,13 +3,13 @@
 #
 # ARGs used in FROM must be declared before the first FROM (BuildKit).
 ARG BUILD_FROM=alpine:3.24
-ARG LOKI_VERSION=3.7.9
+ARG LOKI_VERSION=3.7.10
 
 FROM docker.io/grafana/loki:${LOKI_VERSION} AS loki
 
 FROM ${BUILD_FROM}
 
-ARG LOKI_VERSION=3.7.9
+ARG LOKI_VERSION=3.7.10
 ENV LOKI_VERSION=${LOKI_VERSION}
 
 # hadolint ignore=DL3018
