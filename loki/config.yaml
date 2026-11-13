@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Grafana Loki"
-version: "3.7.9-1"
+version: "3.7.10"
 slug: loki
 description: >-
   Grafana Loki, the log aggregation system. Single-binary mode with local

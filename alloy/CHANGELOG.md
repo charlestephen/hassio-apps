@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.22.0
+
+- Upgrading from upstream version 1.21.3-6 -> 1.22.0
+
 ## 1.21.3-6
 
 - Slim image: install `unzip` only as a build dep and remove it after Alloy is

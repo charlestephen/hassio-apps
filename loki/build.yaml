@@ -9,4 +9,4 @@ upstream_docker_image: "grafana/loki"
 upstream_tag_pattern: 'v\d+\.\d+\.\d+'
 upstream_version_arg: LOKI_VERSION
 args:
-  LOKI_VERSION: "3.7.9"
+  LOKI_VERSION: "3.7.10"
