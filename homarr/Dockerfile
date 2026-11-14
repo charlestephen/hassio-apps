@@ -16,7 +16,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Surface the Homarr version to the runtime entrypoint (for log output).
-ARG HOMARR_VERSION=2.12.0
+ARG HOMARR_VERSION=2.13.0
 ENV HOMARR_VERSION=${HOMARR_VERSION}
 
 # Wrapper entrypoint (options -> env -> exec Homarr's entrypoint)

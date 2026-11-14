@@ -4,7 +4,7 @@ Fetches nothing from the BitTorrent swarm — RatioReign only talks to your
 private trackers with believable announce fingerprints and a climbing upload
 counter. This app wraps
 [charlestephen/ratioreign](https://github.com/charlestephen/ratioreign)
-`2.2.0` and **execs the upstream binary** after mapping HA's `/data` volume
+`2.2.1` and **execs the upstream binary** after mapping HA's `/data` volume
 into the paths RatioReign expects.
 
 ## What it does
@@ -21,7 +21,7 @@ It does **not** open peer connections or transfer torrent payload data.
 
 ## Authentication (default on)
 
-Upstream **2.2.0** enables HTTP Basic Auth by default for the web UI and
+Upstream **2.2.1** enables HTTP Basic Auth by default for the web UI and
 `/api/*`. On first start with an empty password, RatioReign generates one,
 writes it into `/data/config.yaml`, and logs it once (Supervisor → Log):
 

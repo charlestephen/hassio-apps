@@ -3,7 +3,7 @@ description: >-
   Headless BitTorrent ratio-farming daemon — tracker announces and simulated
   upload without transferring torrent data. Thin wrapper on the official image.
 url: https://github.com/charlestephen/hassio-apps/tree/main/ratioreign
-version: "2.2.0"
+version: "2.2.1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: ratioreign

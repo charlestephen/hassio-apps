@@ -1,5 +1,110 @@
 # Changelog
 
+## 2.11.1
+
+- Upgrading from upstream version 2.11.0 -> 2.11.1
+
+> Upstream v2.11.1: https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.1
+>
+> > **On-Site Agent update (optional):** Live Traffic's live flows and Live DNS come from the On-Gateway Agent, so upgrade it to see them (History works without it). With the Tailscale connection configured, an On-Site Agent whose host runs Tailscale reads that host's Tailscale too (see **Tailscale** below), and restarting or upgrading an Agent no longer leaves a false loss blip on its Targets. Open **Settings - Multi-Site**, expand your Site, press **Upgrade**, and run the command for your install (on an On-Gateway Agent, **Run It for Me** runs it for you).
+>
+> UniFi Network writes a flow's record when the flow ends, so its traffic log can tell you what used your internet, but not what's using it right now. Live Traffic does: every flow through your Gateway as it happens, ranked by what's moving now, with the app, where it's going, the DNS lookup behind it, and the Firewall Policy that let it through. Plus Tailscale support, the icons you see in UniFi Network on your Clients and Devices, downstream AES encryption state on GPON, and fixes across Change Control, the Security Audit, and the Wi-Fi Optimizer. See the [v2.11.0 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.0) for what's new in v2.11.0+.
+>
+> ## Monitoring
+>
+> ### Live Traffic
+>
+> - **Live Traffic** - a new page under Monitoring for every flow through your Gateway, traffic between your VLANs included. **Where It's Going** follows each Client to its apps and out its WAN or VPN, and **Flows** opens any connection to a two-minute chart, the DNS lookup behind it, and the Firewall Policy that let it through (worked out from your Site's Firewall Policies while the flow is live, and UniFi Network's own record once it ends).
+> - **Click to filter** - click or tap any Client, app, destination, or route, and the whole page filters to it. Presets save the filters you come back to.
+> - **Apps named where DPI has none** - a flow UniFi Network's DPI leaves unnamed is named by the domain it went to, or from its traffic (a phone's Wi-Fi Calling, Google Cast, AirPlay, HomeKit to an IKEA hub, UniFi WebRTC to your Console). Content your ISP serves from a cache inside its own network (Google Global Cache, Netflix Open Connect, Meta FNA, Akamai) carries an **ISP cache** badge naming the ISP, which needs the MaxMind GeoLite2 databases (**Settings - Security & Alerts**, **MaxMind GeoIP**) except for Netflix.
+> - **Custom Apps** - name the traffic DPI only knows by its port, by protocol and port, and optionally where it goes or a remote domain or address (Site Admin). Hover a bare port like UDP 21324 and **Name This App** fills in the form from that flow.
+> - **Hover cards** - a Client links to its Client Performance page (Device Stats for the Gateway and your UniFi Devices), a destination shows its address with **Threats** and **Trace** links, and every address and domain on a card copies with one click. Badges mark your other Sites' addresses, your Extra Trusted Addresses (**Trusted**), and the Network a LAN destination sits on.
+> - **Live DNS** - lookups as they happen, with blocked answers (NXDOMAIN, or the 0.0.0.0 a DNS blocker returns) called out. A Client that goes around your DNS to an outside resolver, DoH, or DoT is flagged as a bypass, and one your Gateway redirects back to your own resolver shows the attempt and where it ended up.
+> - **Firewall blocks** on the **Active flows** tile - your Clients' connections the Gateway blocked in the last 10 minutes, which Live never sees. A click opens **History** filtered to **Blocked**.
+> - **History** - UniFi Network's own flow records for about the last hour, allowed and blocked, with a **Timeline** to pick a window from. It works without the On-Gateway Agent.
+> - **Live View** - the Bandwidth Hogs card is now **Live Traffic**. With the On-Gateway Agent, **By** splits your WAN by Client, App, Destination, or Route, and a Client's row opens to its flows.
+> - **Enable Live Traffic flow and DNS capture** - a per-Site switch on the **Live Traffic** card in **Settings - Monitoring**, on by default. The On-Gateway Agent sends flow detail only while someone has Live Traffic open, and Network Optimizer keeps flows, apps, and DNS lookups in memory only: see [What Live Traffic Stores](https://github.com/Ozark-Connect/NetworkOptimizer/blob/main/docker/DEPLOYMENT.md#what-live-traffic-stores).
+>
+> ### ONT Stats
+>
+> - **AES DS** on the **PON Status** table (SFP Stats and ONT Stats) - whether the OLT encrypts the downstream traffic to your ONT, with two new Alert rules for when that changes: **ONT: AES Encryption Enabled** (Warning) and **ONT: AES Encryption Disabled** (Error). It needs a **Network Optimizer Custom (HTTP JSON)** endpoint that reports AES state.
+> - **odi-oss GPON firmware (ODI DFP-34X-2C2, Luleey LL-XS2510, and other RTL9601/RTL9602 sticks)** support (#1372, thanks @Optic00). It reads the stick's own Prometheus exporter, so it needs only the stick's address, and it brings in the GPON line counters (BIP, FEC, and HEC) as well as the optics.
+>
+> ## Client Performance
+>
+> - **Data / Apps** - the Data tab is now **Data / Apps**, with the Client's own **Live Traffic**, the apps it's using right now at the top of **Applications**, and its **Live DNS**. Without the On-Gateway Agent, Live Traffic shows the Client's History from UniFi Network.
+> - **Speed** - **Live Throughput** says what the Client is moving through your Gateway, with a link to Data / Apps.
+> - **Fix: the Back button disappeared** - after a link opened Client Performance on your own device, or after you picked a Client from the client selector or pressed **This device**.
+> - Also fixed: on **Connection**, roams in the same minute reading out of order (the Time column now shows seconds).
+>
+> ## Tailscale
+>
+> - **Tailscale (Optional)** card in **Settings - Connection** - reads your tailnet from Tailscale, with an OAuth credential that has Devices Core read (made under Settings - Trust credentials in the Tailscale Admin console), or from a Headscale server. It's read-only: Network Optimizer never changes the tailnet.
+> - **Client Performance** - a Tailscale Client shows its tailnet name, OS, and owner (or its tags), and whether it connects Direct or Relayed through a DERP region. The client selector lists the Site's Tailscale devices, the **Open in Live Traffic** button opens Live Traffic filtered to the device, and a LAN Client that is the tailnet's exit node or subnet router is labeled as one.
+> - **Live Traffic** - Tailscale Clients and flows are named by the device, and a device's busiest flow reads **Direct** (the rest read **Path probe**). Flows to Tailscale's relay servers are named by region, such as Tailscale DERP (Dallas), and read **DERP relay** or **STUN**.
+> - **Speed test results** - Client Speed Test, LAN Speed Test, the Dashboard's **LAN Speed Test** card, and the **Speed / Coverage Map** name Tailscale results by the device's tailnet name, earlier results included, and the result lists mark them with the Tailscale icon. The path trace's Tailscale hop says Direct or Relayed. A Client on tailnet IPv6 now reads as Tailscale instead of a LAN Client, with or without the Tailscale connection configured.
+> - **On-Site Agent** - with the Tailscale connection configured, an On-Site Agent whose host also runs Tailscale (a Linux server or Raspberry Pi that is your subnet router or exit node, for example) adds the exact path to each device and its traffic counters, and, when that host routes for the tailnet, Live Traffic shows the Tailscale device behind each connection instead of the host. Needs the v2.11.1 Agent.
+>
+> ## Client and Device Icons
+>
+> - **Every Client carries its UniFi Network icon** - the icon UniFi Network shows for it, a custom icon you set there included: on the **LAN Topology Flow Map** (2D), Client Performance, the Wi-Fi Optimizer's **Client Stats**, speed test results and their path traces, and the Dashboard's **LAN Speed Test** card. A server whose interfaces share one node on the map shows the most specific of their icons, a custom one first.
+> - **UniFi Devices take UniFi Network's icon where Network Optimizer has no image** - **Device Status**, **UniFi Device Speed Test**, the Wi-Fi Optimizer's Access Point cards, and the Security Audit show it for a model Network Optimizer ships no product image for, and speed test results now show each UniFi Device's image too. Network Optimizer fetches each icon from Ubiquiti once and keeps it, so an install that can't reach Ubiquiti's servers looks as it did before.
+>
+> ## Multi-Site
+>
+> - **Rename an On-Site Agent** - in **Settings - Multi-Site**, with the same pencil as the Site name.
+> - **Removing a Site also deletes its floor plans, report PDFs, and InfluxDB buckets** (not a custom bucket name you gave it), and the **Remove** dialog lists them. Anything left behind by a Site removed before this release stays where it is, so remove it by hand.
+>
+> ## Change Control
+>
+> - **Fix: Schedule applies in showed blank and would not save "A time I choose"** (#1376, thanks @Mancolt for the report and the diagnosis) - on **Settings**. The setting is now **Default schedule time**, with **None, I pick a time per plan**, since all it does is pre-fill the **Time** field in Review Plan.
+> - Also fixed: pressing **Schedule** in Review Plan with a time in the past incorrectly applying the Plan immediately; and date and time fields, like **Daily full snapshot at**, running past the card's edge on an iPhone.
+>
+> ## Wi-Fi Optimizer - Overview
+>
+> - **Health Issues link to what they name** - each AP, Radio, or Client under **Affected** opens where you'd look next: High TX Retry Rates opens that AP's Clients on that band in Client Stats, Co-Channel Interference opens Channels on that channel, Raised Noise Floor opens that Radio's Metrics, and a Client opens in Client Stats.
+> - **Fix: High 2.4 GHz Concentration recommended what you already have** - it suggested Band Steering on an SSID that has it, or an IoT SSID when the Site has one, and its count of Clients that support higher bands included 5 GHz Clients that could use 6 GHz.
+>
+> ## Security Audit
+>
+> - **Fix: Firewall: Rule Order Issue on a one-port exception** - an allow rule that carves one port out of a deny (TCP/UDP 53 ahead of an all-protocol block, for one) read as "may subvert" the deny and scored like a broad hole. The finding now names the traffic the allow takes, or says it covers the whole deny, and an exception of up to three ports no longer costs points.
+> - **Fix: a cellular WAN listed as a Network** - on a UDR 5G Max, the built-in cellular WAN showed in **Network Reference** as a VLAN 1 Network and was audited like one, which lowered the score (#1384, thanks @twolf218 for the report).
+> - **Fix: "Gateway Firewall: Zone Policies Not Reached" on a Zone with no Networks** - the finding told you to restart the Gateway, for a Zone nothing can reach.
+>
+> ## Fixes
+>
+> - **Fix: busy Sites missed flows in Threat Intelligence past the first 1,000 in each collection** - also after downtime, when one collection catches up on many minutes. You may see more blocked flows now, and on a busy Site each collection asks your Console for more.
+> - **Fix: ordinary outbound traffic counted as blocked in Threat Intelligence, raising false attack chain Alerts** (#1386, thanks @Mancolt for the report) - late packets UniFi Network drops after a connection has ended read as a blocked connection, so a LAN host's normal HTTPS showed as "HTTPS outgoing blocked", and one harmless IPS hit from the same host made an Attempted Exploitation -> Monitored chain. Events already recorded stay until they age out.
+> - **Fix: a false loss blip on a Target when its On-Site Agent restarted or upgraded** - a probe caught mid-burst by the restart counted as loss. Needs the v2.11.1 Agent.
+> - **Fix: "Speed tests aren't available at this site" on the main Site** (Client Performance, Client Speed Test) - with an On-Site Agent collecting for the main Site and none hosting the LAN speed test, the main Site lost its own speed test.
+> - **Fix: a WAN speed test marked Invalid still raised a WAN degradation alert** - and an Incident on Change Control's Site Health chart. Invalid results no longer count toward the degradation average either.
+> - **Fix: decimal readings wrong on a system set to a comma-decimal region** (#1375, thanks @Bastika07) - on a Windows or macOS install whose region writes decimals with a comma (Germany, for one), Cellular Stats signal values, **Float** Custom OIDs, Client Speed Test results, Cloudflare WAN Speed Test latency, Adaptive SQM's status readings, and **Usage Adjustment (GB)** on Data Usage read wrong. Readings already stored keep the values they were saved with.
+> - **Fix: "Connection reset by peer" in the log every hour for a UPS Tower, USP-Plug, or USP-Strip** (#1240, thanks @jakerobb for the report) - Network Optimizer kept trying to SSH into these power Devices, which have no SSH, for a reboot reason.
+> - **Fix: a stream of lookups for names with your search domain appended** - Network Optimizer's reverse DNS lookups sent them to your resolver, where they showed in its logs.
+> - **Security hardening** - several fixes in On-Site Agent requests, InfluxDB queries, sign-in sessions, and floor plan images.
+> - Also fixed: a chart for an interface or port whose name has a parenthesis in it drawing empty.
+>
+> ## Installation
+>
+> **Windows**: Download the MSI installer below
+>
+> **Docker (Upgrade)**:
+> ```bash
+> docker compose pull && docker compose up -d
+> ```
+>
+> **macOS** (native, recommended for accurate speed tests vs Docker Desktop):
+> ```bash
+> git clone https://github.com/Ozark-Connect/NetworkOptimizer.git && cd NetworkOptimizer && ./scripts/install-macos-native.sh
+> # or if you already have it cloned
+> cd NetworkOptimizer && git pull && ./scripts/install-macos-native.sh
+> ```
+>
+> **Proxmox**:
+> ```bash
+> bash -c "$(curl -fsSL https://raw.githubusercontent.com/Ozark-Connect/NetworkOptimizer/main/scripts/proxmox/install.sh)"
+> …
+
 ## 2.11.0
 
 - Upgrading from upstream version 2.10.7-1 -> 2.11.0

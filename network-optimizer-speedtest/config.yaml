@@ -3,7 +3,7 @@ description: >-
   OpenSpeedTest frontend customized for Network Optimizer — posts results to
   the companion app. Thin wrapper on ghcr.io/ozark-connect/speedtest.
 url: https://github.com/charlestephen/hassio-apps/tree/main/network-optimizer-speedtest
-version: "2.11.0"
+version: "2.11.1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: network_optimizer_speedtest

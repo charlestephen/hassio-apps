@@ -1,5 +1,105 @@
 # Changelog
 
+## 2.13.0
+
+- Upgrading from upstream version 2.12.0-1 -> 2.13.0
+
+> Upstream v2.13.0: https://github.com/homarr-labs/homarr/releases/tag/v2.13.0
+>
+> # Homarr v2.13.0: Board tabs and a new widget editor
+>
+> Homarr adds board tabs, a new widget editor, 28 theme presets and a Home Assistant widget.
+>
+> ## Highlights
+>
+> ### Board tabs
+>
+> Each board can have up to five tabs. Copy or move items between tabs.
+>
+> <img src="https://github.com/homarr-labs/homarr/releases/download/v2.13.0/board-tabs.png" alt="Board tabs in the header" width="454">
+>
+> ### Add items and edit widgets
+>
+> In edit mode, select an empty area, then choose a widget or app.
+>
+> <img src="https://github.com/homarr-labs/homarr/releases/download/v2.13.0/board-add-menu.png" alt="Add menu for board items and tabs" width="385">
+>
+> The editor shows a preview as you select and configure a widget.
+>
+> <img src="https://github.com/homarr-labs/homarr/releases/download/v2.13.0/board-item-editor.png" alt="Widget selector and preview on the board" width="600">
+>
+> ### Themes
+>
+> Homarr includes 28 theme presets. The live editor shows changes in a board preview.
+>
+> <img src="https://github.com/user-attachments/assets/2395beb2-95cc-40ac-9eac-7ebdae816d13" alt="Theme editor with a live board preview" width="600">
+>
+> ### New Home Assistant widget
+>
+> The new widget controls Home Assistant devices from Homarr. It shows current device states.
+>
+> <img src="https://github.com/user-attachments/assets/f991ff34-0633-4257-a84e-d6485b8ff940" alt="Home Assistant widget with device controls" width="600">
+>
+> ## New integrations and widgets
+>
+> ![New Home Assistant widget](https://raw.githubusercontent.com/homarr-labs/homarr/abe72e9522f36760367473e7b92f0fc68f6e4323/docs/img/releases/2.13.0/whats-new.svg)
+>
+> | | Name | What it does |
+> | --- | --- | --- |
+> | | Smart Home Controls | The widget controls Home Assistant devices. |
+>
+> ## New
+>
+> - **Themes:** Homarr includes 28 presets and a live editor. by @ajnart in [#7468](https://github.com/homarr-labs/homarr/pull/7468)
+> - **Board tabs:** each board can have up to five tabs. Copy or move items between tabs. by @ajnart in [#7497](https://github.com/homarr-labs/homarr/pull/7497)
+> - **Widget editor:** add and edit widgets on the board. A preview shows your changes. by @ajnart in [#7503](https://github.com/homarr-labs/homarr/pull/7503)
+> - **Home Assistant widget:** the new widget controls devices from Homarr. by @ajnart in [#7521](https://github.com/homarr-labs/homarr/pull/7521)
+> - **Workshop search:** the widget selector lists compatible Workshop widgets. by @ajnart in [#7500](https://github.com/homarr-labs/homarr/pull/7500)
+> - **Workshop updates:** only Workshop widgets installed after this release support in-place updates. by @ajnart in [#7525](https://github.com/homarr-labs/homarr/pull/7525)
+> - **Changelog:** Homarr shows the changelog to administrators after an update. by @ajnart in [#7538](https://github.com/homarr-labs/homarr/pull/7538)
+>
+> ## Improved
+>
+> - **Resources:** System Resources shows disk usage and supported per-core CPU charts. by @heathlarsen in [#7534](https://github.com/homarr-labs/homarr/pull/7534)
+>
+> ## Fixed
+>
+> - **Bookmark grids:** rows fill unused widget height. by @Catif in [#7531](https://github.com/homarr-labs/homarr/pull/7531)
+> - **Section sizes:** sections keep their position when you resize beside a container. by @ajnart in [#7461](https://github.com/homarr-labs/homarr/pull/7461)
+> - **Category headers:** headers no longer compress the tiles. by @ajnart in [#7552](https://github.com/homarr-labs/homarr/pull/7552)
+>
+> <details>
+> <summary>All changes</summary>
+>
+> ### Improved
+>
+> - **Management home:** statistic tiles follow the theme. The page includes an interactive Homarr lobster. by @ajnart in [#7535](https://github.com/homarr-labs/homarr/pull/7535)
+> - **Docker icons:** Homarr matches service icons to more container image names. by @ajnart in [#7464](https://github.com/homarr-labs/homarr/pull/7464)
+> - **Docker tags:** `v2` and `v2.13` follow stable releases within their version line. by @ajnart in [#7526](https://github.com/homarr-labs/homarr/pull/7526)
+>
+> ### Fixed
+>
+> - **ntfy history:** Homarr applies message updates and deletions. by @ajnart in [#7517](https://github.com/homarr-labs/homarr/pull/7517)
+> - **Jellyfin titles:** Homarr keeps episode titles when Jellyfin returns older items. by @ajnart in [#7287](https://github.com/homarr-labs/homarr/pull/7287)
+> - **Synology login:** DSM-authorized delegated accounts can connect without a DownloadStation session. by @ajnart in [#7520](https://github.com/homarr-labs/homarr/pull/7520)
+> - **Bookmark titles:** full URLs no longer hide app names. by @ajnart in [#7522](https://github.com/homarr-labs/homarr/pull/7522)
+> - **Bookmark addresses:** hostnames and URLs use consistent text size and weight. by @ajnart in [#7527](https://github.com/homarr-labs/homarr/pull/7527)
+> - **Search text:** earlier search results no longer replace text as you type. by @ajnart in [#7519](https://github.com/homarr-labs/homarr/pull/7519)
+> - **Mobile and board controls:** fixes cover navigation, tabs, search and the widget editor. by @ajnart in [#7554](https://github.com/homarr-labs/homarr/pull/7554)
+> - **Update notice:** management navigation shows the update indicator. by @ajnart in [#7528](https://github.com/homarr-labs/homarr/pull/7528)
+> - **MCP schemas:** tools describe blank string values without an empty constant. by @ajnart in [#7518](https://github.com/homarr-labs/homarr/pull/7518)
+> - **Release images:** the Releases widget shows HTML images at their set widths. by @ajnart in [#7539](https://github.com/homarr-labs/homarr/pull/7539)
+> - **Release notices:** failed Discord announcements can retry after publication. by @ajnart in [#7540](https://github.com/homarr-labs/homarr/pull/7540)
+>
+> </details>
+>
+> ## Thanks
+>
+> Thanks to @Catif for their first contribution in [#7531](https://github.com/homarr-labs/homarr/pull/7531).
+> Thanks to @heathlarsen for their first contribution in [#7534](https://github.com/homarr-labs/homarr/pull/7534).
+>
+> **Full Changelog**: https://github.com/homarr-labs/homarr/compare/v2.12.0...v2.13.0
+
 ## 2.12.0-1
 
 - Remove the empty `oidc_token_endpoint_auth_method` default, which failed the option schema and stopped the app from starting.

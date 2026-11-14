@@ -4,7 +4,7 @@ description: >-
   HomeKit bridge for non-HomeKit devices. Thin wrapper on the official
   homebridge/homebridge image (host networking required for discovery).
 url: https://github.com/charlestephen/hassio-apps/tree/main/homebridge
-version: "2026-11-10"
+version: "2026-11-13"
 stage: stable
 homeassistant: "2026.6.0"
 slug: homebridge
