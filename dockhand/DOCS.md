@@ -1,7 +1,7 @@
 # Dockhand
 
 Thin Home Assistant wrapper around the official
-[Dockhand](https://dockhand.pro) image (`1.0.57`). Dockhand manages Docker
+[Dockhand](https://dockhand.pro) image (`1.0.58`). Dockhand manages Docker
 containers, Compose stacks, images and volumes from a web UI. This app keeps its
 data in the PostgreSQL app from this repository instead of SQLite.
 

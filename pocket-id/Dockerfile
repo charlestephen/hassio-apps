@@ -13,7 +13,7 @@ USER root
 RUN apk upgrade --no-cache \
     && apk add --no-cache jq openssl
 
-ARG POCKET_ID_VERSION=2.19.2
+ARG POCKET_ID_VERSION=2.19.3
 ENV POCKET_ID_VERSION=${POCKET_ID_VERSION}
 
 COPY rootfs/ /

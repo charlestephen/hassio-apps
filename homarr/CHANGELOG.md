@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.13.1
+
+- Upgrading from upstream version 2.12.0-1 -> 2.13.1
+
+> Upstream v2.13.1: https://github.com/homarr-labs/homarr/releases/tag/v2.13.1
+>
+> <!-- Release notes generated using configuration in .github/release.yml at d37c954601bae7e2bfbefdc91cd3ff52e716554b -->
+>
+> ## What's Changed
+> ### Fixed
+> * fix: restore production WebSocket connections by @ajnart in https://github.com/homarr-labs/homarr/pull/7589
+> ### Other changes
+> * chore(build): retain Linux bcrypt prebuilds by @ajnart in https://github.com/homarr-labs/homarr/pull/7574
+> * fix(beszel): keep chart tooltips visible outside widgets by @ajnart in https://github.com/homarr-labs/homarr/pull/7587
+> * fix: preserve board tab names and themed renaming by @ajnart in https://github.com/homarr-labs/homarr/pull/7583
+> * fix(smart-home): keep thermostat controls inside narrow tiles by @ajnart in https://github.com/homarr-labs/homarr/pull/7579
+> * fix(board): inherit canvas scale in item preview by @ajnart in https://github.com/homarr-labs/homarr/pull/7584
+> * fix(assistant): retain provider error diagnostics by @ajnart in https://github.com/homarr-labs/homarr/pull/7585
+>
+>
+> **Full Changelog**: https://github.com/homarr-labs/homarr/compare/v2.13.0...v2.13.1
+
 ## 2.12.0-1
 
 - Remove the empty `oidc_token_endpoint_auth_method` default, which failed the option schema and stopped the app from starting.

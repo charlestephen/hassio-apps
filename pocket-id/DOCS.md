@@ -1,7 +1,7 @@
 # Pocket ID
 
 Thin Home Assistant wrapper around the official
-[Pocket ID](https://pocket-id.org) image (`2.19.2`). Pocket ID is an OpenID
+[Pocket ID](https://pocket-id.org) image (`2.19.3`). Pocket ID is an OpenID
 Connect Certified™ and OAuth 2.0 provider that signs users in with passkeys
 only.
 

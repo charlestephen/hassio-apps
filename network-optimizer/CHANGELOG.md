@@ -1,5 +1,93 @@
 # Changelog
 
+## 2.11.4
+
+- Upgrading from upstream version 2.11.0 -> 2.11.4
+
+> Upstream v2.11.4: https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.4
+>
+> > **On-Site Agent update (optional; unchanged since v2.11.3):** skipped v2.11.3? Press **Upgrade** on your Site in **Settings - Multi-Site** for its Upstream Path Discovery fix. If you updated on v2.11.3 or v2.11.3-preview1, you're set.
+>
+> A fix for Automatic Blocking's public block lists cutting off streaming and other apps some of the time, traceroutes that place each hop in a city and draw the route on a map, a much smoother 2D map, and hover cards on the external addresses in Network Performance and Threat Intelligence. See the [v2.11.3 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.3), the [v2.11.2 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.2), the [v2.11.1 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.1), and the [v2.11.0 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.0) for what's new in v2.11.0+.
+>
+> ## Threat Intelligence
+>
+> ### Automatic Blocking
+>
+> - **Fix: public block lists cutting off streaming and other apps some of the time** - on a Site that blocks at the Gateway, the lists' Firewall Policies in UniFi Network also dropped the replies to connections your own Devices opened, so an app was cut off whenever its servers sat on an address an attacker list still held (cloud addresses change hands often). The Policies match new inbound connections only now, as the On-Gateway Agent's rules already did, and the ones you have are corrected within minutes of upgrading. Outbound blocking is unchanged.
+> - **Hover cards on external addresses** - hover an address or host name anywhere in Threat Intelligence, the blocked sources and public block list drops, or a Web Application Firewall event's source IP for the card Live Traffic shows for a destination: the address to copy, and **Trace**.
+>
+> ## Monitoring
+>
+> ### Network Tools
+>
+> - **Location on each traceroute hop** - the **Traceroute Result** table shows each hop's flag, city, and country. A transit router is placed by the city its name gives (Dallas for `dllstx14`), where an IP location database would put it wherever its network is registered; other hops are placed by a hop a few ms away, or by GeoLite2 City when installed. Hover a location for where it came from.
+> - **Route Map** - below the **Traceroute Result** table, the path is drawn on a map, city to city, starting from your WAN's location when its address is public, with a dotted leg where the hops in between did not answer. Click a hop to find it on the map, or a point on the map to find its hops.
+> - **Set location** - when a hop is placed in the wrong city, an Admin can set the right one from the hop's row (the pin icon after its location). It applies to that address on every Site's traces, and the hops around it are placed against it; only public addresses take one.
+> - **Learned locations** - a transit router one trace placed by its name or a nearby hop keeps that city on later traces that have only GeoLite2 for it, marked **Learned** in the hover.
+> - **Fix: an ICMP or TCP traceroute from a Gateway over SSH ran as UDP** - and a trace whose far end never answered showed an empty table and "Did not reach target", where it now shows the hops it reached.
+>
+> ### Network Performance
+>
+> - **Hover cards on external hosts** - hover a host's chip on the chart or in the statistics table, a **Latency Targets** address, or an address in **Upstream Path Discovery** for the same card: the address to copy, and **Trace**.
+> - **Fix: a Target's RTT Mean and Max reading an impossible round trip** - one corrupted ping reply can print a time of years, and it set the Target's RTT Mean and Max in the statistics table (and scaled its chart) for every window that included it. It's dropped now, whether an On-Site Agent or the server sent the ping (no Agent update needed); a value already stored stays.
+>
+> ### ISP Health
+>
+> - **Location in the hop table** - on desktop, an episode's hop table shows each hop's location, read the same way as in Network Tools (**Set location** works here too), and an open hop table now uses the full width of the event.
+>
+> ### Live View
+>
+> - **A much smoother 2D map** - it runs at a higher frame rate now, without skipping as you pan and zoom. The Dashboard's **Live View** card and the **Firmware Rollout** map get it too.
+>
+> ## Maps
+>
+> - **Scrolling past a map** - the mouse wheel zooms a map only after the pointer rests on it for a moment, or after a click, so a page scroll no longer stops at a map and zooms it. Every map has it; a fullscreen map zooms right away.
+> - **Dark street map** - the **Speed / Coverage Map** and the floor plan editor use the same dark street map as the Route Map. Satellite imagery keeps its own colors.
+>
+> ## Wi-Fi Optimizer
+>
+> - **Fix: Channel Recommendation counting one neighbor's SSIDs as several interferers** - a neighbor radio broadcasting several SSIDs (hidden ones included) weighed once per SSID on its channel, and counts once now. RF Environment's **Neighboring Networks** and **Channel Density** still list each network.
+> - **Fix: a radio free to move straight back into the 160 MHz channel it just left** - Channel Recommendation's soak period missed a radio that left a 160 MHz channel from any but the block's first channel (ch116 in 100-128).
+> - **SSID in Client Stats** - each Client's SSID, as a sortable column in the table (on desktop) and in the Client details.
+>
+> ## Security Audit
+>
+> - **Fix: a WAN on a disabled port flagged Critical** - **Gateway Firewall: WAN Not in External Zone** flagged a WAN still assigned to a port you disabled in UniFi Network, which carries no traffic. A disabled port the Gateway still puts in the wrong Zone is still flagged.
+>
+> ## Fixes
+>
+> - **Fix: a dropdown closing right after it opened** - in Chrome and Edge, a list opened just after scrolling the page could shut on its own.
+>
+> ## Installation
+>
+> **Windows**: Download the MSI installer below
+>
+> **Docker (Upgrade)**:
+> ```bash
+> docker compose pull && docker compose up -d
+> ```
+>
+> **macOS** (native, recommended for accurate speed tests vs Docker Desktop):
+> ```bash
+> git clone https://github.com/Ozark-Connect/NetworkOptimizer.git && cd NetworkOptimizer && ./scripts/install-macos-native.sh
+> # or if you already have it cloned
+> cd NetworkOptimizer && git pull && ./scripts/install-macos-native.sh
+> ```
+>
+> **Proxmox**:
+> ```bash
+> bash -c "$(curl -fsSL https://raw.githubusercontent.com/Ozark-Connect/NetworkOptimizer/main/scripts/proxmox/install.sh)"
+> # or if you just need to update
+> pct exec <CT_ID> -- bash -c 'cd /opt/network-optimizer && docker compose pull && docker compose up -d && docker image prune -f'
+> ```
+>
+> For other platforms (Synology, QNAP, Unraid, native Linux) or new installations, see the [Deployment Guide](https://github.com/Ozark-Connect/NetworkOptimizer/blob/main/docker/DEPLOYMENT.md).
+>
+> Need a hand with an install or upgrade, or something not working right? Ask on the [Network Optimizer Discord](https://discord.gg/pHrmzbBCY3). Confirmed bugs and feature requests go to [GitHub Issues](https://github.com/Ozark-Connect/NetworkOptimizer/issues).
+>
+> 3 older upstream releases omitted.
+
 ## 2.11.0
 
 - Upgrading from upstream version 2.10.7-1 -> 2.11.0

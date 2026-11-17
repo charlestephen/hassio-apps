@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.2.1
+
+- Upgrading from upstream version 2.2.0 -> 2.2.1
+
+> Upstream v2.2.1: https://github.com/charlestephen/ratioreign/releases/tag/v2.2.1
+>
+> ### Added
+>
+> - Docker Hub overview (`docs/dockerhub.md`) with Docker and Docker Compose
+>   instructions, synced to `docker.io/charlestephen/ratioreign` by the
+>   Publish to Docker Hub workflow.
+>
+> ### Removed
+>
+> - The Slack notification workflow.
+>
+> ### Security
+>
+> - The auto-generated admin password is no longer written to the log
+>   (clear-text logging of sensitive information). The startup warning now
+>   names the config file; read `auth.password` from it, then change it in
+>   the web UI. If you started a version that logged it, treat that password
+>   as exposed and change it, and clear or rotate any logs that kept it.
+
 ## 2.2.0
 
 - Track upstream RatioReign `2.2.0` (HTTP Basic Auth on by default).
