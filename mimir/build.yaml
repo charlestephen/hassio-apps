@@ -9,4 +9,4 @@ upstream_docker_image: "grafana/mimir"
 upstream_tag_pattern: 'mimir-\d+\.\d+\.\d+'
 upstream_version_arg: MIMIR_VERSION
 args:
-  MIMIR_VERSION: "3.2.5"
+  MIMIR_VERSION: "3.2.6"

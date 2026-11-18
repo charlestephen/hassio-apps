@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Grafana Mimir"
-version: "3.2.5-1"
+version: "3.2.6"
 slug: mimir
 description: >-
   Grafana Mimir, long-term storage for Prometheus metrics. Monolithic mode

@@ -3,13 +3,13 @@
 #
 # ARGs used in FROM must be declared before the first FROM (BuildKit).
 ARG BUILD_FROM=alpine:3.24
-ARG MIMIR_VERSION=3.2.5
+ARG MIMIR_VERSION=3.2.6
 
 FROM docker.io/grafana/mimir:${MIMIR_VERSION} AS mimir
 
 FROM ${BUILD_FROM}
 
-ARG MIMIR_VERSION=3.2.5
+ARG MIMIR_VERSION=3.2.6
 ENV MIMIR_VERSION=${MIMIR_VERSION}
 
 # hadolint ignore=DL3018

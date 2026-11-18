@@ -1,5 +1,102 @@
 # Changelog
 
+## 2.11.5
+
+- Upgrading from upstream version 2.11.4 -> 2.11.5
+
+> Upstream v2.11.5: https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.5
+>
+> > **On-Site Agent update (optional; new in v2.11.5):** adds telemetry and a mitigation for an out-of-memory error on EFG and UDM-Beast class gateways while feeding Live Traffic (see **Live Traffic** below). Open **Settings - Multi-Site**, expand your Site, press **Upgrade**, and run the command for your install (on an On-Gateway Agent, **Run It for Me** runs it for you). If you updated on v2.11.5-preview3, you're set.
+>
+> Meet the Path Map: every Target you monitor, and the route your traffic takes to get there, on one live map. Plus your actual devices on the 3D map, a signal meter and smoother layout changes on the 2D map, Recent columns in Live Traffic, and fixes for a UniFi Express used as an Access Point, Client names, Change Control, Adaptive SQM, and the Security Audit. See the [v2.11.4 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.4), the [v2.11.3 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.3), the [v2.11.2 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.2), the [v2.11.1 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.1), and the [v2.11.0 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.0) for what's new in v2.11.0+.
+>
+> ## Monitoring
+>
+> ### Network Performance
+>
+> - **Path Map** - right above the **Latency & Packet Loss** charts, each Target's route drawn hop by hop across the map, lit by how that Target is doing against its own baseline. When something gets slow, you can see at a glance whether it's one destination, a transit network several of them cross, or your own ISP: routes that share a network share a line, so a problem upstream shows up on everything behind it. It follows whatever the charts are showing, WANs and time window included, and re-traces every minute while it's open (once per visit on a metered WAN).
+> - **Route changes** - find out when your ISP or a transit network moves your traffic: each change is listed with the round trip before and after, and one click draws the old route next to the new one.
+> - **All, Transit, and Local views** - the whole picture, just the networks between you and each Target, or a close-up of your ISP and where they hand off, with the round trip at each stop.
+> - **A card on everything** - hover any Target, city, or leg of a route (or tap it on a phone) for the Targets there, then jump straight into their charts or run a traceroute in Network Tools.
+> - **Improved UX around switching between Live View, ISP Health, and Network Performance** - links land on the right Targets and moment and show where you came from, the jumps back and forth keep your place, and the chart header (with the loss event stepper) stays in view on desktop.
+>
+> ### Live View
+>
+> - **Your actual devices on the 3D map** - every UniFi Device and Client now shows up as itself, sized by what it is: Access Points mounted the way you placed them on the **Signal Map**, TVs on the wall, and roofs that follow your buildings.
+> - **Hide Device** - right-click anything you'd rather not see on the 3D map, like a management interface or a whole port group, and **Hidden Devices** in **Overlays** brings it back. Only your view changes.
+> - **A smoother 2D map** - Clients joining, roaming, and leaving slide into place instead of jumping, and mesh APs, Device Bridges, and cellular modems set up in **Cellular Stats** carry a signal meter on their card.
+> - **Cellular WANs and ISP logos** - on both maps, a cellular WAN runs from its modem to its WAN globe, with a live 5G or LTE badge when the modem is set up in **Cellular Stats**, and each globe shows your ISP's logo where UniFi Network has one.
+> - **Double-click an Access Point or a cellular modem** - on both maps, to see its Clients in Wi-Fi Optimizer's **Client Stats**, or its charts in **Cellular Stats**.
+> - **Fix: a UniFi Express used as an Access Point showing up as a second Gateway** (thanks @micallan17 for the report and the captures) - behind another UniFi Gateway, it was badged Gateway on **Setup**, left WAN Download and Upload blank on the Dashboard's **Live View**, and sat under the WAN globe on the map.
+> - Also fixed: double-clicking a Switch or Gateway on the Dashboard's **Live View** card doing nothing (it now opens **Port Statistics** on Monitoring - Live View with that device picked); a client's rate label covering its name on the left-to-right layout when the client has a device icon; the map's timeline ignoring the time and date format setting; WAN Throughput freezing after you left Live View parked on a moment; and on the 3D map, unplaced Wi-Fi Clients of an Access Point in an outbuilding landing outside both buildings.
+>
+> ### Live Traffic
+>
+> - **Recent ↓ and Recent ↑** - each flow's data in each direction over the last 5 minutes, on the **Flows** table (summed per group when grouped) and on a client's **Live Traffic** in Client Performance. Click either one to list the busiest flows first.
+> - **Fix: Live Traffic stopping with an error** - when a flow the Gateway's conntrack reads had missed came back and then ended again. Seen on a UDR7.
+> - **Fix: "Reconnecting often" while Live Traffic is open on EFG and UDM-Beast class gateways** (thanks @jetlagalex for the report and the ongoing diagnosis on a UDM-Beast) - after about a day of uptime, the On-Gateway Agent hit out-of-memory errors until it was restarted by hand. It now restarts itself when that happens, and logs the detail needed to find the cause. Needs the Agent update above.
+>
+> ### Network Tools
+>
+> - **Fix: Set location on a hop also moving the routers after it** - on a hop whose replies come back late, like an MPLS hop.
+> - Also fixed: some **Trace** links into Network Tools not filling in the target.
+>
+> ## Change Control
+>
+> - **Fix: a WLAN on an AP Group showing no Broadcasting APs in UniFi Network** - when Change Control created it (from the **Edit** tab or a Roll Back) on any AP Group other than All APs. **If you created one before this release, choose Group under Broadcasting APs for it in UniFi Network.**
+> - **Fix: "overlaps 192.168.0.0/16, reached over the Vpn zone" in Re-address Networks** - a Firewall Policy matching a private range from the VPN or External Zone refused every pattern into that range (and a move out of it could leave addresses behind).
+> - **Fix: Automatic Blocking exceptions left behind by Re-address Networks** - an exception for a Device on a moved Network stopped applying after the move.
+> - **Fix: clearing a Client's name read as deleting the Client** - when the name was its only setting, and Roll Back then failed because UniFi refuses to create a Client that already exists. Clearing a name now reads and rolls back as a rename, and removing a name line in **Edit** no longer fails the Plan with "Name did not land".
+> - **Fix: Client renames made in UniFi Network recorded as No admin recorded** - the Admin who made the rename now shows.
+> - Also fixed: "Partial: Not applied by UniFi: PMF, Security, Security" on a new WLAN with WPA3 or 6 GHz, though the WLAN ended up exactly as planned; a renamed Access Point reading as a fix plus a regression in **Impact**; and a regenerated custom icon reading as unchanged ("Wall Server" to "Wall Server").
+>
+> ## Adaptive SQM
+>
+> - **Fix: a scheduled WAN Speed Test running during Adaptive SQM's own speed test** - when one landed on the Gateway's morning or evening Adaptive SQM test, each measured the other's load, and Adaptive SQM shaped to the wrong rate. A scheduled test now waits until the Adaptive SQM test is done.
+>
+> ## LAN Speed Test
+>
+> - **Fix: no device name on a test run from a UniFi Device** - an Access Point, Switch, or Gateway. Also fixed: the Dashboard's **LAN Speed Test** card showing 0 for a direction the test didn't run.
+>
+> ## Security Audit
+>
+> - **Fix: Acknowledge not sticking on Threat: Actively Targeted Port Forward** (thanks @Mancolt for the report) - the acknowledgement stopped matching whenever the finding's 30-day threat count changed, which is nearly every audit. It now holds until the forwarded port or its source restriction changes. **If you acknowledged it before this release, Acknowledge it once more.**
+>
+> ## Threat Intelligence
+>
+> - **Fix: a partial MaxMind GeoLite2 download shown as a success** (thanks @Optic00 for the report) - when one GeoLite2 database downloaded and the other failed, **Settings** showed the error in the green success box. It now shows as a warning naming the database that did load, and a rejected license key gets a hint that a new MaxMind license key can take a few minutes to start working.
+>
+> ## Fixes
+>
+> - **Fix: old and mismatched Client names** - a Client renamed in UniFi Network kept its old name for a few minutes in Client Performance (until a reload, if it was offline) and for good in Live Traffic History, and the Security Audit's offline Wireless Clients stayed under their Access Point's old name. Names now follow UniFi on every page: a UniFi Protect camera shows the name you gave it in Protect (and Client Performance no longer offers to rename it), and an unnamed Client in Live Traffic shows UniFi's name for it rather than its DHCP hostname.
+>
+> ## Installation
+>
+> **Windows**: Download the MSI installer below
+>
+> **Docker (Upgrade)**:
+> ```bash
+> docker compose pull && docker compose up -d
+> ```
+>
+> **macOS** (native, recommended for accurate speed tests vs Docker Desktop):
+> ```bash
+> git clone https://github.com/Ozark-Connect/NetworkOptimizer.git && cd NetworkOptimizer && ./scripts/install-macos-native.sh
+> # or if you already have it cloned
+> cd NetworkOptimizer && git pull && ./scripts/install-macos-native.sh
+> ```
+>
+> **Proxmox**:
+> ```bash
+> bash -c "$(curl -fsSL https://raw.githubusercontent.com/Ozark-Connect/NetworkOptimizer/main/scripts/proxmox/install.sh)"
+> # or if you just need to update
+> pct exec <CT_ID> -- bash -c 'cd /opt/network-optimizer && docker compose pull && docker compose up -d && docker image prune -f'
+> ```
+>
+> For other platforms (Synology, QNAP, Unraid, native Linux) or new installations, see the [Deployment Guide](https://github.com/Ozark-Connect/NetworkOptimizer/blob/main/docker/DEPLOYMENT.md).
+>
+> Need a hand with an install or upgrade, or something not working right? Ask on the [Network Optimizer Discord](https://discord.gg/pHrmzbBCY3). Confirmed bugs and feature requests go to [GitHub Issues](https://github.com/Ozark-Connect/NetworkOptimizer/issues).
+
 ## 2.11.4
 
 - Upgrading from upstream version 2.11.0 -> 2.11.4

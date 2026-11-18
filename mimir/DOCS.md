@@ -1,7 +1,7 @@
 # Grafana Mimir
 
 Thin Home Assistant wrapper around the official
-[Mimir](https://grafana.com/oss/mimir/) image (`3.2.5`). It runs the monolithic
+[Mimir](https://grafana.com/oss/mimir/) image (`3.2.6`). It runs the monolithic
 target with local filesystem storage under `/data/mimir`, a single tenant
 (multi-tenancy off) and usage statistics off.
 
