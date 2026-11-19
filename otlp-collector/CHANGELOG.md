@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.165.0-8
+
+- Fix: journald logs (which is where this app's own `journald`-receiver code
+  already looked) were never actually collected by default, because
+  `config.yaml` never requested the top-level `journald: true` option --
+  Supervisor only mounts `/var/log/journal`/`/run/log/journal` when an app
+  asks for it. Confirmed live on a real Supervisor host that Docker's own
+  default logging driver there is `journald` (`docker info
+  --format '{{.LoggingDriver}}'` -> `journald`, every container included) --
+  so this one option, with no other permission or Protection Mode change,
+  recovers both Docker container logs and Home Assistant/Supervisor system
+  logs through the existing `journald` receiver. Confirmed via upstream HA
+  docs that `journald` needs no Protection Mode change and mounts read-only.
+
 ## 0.165.0-7
 
 - Default export target is now [OpenObserve](../openobserve/): new

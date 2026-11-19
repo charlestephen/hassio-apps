@@ -21,16 +21,36 @@ below) or an **OTLP endpoint** set:
 | --- | --- | --- |
 | Metrics | OTLP receive, Docker stats, Home Assistant `/api/prometheus`, optional extra scrapes | OpenObserve or OTLP/HTTP (+ optional Prometheus remote_write) |
 | Traces | OTLP receive (`:4317` / `:4318`) | OpenObserve or OTLP/HTTP |
-| Logs | OTLP receive | OpenObserve or OTLP/HTTP |
+| Logs | OTLP receive, host journal (`journald`, on by default) | OpenObserve or OTLP/HTTP |
 
 Leave **Full collector YAML** empty to use this generated default. Paste a
 complete YAML into that option to replace it entirely on every start.
+
+### Docker container logs and Home Assistant/Supervisor system logs
+
+This app requests Supervisor's `journald` permission by default (no
+Protection Mode change, no extra option needed), which mounts the host's
+system journal read-only and feeds it through the collector's `journald`
+receiver automatically. On a Supervisor host where Docker's own logging
+driver is `journald` — check with `docker info --format '{{.LoggingDriver}}'`
+on the host; confirmed live on a real Supervisor install that this is the
+case — this one mount recovers **both** halves of "all the logs": every
+container's stdout/stderr (they're logged through journald, not Docker's
+json-file driver) and Home Assistant Core/Supervisor's own system-level
+output, all in the same journal stream, with no raw Docker socket and no
+`/var/lib/docker/containers` file access (Supervisor has no `map` type for
+that path at all — confirmed against the current app config reference).
+If your host's Docker logging driver is `json-file` instead of `journald`,
+this mechanism won't see container logs; check your host's own Docker
+config (`/etc/docker/daemon.json`) rather than this app's options.
 
 Optional auto-enable when paths exist in the container:
 
 - `hostmetrics` if `/hostfs/proc` is mounted
 - `filelog` for Docker json logs if `/var/lib/docker/containers` is mounted
-- `journald` if `/var/log/journal` or `/run/log/journal` is mounted
+  (no `map` type exposes this path, so this never actually triggers under
+  Supervisor today — kept for a manual/non-Supervisor deployment with a
+  custom bind mount)
 
 Docker stats come from the [Docker Socket Proxy](../docker-socket-proxy/) app
 (see below), so this app never needs the raw Docker socket. Host, journal and

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.1-1
+
+- Fix `icon.png`/`logo.png`: the rounded-square badge sat on an opaque white
+  canvas (confirmed via pixel inspection: solid white corners), showing as a
+  white box outside the badge's rounded corners in any UI with a non-white
+  background. Flood-filled the background transparent from all four corners
+  (not a blanket color-key) so the crown/arrow artwork itself is untouched.
+
 ## 2.2.1
 
 - Upgrading from upstream version 2.2.0 -> 2.2.1
