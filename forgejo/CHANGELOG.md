@@ -1,5 +1,13 @@
 # Changelog
 
+## 17.0.2
+
+- Upgrading from upstream version 17.0.1-6 -> 17.0.2
+
+> Upstream v17.0.2: https://codeberg.org/forgejo/forgejo/releases/tag/v17.0.2
+>
+> See https://codeberg.org/forgejo/forgejo/src/branch/forgejo/release-notes-published/17.0.2.md
+
 ## 17.0.1-6
 
 - New `DB_HOST`/`DB_PORT`/`DB_NAME`/`DB_USER`/`DB_PASSWD` options so `DB_TYPE: postgres` can actually be
