@@ -1,11 +1,20 @@
 ---
-# The binary is copied from the official image (distroless, glibc) onto Debian
-# slim. The image tags carry a leading v.
+# The binary is copied from the Enterprise Edition image (distroless, glibc,
+# public.ecr.aws/zinclabs/openobserve-enterprise -- o2cr.ai needs registry
+# credentials this build doesn't have, confirmed denied) onto Debian slim.
+# The image tags carry a leading v. upstream_repo still tracks the open-source
+# community repo's release tags for version numbers -- confirmed live that
+# Enterprise v1.1.2 is the exact same version as Community v1.1.2, so those
+# numbers line up. upstream_docker_image is deliberately left unset: the
+# tracker's Docker Hub gate (update-upstream-version.py's
+# docker_hub_tag_exists) only knows how to query Docker Hub, not AWS ECR
+# Public, so setting it here would make every future auto-update refuse to
+# bump with a false "image not found" -- leaving it empty skips that gate
+# instead of failing it.
 build_from:
   aarch64: docker.io/library/debian:trixie-slim
   amd64: docker.io/library/debian:trixie-slim
 upstream_repo: "openobserve/openobserve"
-upstream_docker_image: "openobserve/openobserve"
 upstream_tag_pattern: 'v\d+\.\d+\.\d+'
 upstream_version_arg: OPENOBSERVE_VERSION
 upstream_version_arg_prefix: v

@@ -1,3 +1,15 @@
+# OpenObserve Enterprise Edition (same v1.1.2 core, same /openobserve binary
+# path, same ZO_* environment variables, same Basic Auth behavior as the
+# Community image this previously wrapped -- confirmed by running both side
+# by side). Still free to run with no license key for Enterprise's own free
+# tier; a license key unlocks its paid features but isn't required to start.
+#
+# Pulled from the public AWS ECR mirror, not o2cr.ai directly: o2cr.ai
+# requires registry credentials this build doesn't have (confirmed:
+# `podman pull o2cr.ai/openobserve/openobserve-enterprise:latest` returns
+# "denied: Not Authorized"), while this ECR mirror is the same image with no
+# auth needed, pullable here and in CI with no extra secrets.
+#
 # The official image is distroless (no shell) and its binary links glibc. Copy the
 # binary onto Debian slim so the options wrapper can set the environment, then
 # exec the upstream binary.
@@ -6,7 +18,7 @@
 ARG BUILD_FROM=debian:trixie-slim
 ARG OPENOBSERVE_VERSION=v1.1.2
 
-FROM docker.io/openobserve/openobserve:${OPENOBSERVE_VERSION} AS upstream
+FROM public.ecr.aws/zinclabs/openobserve-enterprise:${OPENOBSERVE_VERSION} AS upstream
 
 FROM ${BUILD_FROM}
 
@@ -43,7 +55,7 @@ LABEL \
     org.opencontainers.image.description="${BUILD_DESCRIPTION}" \
     org.opencontainers.image.vendor="Home Assistant Apps" \
     org.opencontainers.image.authors="CharleStephen (https://github.com/charlestephen)" \
-    org.opencontainers.image.licenses="AGPL-3.0-only" \
+    org.opencontainers.image.licenses="LicenseRef-OpenObserve-Enterprise" \
     org.opencontainers.image.url="https://github.com/charlestephen" \
     org.opencontainers.image.source="https://github.com/charlestephen/hassio-apps" \
     org.opencontainers.image.documentation="https://github.com/${BUILD_REPOSITORY}/blob/main/README.md" \

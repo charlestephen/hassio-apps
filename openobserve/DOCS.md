@@ -1,8 +1,18 @@
 # OpenObserve
 
 Thin Home Assistant wrapper around the official
-[OpenObserve](https://openobserve.ai/) image (`1.1.2`). It runs the single binary
-with local disk storage under `/data/openobserve` and telemetry off.
+[OpenObserve Enterprise Edition](https://openobserve.ai/) image (`1.1.2`),
+pulled from the [public AWS ECR mirror](https://gallery.ecr.aws/zinclabs/openobserve-enterprise)
+rather than `o2cr.ai` directly (that registry needs credentials this build
+doesn't have — confirmed denied). Same `/openobserve` binary path, same
+`ZO_*` environment variables, same Basic Auth behavior as the Community
+image this previously wrapped (confirmed by running both side by side), so
+this is a drop-in replacement: same options, same `/data/openobserve`
+layout, no changes needed to an existing install beyond updating the app.
+Runs free with no license key — a key only unlocks Enterprise's paid
+features (set it in-app under Management → License once you have one; this
+app has no option for it). It runs the single binary with local disk
+storage under `/data/openobserve` and telemetry off.
 
 ## Quick start
 

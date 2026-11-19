@@ -6,10 +6,10 @@
 ![Supports amd64 Architecture][amd64-shield]
 
 All-in-one observability for Home Assistant: logs, metrics and traces in one app with a UI on port `5080` and OTLP ingestion.
-Thin Home Assistant wrapper around [`openobserve/openobserve`][image] `1.1.2`. See
-[DOCS.md](DOCS.md).
+Thin Home Assistant wrapper around the [OpenObserve Enterprise Edition][image] image `1.1.2` — runs free with no license
+key, same as the Community edition this previously wrapped. See [DOCS.md](DOCS.md).
 
-[image]: https://hub.docker.com/r/openobserve/openobserve
+[image]: https://gallery.ecr.aws/zinclabs/openobserve-enterprise
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg

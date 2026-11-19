@@ -1,11 +1,11 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "OpenObserve"
-version: "1.1.2-1"
+version: "1.1.2-2"
 slug: openobserve
 description: >-
   OpenObserve, an all-in-one observability backend for logs, metrics and
   traces with a built-in UI and OTLP ingestion. Thin wrapper on the official
-  image.
+  Enterprise Edition image; runs free with no license key, same as before.
 url: https://github.com/charlestephen/hassio-apps/tree/main/openobserve
 stage: stable
 homeassistant: "2026.6.0"

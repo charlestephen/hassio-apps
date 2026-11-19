@@ -164,7 +164,8 @@ Or add it manually:
 ### &#10003; [OpenObserve](openobserve/)
 
 - All-in-one logs, metrics and traces backend with a UI and OTLP ingestion.
-  Official `openobserve/openobserve` binary; version tracks upstream releases.
+  Official OpenObserve Enterprise Edition binary (runs free, no license key
+  required); version tracks upstream releases.
 
 ### &#10003; [OTLP Collector](otlp-collector/)
 
