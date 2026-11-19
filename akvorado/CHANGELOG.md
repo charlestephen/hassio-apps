@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026.10.1-2
+
+- Fix: leaving `inlet: {}` in the rendered config did not default to the
+  three documented flow listeners (2055/4739/6343 udp); it produced a
+  single UDP input bound to `:0` (an OS-assigned port), so no exported
+  flows could ever reach the inlet. Found on a live Supervisor —
+  `/proc/net/udp` inside the container showed no socket on any of the
+  three ports. Now sets `inlet.flow.inputs` explicitly to the three
+  listeners.
+
 ## 2026.10.1-1
 
 - Fix: `BUILD_FROM` was declared in a stage scope, not before the first
