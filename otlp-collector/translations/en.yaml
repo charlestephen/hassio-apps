@@ -39,6 +39,14 @@ configuration:
   otlp_logs_endpoint:
     name: OTLP logs endpoint (override)
     description: Optional; overrides OpenObserve/OTLP endpoint for logs only.
+  compression:
+    name: Compression
+    description: >-
+      Applied to every otlphttp exporter (traces, metrics, logs — OpenObserve
+      or an OTLP override). gzip (default) is always on in the underlying
+      collector; set zstd for a better ratio with less CPU if your backend
+      decodes it, or none to disable. Does not affect the Prometheus
+      remote_write exporter, which only supports snappy.
   prometheus_remote_write_endpoint:
     name: Prometheus remote_write endpoint
     description: >-

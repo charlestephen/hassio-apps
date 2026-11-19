@@ -121,6 +121,7 @@ with no OpenObserve auth header attached.
 | `otlp_endpoint` | *(empty)* | Advanced: shared OTLP/HTTP base for traces, metrics, and logs — overrides OpenObserve for every signal (e.g. Mimir, VictoriaMetrics, another collector). |
 | `otlp_*_endpoint` | *(empty)* | Advanced: per-signal overrides of the above (and of OpenObserve, for just that signal). |
 | `prometheus_remote_write_endpoint` | *(empty)* | Extra metrics sink (VictoriaMetrics / Mimir `remote_write`), in addition to whatever exports metrics above. |
+| `compression` | `gzip` | Applied to every `otlphttp` exporter (traces, metrics, logs). `zstd`/`snappy`/`zlib`/`deflate`/`lz4` or `none`. Does not affect `prometheus_remote_write_endpoint`, which only supports `snappy`. |
 | `enable_docker_stats` | `true` | Container metrics via Docker socket. |
 | `scrape_homeassistant` | `true` | Scrape `homeassistant:<port>/api/prometheus`. |
 | `ha_port` | `80` | Port Home Assistant serves on for that scrape (`8123` for a default install). |

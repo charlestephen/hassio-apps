@@ -3,7 +3,7 @@ description: >-
   OpenTelemetry Collector Contrib — collect Home Assistant / Docker metrics and
   receive OTLP logs, traces, and metrics; export to an endpoint you choose.
 url: https://github.com/charlestephen/hassio-apps/tree/main/otlp-collector
-version: "0.165.0-9"
+version: "0.165.0-10"
 stage: stable
 homeassistant: "2026.6.0"
 slug: otlp_collector
@@ -60,6 +60,10 @@ options:
   prometheus_scrape_targets: ""
   # Paste a complete collector YAML to replace the generated default entirely.
   config_yaml: ""
+  # otlphttp exporters already compress with this by default; change it to
+  # zstd (better ratio/CPU, confirm your backend decodes it) or none to turn
+  # compression off entirely.
+  compression: gzip
 schema:
   log_level: list(debug|info|warn|error)
   openobserve_url: str?
@@ -79,3 +83,4 @@ schema:
   ha_port: port
   prometheus_scrape_targets: str?
   config_yaml: str?
+  compression: list(gzip|zstd|snappy|zlib|deflate|lz4|none)

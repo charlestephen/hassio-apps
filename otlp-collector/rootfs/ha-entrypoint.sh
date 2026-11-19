@@ -61,6 +61,7 @@ SCRAPE="$(get prometheus_scrape_targets)"
 HA_TOKEN="$(get ha_prometheus_token)"
 HA_PORT="$(get ha_port)"; HA_PORT="${HA_PORT:-80}"
 HOSTNAME="$(hostname 2>/dev/null || echo homeassistant)"
+COMPRESSION="$(get compression)"; COMPRESSION="${COMPRESSION:-gzip}"
 
 # Per-signal endpoints fall back to the shared otlp_endpoint, which in turn
 # falls back to OpenObserve (default export target) when its own URL and
@@ -262,27 +263,32 @@ if [ -n "${TRACES_EP}" ]; then
     EXPORTERS="${EXPORTERS}
   otlphttp/traces:
     endpoint: ${TRACES_EP}
+    compression: ${COMPRESSION}
     tls:
       insecure: true
 $(oo_headers_for "${TRACES_EP}")
 "
     TRACE_EXP="otlphttp/traces"
-    log "traces -> ${TRACES_EP}"
+    log "traces -> ${TRACES_EP} (${COMPRESSION})"
 fi
 
 if [ -n "${METRICS_EP}" ]; then
     EXPORTERS="${EXPORTERS}
   otlphttp/metrics:
     endpoint: ${METRICS_EP}
+    compression: ${COMPRESSION}
     tls:
       insecure: true
 $(oo_headers_for "${METRICS_EP}")
 "
     METRIC_EXP="otlphttp/metrics"
-    log "metrics (OTLP) -> ${METRICS_EP}"
+    log "metrics (OTLP) -> ${METRICS_EP} (${COMPRESSION})"
 fi
 
 if [ -n "${PRW_EP}" ]; then
+    # prometheusremotewrite only supports snappy (mandated by the remote_write
+    # protocol itself, confirmed in its own README) -- the Compression option
+    # does not apply here, unlike the otlphttp exporters below.
     EXPORTERS="${EXPORTERS}
   prometheusremotewrite:
     endpoint: ${PRW_EP}
@@ -296,19 +302,20 @@ if [ -n "${PRW_EP}" ]; then
     else
         METRIC_EXP="prometheusremotewrite"
     fi
-    log "metrics (remote_write) -> ${PRW_EP}"
+    log "metrics (remote_write) -> ${PRW_EP} (snappy)"
 fi
 
 if [ -n "${LOGS_EP}" ]; then
     EXPORTERS="${EXPORTERS}
   otlphttp/logs:
     endpoint: ${LOGS_EP}
+    compression: ${COMPRESSION}
     tls:
       insecure: true
 $(oo_headers_for "${LOGS_EP}")
 "
     LOG_EXP="otlphttp/logs"
-    log "logs -> ${LOGS_EP}"
+    log "logs -> ${LOGS_EP} (${COMPRESSION})"
 fi
 
 if [ -z "${TRACE_EXP}${METRIC_EXP}${LOG_EXP}" ]; then

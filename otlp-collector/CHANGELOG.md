@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.165.0-10
+
+- Add `compression` option (default `gzip`), applied to every `otlphttp`
+  exporter (traces, metrics, logs). `gzip` was already the collector's own
+  default with no config needed (confirmed in the OTel Collector's own
+  exporter README); this just exposes it as a real option, including
+  `zstd`/`snappy`/`zlib`/`deflate`/`lz4`/`none`. Deliberately does not touch
+  `prometheus_remote_write_endpoint`'s exporter, which only supports
+  `snappy` — confirmed in its own README, mandated by the remote_write
+  protocol itself, not user-configurable the same way.
+
 ## 0.165.0-9
 
 - Fix: the journald receiver's `directory:` config was pinned to
