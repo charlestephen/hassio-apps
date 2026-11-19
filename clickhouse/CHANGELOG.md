@@ -9,3 +9,5 @@
   `log_level` options; all data redirected under `/data/clickhouse`.
 - Ships an AppArmor profile (`apparmor.txt`), including `SYS_NICE` (used by
   ClickHouse to prioritize its own threads).
+- `icon.png`/`logo.png` use ClickHouse's own mark (from its GitHub
+  organization avatar), composited with the project name for the logo.

@@ -12,3 +12,5 @@
 - Exposes inlet's NetFlow/IPFIX/sFlow listeners (`2055/udp`, `4739/udp`,
   `6343/udp`) and the console web UI (`8083/tcp`).
 - Ships an AppArmor profile (`apparmor.txt`).
+- `icon.png`/`logo.png` use Akvorado's own mark (from its GitHub organization
+  avatar), composited with the project name for the logo.
