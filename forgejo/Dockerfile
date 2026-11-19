@@ -16,7 +16,8 @@ RUN apk upgrade --no-cache \
     && apk add --no-cache \
     shadow \
     jq \
-    gettext
+    gettext \
+    postgresql-client
 
 COPY rootfs/ /
 

@@ -1,0 +1,16 @@
+configuration:
+  password:
+    name: Password
+    description: >-
+      requirepass. Leave empty only on a fully trusted network.
+  maxmemory:
+    name: Max memory
+    description: Memory cap, for example 256mb. 0 is unlimited.
+  maxmemory_policy:
+    name: Eviction policy
+    description: Eviction policy used once Max memory is reached.
+  log_level:
+    name: Log level
+    description: Verbosity of the valkey-server log.
+network:
+  6379/tcp: Valkey (Redis protocol)

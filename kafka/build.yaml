@@ -1,0 +1,12 @@
+---
+# Thin wrapper on Apache Kafka's official multi-arch image (Docker Hub: apache/kafka).
+build_from:
+  aarch64: docker.io/apache/kafka:4.4.0
+  amd64: docker.io/apache/kafka:4.4.0
+upstream_repo: "apache/kafka"
+upstream_tag_pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+upstream_build_from: true
+upstream_docker_image: "apache/kafka"
+upstream_version_arg: KAFKA_VERSION
+args:
+  KAFKA_VERSION: "4.4.0"

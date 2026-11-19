@@ -1,0 +1,9 @@
+configuration:
+  listen_address:
+    name: Listen address
+    description: Address and port to listen for incoming UDP packets on, for example ":4560".
+  receivers:
+    name: Receivers
+    description: host:port targets each incoming packet is copied to.
+network:
+  4560/udp: UDP packets to mirror

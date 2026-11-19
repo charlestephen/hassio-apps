@@ -1,0 +1,33 @@
+name: Valkey
+description: Valkey is an open source, Redis-protocol-compatible in-memory key-value store, used here as a cache/session backend for other apps (e.g. Akvorado).
+url: https://github.com/charlestephen/hassio-apps/tree/main/valkey
+version: "9.1.4"
+stage: stable
+homeassistant: "2026.6.0"
+slug: valkey
+image: ghcr.io/charlestephen/hassio-addons-valkey-{arch}
+startup: system
+init: false
+boot: auto
+hassio_role: default
+panel_icon: mdi:database-clock
+arch:
+  - aarch64
+  - amd64
+map:
+  - type: data
+    read_only: false
+ports:
+  6379/tcp: 6379
+ports_description:
+  6379/tcp: Valkey (Redis protocol)
+options:
+  password: ""
+  maxmemory: "0"
+  maxmemory_policy: noeviction
+  log_level: notice
+schema:
+  password: password?
+  maxmemory: str
+  maxmemory_policy: list(noeviction|allkeys-lru|volatile-lru|allkeys-lfu|volatile-lfu|allkeys-random|volatile-random|volatile-ttl)
+  log_level: list(debug|verbose|notice|warning|nothing)

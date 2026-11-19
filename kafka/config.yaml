@@ -1,0 +1,33 @@
+name: Apache Kafka
+description: Apache Kafka is a distributed event streaming platform, used here as a single-node KRaft broker for other apps (e.g. Akvorado) to publish and consume from.
+url: https://github.com/charlestephen/hassio-apps/tree/main/kafka
+version: "4.4.0"
+stage: stable
+homeassistant: "2026.6.0"
+slug: kafka
+image: ghcr.io/charlestephen/hassio-addons-kafka-{arch}
+startup: system
+init: false
+boot: auto
+hassio_role: default
+panel_icon: mdi:sync
+arch:
+  - aarch64
+  - amd64
+map:
+  - type: data
+    read_only: false
+ports:
+  9092/tcp: 9092
+ports_description:
+  9092/tcp: Kafka client listener (PLAINTEXT)
+options:
+  node_id: 1
+  log_retention_hours: 168
+  auto_create_topics_enable: true
+  heap_opts: "-Xmx512M -Xms512M"
+schema:
+  node_id: int(1,)
+  log_retention_hours: int(1,)
+  auto_create_topics_enable: bool
+  heap_opts: str

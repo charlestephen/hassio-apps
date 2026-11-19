@@ -40,11 +40,28 @@ Or add it manually:
   UniFi OS). Each certificate lives in `/ssl/acme.sh/<domain>`. The client
   upgrades itself.
 
+### &#10003; [Akvorado](akvorado/)
+
+- Collects NetFlow/IPFIX/sFlow, enriches it, stores it in ClickHouse, and
+  visualizes it. Runs orchestrator, inlet, outlet and console together in one
+  app, using the Kafka, ClickHouse and Valkey apps as dependencies.
+
+### &#10003; [Apache Kafka](kafka/)
+
+- Distributed event streaming platform. Thin wrapper on the official
+  `apache/kafka` image, single-node KRaft broker (no Zookeeper).
+
 ### &#10003; [Authentik](authentik/)
 
 - Identity provider (OpenID Connect, OAuth 2.0, SAML, LDAP). Thin wrapper on
   `ghcr.io/goauthentik/server` running server and worker in one process, using
   the PostgreSQL app for its database.
+
+### &#10003; [ClickHouse](clickhouse/)
+
+- Columnar OLAP database. Thin wrapper on the official
+  `clickhouse/clickhouse-server` image, used as flow/time-series storage for
+  other apps (e.g. Akvorado).
 
 ### &#10003; [Cloudflared](cloudflared/)
 
@@ -222,6 +239,11 @@ Or add it manually:
 - Remote-host companion for Traefik Manager, letting it manage a Traefik
   instance running elsewhere on the network.
 
+### &#10003; [UDP Mirror](udp-mirror/)
+
+- Listens for UDP packets and sends copies to multiple receivers. Thin
+  wrapper on the official `czerwonk/udp-mirror` image.
+
 ### &#10003; [Ultimate CA Manager](ultimate-ca-manager/)
 
 - Self-hosted Certificate Authority (ACME, SCEP, EST, OCSP, CRL, TSA, SSH CA).
@@ -247,6 +269,12 @@ Or add it manually:
 ### &#10003; [UnPoller](unpoller/)
 
 - UniFi controller metrics for Prometheus, InfluxDB and Loki. Thin wrapper on the official image.
+
+### &#10003; [Valkey](valkey/)
+
+- Redis-protocol-compatible in-memory key-value store. Thin wrapper on the
+  official `valkey/valkey` image, used as a cache/session backend for other
+  apps (e.g. Akvorado's console).
 
 ### &#10003; [VictoriaLogs](victoria-logs/)
 

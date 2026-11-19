@@ -1,5 +1,15 @@
 # Changelog
 
+## 17.0.1-6
+
+- New `DB_HOST`/`DB_PORT`/`DB_NAME`/`DB_USER`/`DB_PASSWD` options so `DB_TYPE: postgres` can actually be
+  configured (previously only the `sqlite3`/`mysql`/`postgres` choice existed, with no way to point it
+  anywhere). Defaults to this repository's `postgres` app.
+- New `DB_ADMIN_USER`/`DB_ADMIN_PASSWORD` options: when set, the app creates (or updates) the role and
+  database on the PostgreSQL app automatically on every start, same pattern as the Authentik app.
+- New `USE_PGBOUNCER` option to send Forgejo's own connections through the PgBouncer app once provisioned.
+- `DB_TYPE` still defaults to `sqlite3`, so existing installs are unaffected.
+
 ## 17.0.1-5
 
 - Security: the app no longer ships a fixed default `SECRET_KEY`. When the option is empty, a random key

@@ -1,0 +1,11 @@
+---
+# Thin wrapper on Valkey's official multi-arch image (Docker Hub: valkey/valkey).
+build_from:
+  aarch64: docker.io/valkey/valkey:9.1.4-alpine
+  amd64: docker.io/valkey/valkey:9.1.4-alpine
+upstream_repo: "valkey-io/valkey"
+upstream_build_from: true
+upstream_docker_image: "valkey/valkey"
+upstream_version_arg: VALKEY_VERSION
+args:
+  VALKEY_VERSION: "9.1.4"

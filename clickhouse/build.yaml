@@ -1,0 +1,14 @@
+---
+# Thin wrapper on ClickHouse's official multi-arch image
+# (Docker Hub: clickhouse/clickhouse-server), Alpine variant.
+build_from:
+  aarch64: docker.io/clickhouse/clickhouse-server:26.8.40.7-alpine
+  amd64: docker.io/clickhouse/clickhouse-server:26.8.40.7-alpine
+upstream_repo: "ClickHouse/ClickHouse"
+upstream_tag_prefix: "v"
+upstream_tag_pattern: '^v26\.8\.[0-9]+\.[0-9]+-lts$'
+upstream_build_from: true
+upstream_docker_image: "clickhouse/clickhouse-server"
+upstream_version_arg: CLICKHOUSE_VERSION
+args:
+  CLICKHOUSE_VERSION: "26.8.40.7"

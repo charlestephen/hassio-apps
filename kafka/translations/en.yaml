@@ -1,0 +1,15 @@
+configuration:
+  node_id:
+    name: Node ID
+    description: KRaft node ID. Leave at 1 for a single-node broker.
+  log_retention_hours:
+    name: Log retention (hours)
+    description: How long topic data is kept before deletion.
+  auto_create_topics_enable:
+    name: Auto-create topics
+    description: Create a topic automatically the first time something publishes to it.
+  heap_opts:
+    name: JVM heap options
+    description: Passed as KAFKA_HEAP_OPTS, for example "-Xmx512M -Xms512M".
+network:
+  9092/tcp: Kafka client listener (PLAINTEXT)

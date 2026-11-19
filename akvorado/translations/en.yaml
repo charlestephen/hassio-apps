@@ -1,0 +1,29 @@
+configuration:
+  kafka_host:
+    name: Kafka host
+    description: Hostname of the Kafka app.
+  kafka_port:
+    name: Kafka port
+    description: Kafka client port.
+  clickhouse_host:
+    name: ClickHouse host
+    description: Hostname of the ClickHouse app.
+  clickhouse_port:
+    name: ClickHouse native port
+    description: >-
+      ClickHouse native protocol port (not the HTTP port) as seen by other
+      containers.
+  clickhouse_password:
+    name: ClickHouse password
+    description: Must match the ClickHouse app's Default user password option.
+  redis_host:
+    name: Valkey host
+    description: Hostname of the Valkey app.
+  redis_port:
+    name: Valkey port
+    description: Valkey port.
+network:
+  2055/udp: NetFlow v9/IPFIX flow input (inlet)
+  4739/udp: IPFIX flow input (inlet)
+  6343/udp: sFlow flow input (inlet)
+  8083/tcp: Console web UI

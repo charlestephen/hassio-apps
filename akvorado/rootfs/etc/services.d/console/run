@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+until curl -sf http://localhost:8080/api/v0/metrics >/dev/null 2>&1; do
+    bashio::log.info "console: waiting for the Akvorado orchestrator..."
+    sleep 2
+done
+bashio::log.info "Starting Akvorado console ${AKVORADO_VERSION:-}..."
+exec /usr/local/bin/akvorado console http://localhost:8080

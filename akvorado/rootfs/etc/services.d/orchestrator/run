@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+bashio::log.info "Starting Akvorado orchestrator ${AKVORADO_VERSION:-}..."
+exec /usr/local/bin/akvorado orchestrator /etc/akvorado/akvorado.yaml

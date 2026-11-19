@@ -1,0 +1,32 @@
+---
+# Rendered by /etc/cont-init.d/akvorado.sh from the app options. Each of the
+# four akvorado processes gets its own http.listen port so they can run
+# side by side in this one container (upstream's own compose runs each in a
+# separate container, where they can all default to the same port).
+http:
+  listen: ":8080"
+
+kafka:
+  brokers:
+    - "${KAFKA_HOST}:${KAFKA_PORT}"
+  topic: flows
+
+clickhousedb:
+  servers:
+    - "${CLICKHOUSE_HOST}:${CLICKHOUSE_PORT}"
+  username: default
+  password: "${CLICKHOUSE_PASSWORD}"
+  database: default
+
+clickhouse:
+  orchestrator-url: "http://localhost:8080"
+
+inlet:
+  http:
+    listen: ":8081"
+
+outlet:
+  http:
+    listen: ":8082"
+
+console: !include "console.yaml"

@@ -1,0 +1,10 @@
+---
+http:
+  listen: ":8083"
+  cache:
+    type: redis
+    server: "${REDIS_HOST}:${REDIS_PORT}"
+
+database:
+  driver: sqlite
+  dsn: /data/console.sqlite

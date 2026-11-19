@@ -40,6 +40,32 @@ configuration:
   DB_TYPE:
     name: Database type
     description: sqlite3 needs no setup. mysql and postgres use an external database.
+  DB_HOST:
+    name: Database host
+    description: Hostname of the database server. Defaults to the postgres app from this repository.
+  DB_PORT:
+    name: Database port
+    description: Port of the database server.
+  DB_NAME:
+    name: Database name
+    description: Name of the database Forgejo uses.
+  DB_USER:
+    name: Database user
+    description: Login Forgejo connects as.
+  DB_PASSWD:
+    name: Database password
+    description: Password for Database user.
+  DB_ADMIN_USER:
+    name: Database admin user
+    description: Superuser used only to create the role and database above.
+  DB_ADMIN_PASSWORD:
+    name: Database admin password
+    description: >-
+      Superuser password. Set this to auto-create the role and database on
+      first start. Leave empty if they already exist.
+  USE_PGBOUNCER:
+    name: Use PgBouncer
+    description: Send Forgejo's own connections through the pgbouncer app instead of straight to PostgreSQL.
   DISABLE_REGISTRATION:
     name: Disable registration
     description: Stop new users from signing themselves up.

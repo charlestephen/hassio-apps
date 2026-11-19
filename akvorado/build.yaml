@@ -1,0 +1,16 @@
+---
+# Akvorado's own image (ghcr.io/akvorado/akvorado) is gcr.io/distroless/static
+# — no shell, no package manager — so it can't run Supervisor's options
+# templating or supervise four cooperating processes. BUILD_FROM is the HA
+# base image (shell, s6-overlay, bashio); only the compiled binary is taken
+# from upstream (see Dockerfile). upstream_build_from is intentionally unset:
+# bumping the akvorado version must not touch this BUILD_FROM pin.
+build_from:
+  aarch64: ghcr.io/hassio-addons/base:stable
+  amd64: ghcr.io/hassio-addons/base:stable
+upstream_repo: "akvorado/akvorado"
+upstream_tag_pattern: '^[0-9]{4}\.[0-9]+\.[0-9]+$'
+upstream_docker_image: "ghcr.io/akvorado/akvorado"
+upstream_version_arg: AKVORADO_VERSION
+args:
+  AKVORADO_VERSION: "2026.10.1"

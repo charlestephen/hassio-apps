@@ -62,6 +62,57 @@ done
 : "${USER:=git}"
 : "${USER_UID:=1000}"
 : "${USER_GID:=1000}"
+: "${DB_ADMIN_USER:=postgres}"
+: "${DB_ADMIN_PASSWORD:=}"
+: "${USE_PGBOUNCER:=false}"
+
+# Create the role and database on the PostgreSQL app when DB_TYPE is
+# postgres and an admin password is given. Runs against DB_HOST/DB_PORT
+# directly (never PgBouncer) since role/database creation needs a direct
+# admin connection. Safe to repeat on every start.
+if [ "${DB_TYPE}" = "postgres" ] && [ -n "${DB_ADMIN_PASSWORD}" ]; then
+    reachable=false
+    tries=0
+    while [ "${tries}" -lt 30 ]; do
+        out="$(PGPASSWORD="${DB_ADMIN_PASSWORD}" psql -X -q -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_ADMIN_USER}" -d postgres -c 'SELECT 1' 2>&1)" && { reachable=true; break; }
+        case "${out}" in
+            *"authentication failed"*)
+                echo "ERROR: PostgreSQL refused '${DB_ADMIN_USER}'; check DB_ADMIN_PASSWORD" >&2
+                break
+                ;;
+        esac
+        tries=$((tries + 1))
+        sleep 2
+    done
+    if [ "${reachable}" != "true" ] && [ "${tries}" -ge 30 ]; then
+        echo "WARNING: cannot reach PostgreSQL at ${DB_HOST}:${DB_PORT}; skipping provisioning" >&2
+    fi
+    if [ "${reachable}" = "true" ]; then
+        PGPASSWORD="${DB_ADMIN_PASSWORD}" psql -X -q -v ON_ERROR_STOP=1 -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_ADMIN_USER}" \
+            -d postgres -v u="${DB_USER}" -v p="${DB_PASSWD}" -v d="${DB_NAME}" <<'SQL'
+SELECT format('CREATE ROLE %I LOGIN PASSWORD %L', :'u', :'p')
+WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'u') \gexec
+SELECT format('ALTER ROLE %I LOGIN PASSWORD %L', :'u', :'p')
+WHERE EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'u') \gexec
+SELECT format('CREATE DATABASE %I OWNER %I', :'d', :'u')
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = :'d') \gexec
+SELECT format('ALTER DATABASE %I OWNER TO %I', :'d', :'u') \gexec
+SQL
+        PGPASSWORD="${DB_ADMIN_PASSWORD}" psql -X -q -v ON_ERROR_STOP=1 -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_ADMIN_USER}" \
+            -d "${DB_NAME}" -v u="${DB_USER}" <<'SQL'
+SELECT format('GRANT ALL ON SCHEMA public TO %I', :'u') \gexec
+SQL
+        echo "Provisioned PostgreSQL role/database '${DB_USER}'/'${DB_NAME}' on ${DB_HOST}:${DB_PORT}"
+    fi
+fi
+
+# A transaction-mode pooler needs a direct endpoint for Forgejo's runtime
+# connection to go through instead, once provisioning (above) is done.
+if [ "${DB_TYPE}" = "postgres" ] && [ "${USE_PGBOUNCER}" = "true" ]; then
+    DB_HOST="$(hostname | sed 's/-forgejo$/-pgbouncer/')"
+    DB_PORT=6432
+    echo "Using PgBouncer at ${DB_HOST}:${DB_PORT}"
+fi
 
 # SECRET_KEY encrypts data in the database, so a generated key has to survive restarts and updates.
 LEGACY_SECRET_KEY="RNXVG8MSeh5ik6abGFctBMllvVAFWmP2"

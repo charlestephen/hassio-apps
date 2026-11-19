@@ -40,7 +40,26 @@ This app tracks upstream Forgejo `17.0.1`.
 
 | Option | Env var | Default | Description |
 |---|---|---|---|
-| `DB_TYPE` | `DB_TYPE` | `sqlite3` | Database backend: `sqlite3` (built-in, no external service), `mysql`, or `postgres`. For MySQL/PostgreSQL set `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWD` via the extra_env pattern if needed. |
+| `DB_TYPE` | `DB_TYPE` | `sqlite3` | Database backend: `sqlite3` (built-in, no external service), `mysql`, or `postgres`. |
+| `DB_HOST` | `DB_HOST` | `dd815a57-postgres` | Hostname (and optionally `:port`) of the database server. Defaults to this repository's PostgreSQL app. |
+| `DB_PORT` | `DB_PORT` | `5432` | Database port. |
+| `DB_NAME` | `DB_NAME` | `forgejo` | Database name. |
+| `DB_USER` | `DB_USER` | `forgejo` | Database login. |
+| `DB_PASSWD` | `DB_PASSWD` | _(empty)_ | Password for `DB_USER`. |
+| `DB_ADMIN_USER` | `DB_ADMIN_USER` | `postgres` | Superuser on the PostgreSQL app, used only to provision the role/database below. |
+| `DB_ADMIN_PASSWORD` | `DB_ADMIN_PASSWORD` | _(empty)_ | Superuser password. **Set this to have Forgejo create its own role and database automatically.** Leave empty if you already created them yourself. |
+| `USE_PGBOUNCER` | `USE_PGBOUNCER` | `false` | Once provisioned, send Forgejo's own connections through this repository's PgBouncer app instead of straight to PostgreSQL. |
+
+When `DB_TYPE` is `postgres` and `DB_ADMIN_PASSWORD` is set, the app connects
+to the PostgreSQL app as `DB_ADMIN_USER`, creates (or updates the password
+of) the `DB_USER` role and the `DB_NAME` database if they don't already
+exist, and fixes ownership so Forgejo can create tables. This runs on every
+start and is safe to repeat. If `DB_ADMIN_PASSWORD` is left empty, create the
+role and database yourself first.
+
+Switching `DB_TYPE` from `sqlite3` to `postgres` (or back) does **not**
+migrate data — each backend starts with its own empty database. Migrate data
+yourself with Forgejo's own `forgejo dump`/`forgejo doctor` tooling if needed.
 
 ### User Registration & Access
 

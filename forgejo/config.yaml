@@ -1,5 +1,5 @@
 name: Forgejo
-version: "17.0.1-5"
+version: "17.0.1-6"
 slug: forgejo
 image: ghcr.io/charlestephen/hassio-addons-forgejo-{arch}
 description: Forgejo is a Git hosting, code review, team collaboration, package registry, and CI/CD
@@ -63,9 +63,20 @@ options:
   INSTALL_LOCK: true
 
   # ---------------------------------------------------------------------------
-  # Database (sqlite3 by default; external DB requires additional config)
+  # Database (sqlite3 by default). Set DB_TYPE: postgres to use the postgres
+  # app from this repository; DB_ADMIN_PASSWORD (if set) auto-creates the
+  # role and database on it. Leaving DB_ADMIN_PASSWORD empty means the role
+  # and database must already exist.
   # ---------------------------------------------------------------------------
   DB_TYPE: "sqlite3"
+  DB_HOST: "dd815a57-postgres"
+  DB_PORT: 5432
+  DB_NAME: "forgejo"
+  DB_USER: "forgejo"
+  DB_PASSWD: ""
+  DB_ADMIN_USER: "postgres"
+  DB_ADMIN_PASSWORD: ""
+  USE_PGBOUNCER: false
 
   # ---------------------------------------------------------------------------
   # User registration & access
@@ -126,6 +137,14 @@ schema:
 
   # Database
   DB_TYPE: list(sqlite3|mysql|postgres)?
+  DB_HOST: str?
+  DB_PORT: port?
+  DB_NAME: str?
+  DB_USER: str?
+  DB_PASSWD: password?
+  DB_ADMIN_USER: str?
+  DB_ADMIN_PASSWORD: password?
+  USE_PGBOUNCER: bool?
 
   # Registration & access
   DISABLE_REGISTRATION: bool

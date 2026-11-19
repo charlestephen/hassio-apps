@@ -1,0 +1,13 @@
+configuration:
+  default_user_password:
+    name: Default user password
+    description: Password for the "default" user. Set this before exposing the server.
+  max_server_memory_usage_to_ram_ratio:
+    name: Max memory (ratio of host RAM)
+    description: Fraction of host RAM ClickHouse is allowed to use.
+  log_level:
+    name: Log level
+    description: Verbosity of the ClickHouse server log.
+network:
+  8123/tcp: HTTP interface (query, /ping)
+  9000/tcp: Native protocol (clickhouse-client)
