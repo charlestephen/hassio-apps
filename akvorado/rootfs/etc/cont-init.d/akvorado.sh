@@ -9,7 +9,11 @@ mkdir -p /etc/akvorado /data
 
 declare KAFKA_HOST KAFKA_PORT CLICKHOUSE_HOST CLICKHOUSE_PORT CLICKHOUSE_PASSWORD REDIS_HOST REDIS_PORT
 declare SNMP_COMMUNITY SNMP_V3_USER SNMP_V3_AUTH_PROTOCOL SNMP_V3_AUTH_PASSPHRASE SNMP_V3_PRIV_PROTOCOL SNMP_V3_PRIV_PASSPHRASE
-declare DEFAULT_SAMPLING_RATE
+declare DEFAULT_SAMPLING_RATE OWN_HOST
+# ClickHouse runs in its own container, so it must reach the orchestrator's
+# HTTP dictionary source (protocols/ASNs) via this container's own network
+# name -- "localhost" only works for processes inside this same container.
+OWN_HOST="$(hostname)"
 KAFKA_HOST="$(bashio::config 'kafka_host')"
 KAFKA_PORT="$(bashio::config 'kafka_port')"
 CLICKHOUSE_HOST="$(bashio::config 'clickhouse_host')"
@@ -24,7 +28,7 @@ SNMP_V3_AUTH_PASSPHRASE="$(bashio::config 'snmp_v3_auth_passphrase')"
 SNMP_V3_PRIV_PROTOCOL="$(bashio::config 'snmp_v3_priv_protocol')"
 SNMP_V3_PRIV_PASSPHRASE="$(bashio::config 'snmp_v3_priv_passphrase')"
 DEFAULT_SAMPLING_RATE="$(bashio::config 'default_sampling_rate')"
-export KAFKA_HOST KAFKA_PORT CLICKHOUSE_HOST CLICKHOUSE_PORT CLICKHOUSE_PASSWORD REDIS_HOST REDIS_PORT
+export KAFKA_HOST KAFKA_PORT CLICKHOUSE_HOST CLICKHOUSE_PORT CLICKHOUSE_PASSWORD REDIS_HOST REDIS_PORT OWN_HOST
 
 # Double-quoted YAML string: escape backslash and double-quote only.
 yaml_escape() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }

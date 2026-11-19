@@ -19,7 +19,7 @@ clickhousedb:
   database: default
 
 clickhouse:
-  orchestrator-url: "http://localhost:8080"
+  orchestrator-url: "http://${OWN_HOST}:8080"
 
 inlet:
   http:

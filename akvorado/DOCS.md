@@ -58,7 +58,7 @@ them — SNMP is not involved in it at all, despite both showing up as
 
 | Process | Internal HTTP port | Role |
 |---|---|---|
-| orchestrator | `8080` | Serves merged config to the other three processes; not published outside the container. |
+| orchestrator | `8080` | Serves merged config to the other three processes and dictionary data (protocol/ASN names) to the ClickHouse app; not published to the host, but reachable from sibling containers on the Supervisor's internal network. |
 | inlet | `8081` | Receives flows on `2055/udp`, `4739/udp`, `6343/udp`; metrics only, not published. |
 | outlet | `8082` | Enriches flows and writes them to ClickHouse; metrics only, not published. |
 | console | `8083` | Web UI — this is the published `webui:` port. |

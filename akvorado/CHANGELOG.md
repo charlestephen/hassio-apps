@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026.10.1-6
+
+- Fix: `clickhouse.orchestrator-url` was templated as `http://localhost:8080`,
+  which only resolves for processes inside this container -- ClickHouse runs
+  in the sibling `clickhouse` app's own container, so its attempts to pull
+  the orchestrator's dictionary data (protocol/ASN name lookups) over HTTP
+  hit its own loopback instead and failed with "Connection refused". Found
+  live on a production Supervisor: every console query using
+  `dictGetOrDefault('default.protocols', ...)` returned
+  `Internal Server Error`, traced to ClickHouse's own log
+  (`HTTPDictionarySource::loadAll()` / `ExternalDictionariesLoader`), not an
+  akvorado-to-ClickHouse connectivity problem as first suspected. Now renders
+  `http://${OWN_HOST}:8080`, where `OWN_HOST` is this container's own
+  `hostname` -- the name sibling containers already reach it by on the
+  Supervisor's internal network.
+
 ## 2026.10.1-5
 
 - Add `default_sampling_rate` option, wired into `outlet.core`. Found live
