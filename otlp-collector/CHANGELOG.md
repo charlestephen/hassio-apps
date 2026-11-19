@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.165.0-9
+
+- Fix: the journald receiver's `directory:` config was pinned to
+  `/var/log/journal` whenever it existed. Live-tested against a real
+  Supervisor host and caught a real bug: that host keeps *live* data only in
+  `/run/log/journal` (runtime journal), while `/var/log/journal`
+  (persistent) exists but had no recent entries -- so the receiver was
+  silently reading a stale directory and exporting nothing, no error at all.
+  Dropped `directory:` entirely; journalctl's own default path discovery
+  merges both persistent and runtime journals when mounted at their real
+  standard paths, confirmed live.
+
 ## 0.165.0-8
 
 - Fix: journald logs (which is where this app's own `journald`-receiver code

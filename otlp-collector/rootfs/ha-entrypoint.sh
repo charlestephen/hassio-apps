@@ -163,17 +163,22 @@ if [ -d /var/lib/docker/containers ]; then
     log "filelog/docker enabled"
 fi
 
-# Optional host journal when mounted.
+# Optional host journal when mounted. Deliberately no "directory:" field --
+# confirmed live that a host can keep LIVE data only in /run/log/journal
+# (runtime) while /var/log/journal (persistent) exists but is stale, so
+# pinning to one directory can silently read the wrong one. Omitting
+# "directory" lets journalctl use its own default path discovery, which
+# merges both persistent and runtime journals when they're mounted at their
+# real standard absolute paths (confirmed live: a plain `journalctl` with no
+# --directory, run inside the container with both paths mounted, shows live
+# entries from both).
 if [ -d /var/log/journal ] || [ -d /run/log/journal ]; then
-    JOURNAL_DIR="/var/log/journal"
-    [ -d /run/log/journal ] && [ ! -d /var/log/journal ] && JOURNAL_DIR="/run/log/journal"
     RECEIVERS="${RECEIVERS}
   journald:
-    directory: ${JOURNAL_DIR}
     start_at: end
 "
     LOGS_RECV="${LOGS_RECV}, journald"
-    log "journald enabled (${JOURNAL_DIR})"
+    log "journald enabled"
 fi
 
 # Build prometheus scrape_configs (HA + extras).
