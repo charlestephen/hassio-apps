@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.4.0-2
+
+- Fix: `kafka-storage.sh` is not on `PATH` in the official image; it lives
+  at `/opt/kafka/bin/kafka-storage.sh`. Found by actually starting the app
+  on a live Supervisor — the broker failed to generate its KRaft cluster ID
+  on first boot. Verified with a local container run through to "Kafka
+  Server started" before pushing.
+
 ## 4.4.0-1
 
 - Fix: the Dockerfile tried `microdnf`/`apt-get` to install `jq`, but

@@ -15,7 +15,7 @@ get() { jq -r --arg k "$1" '.[$k] // empty' "${OPTIONS}"; }
 # A KRaft cluster ID is generated once and must survive restarts, or the
 # broker refuses to reuse its existing log directory.
 if [ ! -s "${CLUSTER_ID_FILE}" ]; then
-    kafka-storage.sh random-uuid > "${CLUSTER_ID_FILE}"
+    /opt/kafka/bin/kafka-storage.sh random-uuid > "${CLUSTER_ID_FILE}"
     echo "[kafka-app] generated a new CLUSTER_ID"
 fi
 CLUSTER_ID="$(cat "${CLUSTER_ID_FILE}")"
