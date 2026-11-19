@@ -39,6 +39,7 @@ this repository first:
 | `clickhouse_password` | password | empty | Must match the ClickHouse app's `default_user_password`. |
 | `redis_host` | string | `dd815a57-valkey` | Hostname of the Valkey app. |
 | `redis_port` | port | `6379` | Valkey port. |
+| `snmp_community` | password | `public` | SNMPv1/v2c read-only community string for resolving exporter interface names. **Required** — akvorado discards a flow entirely if it can't resolve the interface name and sampling rate for it, so this must match what each exporter accepts. |
 
 ## Architecture inside this app
 
@@ -56,13 +57,23 @@ s6.
 ## Scope of this release
 
 This app wires the core pipeline (flows in → Kafka → ClickHouse → console
-out) with upstream's documented defaults for everything else. Not yet
-configured: SNMP interface-name enrichment, GeoIP, BGP/BMP-based AS-path
-enrichment, and custom network/exporter classifiers — add
-`outlet.metadata`/`outlet.routing`/`outlet.networks`/`outlet.core` keys to
-`/etc/templates/akvorado.yaml`'s `outlet:` block (currently `{}`, i.e.
-upstream defaults) when you need them. See upstream's
+out) plus SNMP-based interface-name resolution (`snmp_community`). Not yet
+configured: GeoIP and custom network/exporter classifiers — add
+`outlet.networks`/`outlet.core` keys to `/etc/templates/akvorado.yaml`'s
+`outlet:` block when you need them. The BMP provider (port `10179/tcp`,
+used for AS-path enrichment) is already running on upstream's own defaults —
+verified live, it listens even with no `outlet.routing` config — it's just
+not published to the host; add it to this app's `ports`/`ports_description`
+if you want to reach it from outside the container. See upstream's
 [configuration reference](https://github.com/akvorado/akvorado/blob/main/console/data/docs/50-configuration.md).
+
+### SNMP is required, not optional
+
+Akvorado discards a flow entirely — it is never written to ClickHouse — if
+it cannot resolve the exporter's interface name and sampling rate via SNMP.
+Set `snmp_community` to whatever read-only community string your exporter(s)
+accept (`public` is the default both here and on most factory-configured
+devices, but many networks disable or change it).
 
 ## Web UI
 

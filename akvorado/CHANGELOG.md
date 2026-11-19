@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026.10.1-3
+
+- Add `snmp_community` option (default `public`), wired into
+  `outlet.metadata.providers`. Found on a live Supervisor with real NetFlow
+  v10 traffic: without SNMP, akvorado discards every flow it receives
+  ("metadata missing", "sampling rate missing" — confirmed via
+  `akvorado_outlet_core_flows_errors_total`), so this is required for any
+  flow to actually reach ClickHouse, not optional enrichment.
+- Corrects an earlier doc note: the BMP provider (`10179/tcp`) runs on
+  upstream's own defaults already; it does not need explicit
+  `outlet.routing` config to start.
+
 ## 2026.10.1-2
 
 - Fix: leaving `inlet: {}` in the rendered config did not default to the

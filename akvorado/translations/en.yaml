@@ -22,6 +22,12 @@ configuration:
   redis_port:
     name: Valkey port
     description: Valkey port.
+  snmp_community:
+    name: SNMP community
+    description: >-
+      SNMPv1/v2c read-only community string used to resolve interface names
+      on exporters. Akvorado discards a flow if it cannot resolve this, so
+      it must match what each exporter accepts.
 network:
   2055/udp: NetFlow v9/IPFIX flow input (inlet)
   4739/udp: IPFIX flow input (inlet)

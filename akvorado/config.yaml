@@ -1,7 +1,7 @@
 name: Akvorado
 description: Akvorado collects NetFlow/IPFIX/sFlow, enriches it, stores it in ClickHouse, and visualizes it. Runs orchestrator, inlet, outlet and console together in one app, using the Kafka, ClickHouse and Valkey apps as its dependencies.
 url: https://github.com/charlestephen/hassio-apps/tree/main/akvorado
-version: "2026.10.1-2"
+version: "2026.10.1-3"
 stage: stable
 homeassistant: "2026.6.0"
 slug: akvorado
@@ -36,6 +36,7 @@ options:
   clickhouse_password: ""
   redis_host: dd815a57-valkey
   redis_port: 6379
+  snmp_community: public
 schema:
   kafka_host: str
   kafka_port: port
@@ -44,3 +45,4 @@ schema:
   clickhouse_password: password?
   redis_host: str
   redis_port: port
+  snmp_community: password?

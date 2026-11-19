@@ -45,5 +45,11 @@ inlet:
 outlet:
   http:
     listen: ":8082"
+  metadata:
+    providers:
+      - type: snmp
+        credentials:
+          ::/0:
+            communities: "${SNMP_COMMUNITY}"
 
 console: !include "console.yaml"
