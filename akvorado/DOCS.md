@@ -46,6 +46,9 @@ this repository first:
 | `snmp_v3_priv_protocol` | list | `AES` | `none`, `DES`, `AES`, `AES192`, `AES256`, `AES192-C`, `AES256-C` (`-C` are Cisco variants). |
 | `snmp_v3_priv_passphrase` | password | empty | Privacy (encryption) passphrase for the SNMP v3 user. |
 | `default_sampling_rate` | int | `0` | Used only when an exporter doesn't report its own sampling rate in-band. `0` leaves akvorado's own default (reject the flow). See below. |
+| `wan_interface_name` | string | empty | Exact interface name (as SNMP reports it, e.g. `eth4`) classified as the external boundary (`InIfBoundary`/`OutIfBoundary = external`); every other interface becomes `internal`. Empty leaves interfaces unclassified, the previous behavior. |
+| `geoip_account_id` | string | empty | MaxMind account ID. Leave both this and `geoip_license_key` empty to skip GeoIP entirely. |
+| `geoip_license_key` | password | empty | MaxMind license key (free tier works) for the GeoLite2 databases. |
 
 SNMP (v1/v2c or v3) is **required**, not optional enrichment — akvorado
 discards a flow entirely if it can't resolve the exporter's interface name
@@ -70,10 +73,15 @@ s6.
 ## Scope of this release
 
 This app wires the core pipeline (flows in → Kafka → ClickHouse → console
-out) plus SNMP-based interface-name resolution (`snmp_community`). Not yet
-configured: GeoIP and custom network/exporter classifiers — add
-`outlet.networks`/`outlet.core` keys to `/etc/templates/akvorado.yaml`'s
-`outlet:` block when you need them. The BMP provider (port `10179/tcp`,
+out), SNMP-based interface-name resolution (`snmp_community`), optional
+GeoIP enrichment (`geoip_account_id`/`geoip_license_key`), and a one-interface
+boundary classifier (`wan_interface_name`). Not yet configured: custom
+network/exporter classifiers (site, region, tenant, provider) or real BGP/BMP
+routing data — add `outlet.networks`/further `outlet.core` rules to
+`/etc/templates/akvorado.yaml`'s `outlet:` block when you need them (UniFi
+gateways don't expose a BMP or RIB-gRPC feed Akvorado's `outlet.routing`
+provider could consume, so GeoIP's ASN database is the practical substitute
+for `SrcAS`/`DstAS` here). The BMP provider (port `10179/tcp`,
 used for AS-path enrichment) is already running on upstream's own defaults —
 verified live, it listens even with no `outlet.routing` config — it's just
 not published to the host; add it to this app's `ports`/`ports_description`
@@ -100,6 +108,29 @@ anything visibly — it silently multiplies/divides every traffic figure by
 the wrong factor, so confirm the real ratio from the exporter's own flow
 export configuration rather than guessing.
 
+### GeoIP enrichment
+
+Set `geoip_account_id` and `geoip_license_key` (from a free MaxMind account)
+to populate `SrcCountry`, `DstCountry`, `SrcGeoState`, `DstGeoState`,
+`SrcGeoCity`, `DstGeoCity`, `SrcAS`, and `DstAS`. A background service fetches
+`GeoLite2-ASN` and `GeoLite2-City` into `/data/geoip/` on start and re-checks
+daily (MaxMind recommends twice a week; akvorado reloads the files
+automatically whenever they change). `SrcAS`/`DstAS` from GeoIP are IP-to-ASN
+lookups, not a live BGP feed — they won't carry `ASPath` or any other
+BGP-only attribute. Leaving the credentials empty leaves these fields empty
+(the `geoip` provider is marked `optional` in the rendered config, so startup
+never depends on it).
+
+### WAN interface boundary
+
+Set `wan_interface_name` to the exact interface name SNMP reports for your
+internet-facing interface (check `OutIfName`/`InIfName` in an existing flow
+once SNMP is working) to populate `InIfBoundary`/`OutIfBoundary` ("internal"
+vs "external"). This is a single-router shortcut: akvorado's real
+`interface-classifiers` can match on connectivity type, provider, and more via
+its description field, but that needs the richer structure upstream expects
+(e.g. `Transit: Cogent ...`) which most home routers don't report over SNMP.
+
 ## Web UI
 
 After the orchestrator and console are both up, access the console at
@@ -108,5 +139,6 @@ After the orchestrator and console are both up, access the console at
 ## Data
 
 The console's SQLite database lives at `/data/console.sqlite`; flow data
-itself is stored in the ClickHouse app, not here. `/data` is included in
-Home Assistant backups.
+itself is stored in the ClickHouse app, not here. The GeoIP databases live
+at `/data/geoip/*.mmdb` when configured. `/data` is included in Home
+Assistant backups.

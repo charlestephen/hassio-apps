@@ -52,6 +52,22 @@ configuration:
       0 leaves akvorado's own default: reject any flow with no known rate.
       Set to your exporter's actual configured sampling ratio, e.g. 1000
       for 1:1000 — a wrong value here silently skews traffic volume.
+  wan_interface_name:
+    name: WAN interface name
+    description: >-
+      Exact interface name (as SNMP reports it) classified as the external
+      boundary; every other interface becomes internal. Leave empty to
+      leave interfaces unclassified.
+  geoip_account_id:
+    name: GeoIP (MaxMind) account ID
+    description: >-
+      MaxMind account ID. Leave both this and the license key empty to
+      skip GeoIP enrichment entirely.
+  geoip_license_key:
+    name: GeoIP (MaxMind) license key
+    description: >-
+      MaxMind license key (the free tier works) used to fetch the
+      GeoLite2-ASN and GeoLite2-City databases.
 network:
   2055/udp: NetFlow v9/IPFIX flow input (inlet)
   4739/udp: IPFIX flow input (inlet)

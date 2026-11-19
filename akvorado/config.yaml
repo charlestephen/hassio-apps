@@ -1,7 +1,7 @@
 name: Akvorado
 description: Akvorado collects NetFlow/IPFIX/sFlow, enriches it, stores it in ClickHouse, and visualizes it. Runs orchestrator, inlet, outlet and console together in one app, using the Kafka, ClickHouse and Valkey apps as its dependencies.
 url: https://github.com/charlestephen/hassio-apps/tree/main/akvorado
-version: "2026.10.1-6"
+version: "2026.10.1-7"
 stage: stable
 homeassistant: "2026.6.0"
 slug: akvorado
@@ -43,6 +43,9 @@ options:
   snmp_v3_priv_protocol: AES
   snmp_v3_priv_passphrase: ""
   default_sampling_rate: 0
+  wan_interface_name: ""
+  geoip_account_id: ""
+  geoip_license_key: ""
 schema:
   kafka_host: str
   kafka_port: port
@@ -58,3 +61,6 @@ schema:
   snmp_v3_priv_protocol: list(none|DES|AES|AES192|AES256|AES192-C|AES256-C)?
   default_sampling_rate: int(0,)
   snmp_v3_priv_passphrase: password?
+  wan_interface_name: str?
+  geoip_account_id: str?
+  geoip_license_key: password?

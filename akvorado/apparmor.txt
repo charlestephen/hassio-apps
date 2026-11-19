@@ -40,6 +40,7 @@ profile akvorado flags=(attach_disconnected,mediate_deleted) {
   /usr/local/bin/akvorado rix,
   /etc/templates/** r,
   /etc/akvorado/** rw,
+  /etc/geoipupdate/** rw,
   /data/** rwk,
 
   /etc/nsswitch.conf r,

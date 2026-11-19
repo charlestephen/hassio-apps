@@ -11,6 +11,7 @@
 # own default.
 ARG AKVORADO_VERSION=2026.10.1
 ARG AKVORADO_IMAGE=ghcr.io/akvorado/akvorado:${AKVORADO_VERSION}
+ARG GEOIPUPDATE_VERSION=8.0.0
 ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 
 FROM ${AKVORADO_IMAGE} AS upstream
@@ -19,8 +20,15 @@ FROM ${BUILD_FROM}
 
 ARG AKVORADO_VERSION
 ENV AKVORADO_VERSION=${AKVORADO_VERSION}
+ARG GEOIPUPDATE_VERSION
+ARG TARGETARCH
 
 RUN apk add --no-cache jq gettext curl
+
+# geoipupdate has no apk package; its own GitHub release ships a plain Go
+# binary per arch (TARGETARCH is amd64/arm64, matching the release names).
+RUN curl -fsSL "https://github.com/maxmind/geoipupdate/releases/download/v${GEOIPUPDATE_VERSION}/geoipupdate_${GEOIPUPDATE_VERSION}_linux_${TARGETARCH}.tar.gz" \
+    | tar -xz -C /usr/local/bin --strip-components=1 "geoipupdate_${GEOIPUPDATE_VERSION}_linux_${TARGETARCH}/geoipupdate"
 
 COPY --from=upstream /usr/local/bin/akvorado /usr/local/bin/akvorado
 COPY rootfs/ /

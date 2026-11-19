@@ -1,0 +1,15 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# MaxMind recommends running geoipupdate at least twice a week; daily is
+# simply idempotent when nothing has changed upstream. No-ops entirely
+# when GeoIP.conf wasn't written (no account configured).
+while true; do
+    if [ -f /etc/geoipupdate/GeoIP.conf ]; then
+        if geoipupdate -f /etc/geoipupdate/GeoIP.conf -d /data/geoip; then
+            bashio::log.info "geoipupdate: GeoLite2 databases up to date"
+        else
+            bashio::log.warning "geoipupdate: refresh failed, keeping the last known-good databases"
+        fi
+    fi
+    sleep 86400
+done

@@ -51,6 +51,10 @@ outlet:
         credentials:
           ::/0:
 ##SNMP_CREDENTIALS##
-##DEFAULT_SAMPLING_RATE##
+  geoip:
+    asn-database: /data/geoip/GeoLite2-ASN.mmdb
+    geo-database: /data/geoip/GeoLite2-City.mmdb
+    optional: true
+##OUTLET_CORE##
 
 console: !include "console.yaml"

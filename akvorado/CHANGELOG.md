@@ -1,5 +1,28 @@
 # Changelog
 
+## 2026.10.1-7
+
+- Add optional GeoIP enrichment: `geoip_account_id`/`geoip_license_key`
+  options write a `geoipupdate` config and a new background service fetches
+  `GeoLite2-ASN`/`GeoLite2-City` into `/data/geoip/`, refreshed daily.
+  Populates `SrcCountry`/`DstCountry`/`SrcGeoState`/`DstGeoState`/
+  `SrcGeoCity`/`DstGeoCity`/`SrcAS`/`DstAS`. `outlet.geoip` is rendered with
+  `optional: true` so startup never depends on it. `geoipupdate` has no apk
+  package; its binary is fetched from its own GitHub release per-arch
+  (`TARGETARCH`) in the Dockerfile.
+- Add `wan_interface_name` option: a single `outlet.core.interface-classifiers`
+  rule that marks the named interface `external` and everything else
+  `internal` (`InIfBoundary`/`OutIfBoundary`). Checked against real UniFi BGP
+  documentation and Akvorado's own config reference first: UniFi gateways
+  only support BGP via a manually peered FRR config file and don't expose
+  BMP or a RIB-gRPC feed, so Akvorado's `outlet.routing` provider (BMP or
+  BioRIS) has nothing to consume here — GeoIP's ASN database is the
+  practical substitute for `SrcAS`/`DstAS` instead of a live BGP/BMP feed.
+- Merged `default_sampling_rate` and the new interface classifier into one
+  `outlet_core()` template function: both live under the same
+  `outlet.core` YAML key, and two separate `core:` mappings in the same
+  document would have silently discarded the first one.
+
 ## 2026.10.1-6
 
 - Fix: `clickhouse.orchestrator-url` was templated as `http://localhost:8080`,

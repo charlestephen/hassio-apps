@@ -5,11 +5,11 @@
 # before the orchestrator/inlet/outlet/console services start.
 # ==============================================================================
 
-mkdir -p /etc/akvorado /data
+mkdir -p /etc/akvorado /data /data/geoip
 
 declare KAFKA_HOST KAFKA_PORT CLICKHOUSE_HOST CLICKHOUSE_PORT CLICKHOUSE_PASSWORD REDIS_HOST REDIS_PORT
 declare SNMP_COMMUNITY SNMP_V3_USER SNMP_V3_AUTH_PROTOCOL SNMP_V3_AUTH_PASSPHRASE SNMP_V3_PRIV_PROTOCOL SNMP_V3_PRIV_PASSPHRASE
-declare DEFAULT_SAMPLING_RATE OWN_HOST
+declare DEFAULT_SAMPLING_RATE OWN_HOST WAN_INTERFACE_NAME GEOIP_ACCOUNT_ID GEOIP_LICENSE_KEY
 # ClickHouse runs in its own container, so it must reach the orchestrator's
 # HTTP dictionary source (protocols/ASNs) via this container's own network
 # name -- "localhost" only works for processes inside this same container.
@@ -28,6 +28,9 @@ SNMP_V3_AUTH_PASSPHRASE="$(bashio::config 'snmp_v3_auth_passphrase')"
 SNMP_V3_PRIV_PROTOCOL="$(bashio::config 'snmp_v3_priv_protocol')"
 SNMP_V3_PRIV_PASSPHRASE="$(bashio::config 'snmp_v3_priv_passphrase')"
 DEFAULT_SAMPLING_RATE="$(bashio::config 'default_sampling_rate')"
+WAN_INTERFACE_NAME="$(bashio::config 'wan_interface_name')"
+GEOIP_ACCOUNT_ID="$(bashio::config 'geoip_account_id')"
+GEOIP_LICENSE_KEY="$(bashio::config 'geoip_license_key')"
 export KAFKA_HOST KAFKA_PORT CLICKHOUSE_HOST CLICKHOUSE_PORT CLICKHOUSE_PASSWORD REDIS_HOST REDIS_PORT OWN_HOST
 
 # Double-quoted YAML string: escape backslash and double-quote only.
@@ -52,14 +55,42 @@ else
     bashio::log.info "SNMP: using SNMPv1/v2c (community=***)"
 fi
 
-# 0 means "not set": akvorado then rejects any flow with no in-band
-# sampling rate, which is the honest default (we won't invent a ratio).
-default_sampling_rate() {
+# Both default-sampling-rate and interface-classifiers live under the same
+# outlet.core key, so they're rendered together -- a second "core:" mapping
+# in the same YAML document would silently discard the first one.
+# 0 sampling rate and an empty WAN interface name both mean "not set".
+outlet_core() {
+    if [ "${DEFAULT_SAMPLING_RATE:-0}" -le 0 ] && [ -z "${WAN_INTERFACE_NAME}" ]; then
+        return
+    fi
+    printf '  core:\n'
     if [ "${DEFAULT_SAMPLING_RATE:-0}" -gt 0 ]; then
-        printf '  core:\n    default-sampling-rate: %s\n' "${DEFAULT_SAMPLING_RATE}"
+        printf '    default-sampling-rate: %s\n' "${DEFAULT_SAMPLING_RATE}"
         bashio::log.info "Outlet: default sampling rate set to 1:${DEFAULT_SAMPLING_RATE}"
     fi
+    if [ -n "${WAN_INTERFACE_NAME}" ]; then
+        printf '    interface-classifiers:\n'
+        printf '      - Interface.Name == "%s" && ClassifyExternal()\n' "$(yaml_escape "${WAN_INTERFACE_NAME}")"
+        printf '      - ClassifyInternal()\n'
+        bashio::log.info "Outlet: classifying interface \"${WAN_INTERFACE_NAME}\" as the external boundary"
+    fi
 }
+
+# geoipupdate's own config file; the geoipupdate service no-ops without it.
+if [ -n "${GEOIP_ACCOUNT_ID}" ] && [ -n "${GEOIP_LICENSE_KEY}" ]; then
+    mkdir -p /etc/geoipupdate
+    {
+        printf 'AccountID %s\n' "${GEOIP_ACCOUNT_ID}"
+        printf 'LicenseKey %s\n' "${GEOIP_LICENSE_KEY}"
+        printf 'EditionIDs GeoLite2-ASN GeoLite2-City\n'
+        printf 'DatabaseDirectory /data/geoip\n'
+    } > /etc/geoipupdate/GeoIP.conf
+    chmod 600 /etc/geoipupdate/GeoIP.conf
+    bashio::log.info "GeoIP: MaxMind credentials set, databases will be fetched/refreshed in the background"
+else
+    rm -f /etc/geoipupdate/GeoIP.conf
+    bashio::log.info "GeoIP: no MaxMind account configured, SrcCountry/DstCountry/SrcAS/DstAS stay empty"
+fi
 
 envsubst < /etc/templates/console.yaml > /etc/akvorado/console.yaml
 
@@ -69,7 +100,7 @@ envsubst < /etc/templates/console.yaml > /etc/akvorado/console.yaml
 while IFS= read -r line || [ -n "${line}" ]; do
     case "${line}" in
         "##SNMP_CREDENTIALS##") snmp_credentials >> /etc/akvorado/akvorado.yaml ;;
-        "##DEFAULT_SAMPLING_RATE##") default_sampling_rate >> /etc/akvorado/akvorado.yaml ;;
+        "##OUTLET_CORE##") outlet_core >> /etc/akvorado/akvorado.yaml ;;
         *) printf '%s\n' "${line}" >> /etc/akvorado/akvorado.yaml ;;
     esac
 done < <(envsubst < /etc/templates/akvorado.yaml)
