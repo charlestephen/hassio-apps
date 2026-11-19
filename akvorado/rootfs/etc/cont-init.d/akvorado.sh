@@ -9,6 +9,7 @@ mkdir -p /etc/akvorado /data
 
 declare KAFKA_HOST KAFKA_PORT CLICKHOUSE_HOST CLICKHOUSE_PORT CLICKHOUSE_PASSWORD REDIS_HOST REDIS_PORT
 declare SNMP_COMMUNITY SNMP_V3_USER SNMP_V3_AUTH_PROTOCOL SNMP_V3_AUTH_PASSPHRASE SNMP_V3_PRIV_PROTOCOL SNMP_V3_PRIV_PASSPHRASE
+declare DEFAULT_SAMPLING_RATE
 KAFKA_HOST="$(bashio::config 'kafka_host')"
 KAFKA_PORT="$(bashio::config 'kafka_port')"
 CLICKHOUSE_HOST="$(bashio::config 'clickhouse_host')"
@@ -22,6 +23,7 @@ SNMP_V3_AUTH_PROTOCOL="$(bashio::config 'snmp_v3_auth_protocol')"
 SNMP_V3_AUTH_PASSPHRASE="$(bashio::config 'snmp_v3_auth_passphrase')"
 SNMP_V3_PRIV_PROTOCOL="$(bashio::config 'snmp_v3_priv_protocol')"
 SNMP_V3_PRIV_PASSPHRASE="$(bashio::config 'snmp_v3_priv_passphrase')"
+DEFAULT_SAMPLING_RATE="$(bashio::config 'default_sampling_rate')"
 export KAFKA_HOST KAFKA_PORT CLICKHOUSE_HOST CLICKHOUSE_PORT CLICKHOUSE_PASSWORD REDIS_HOST REDIS_PORT
 
 # Double-quoted YAML string: escape backslash and double-quote only.
@@ -46,17 +48,26 @@ else
     bashio::log.info "SNMP: using SNMPv1/v2c (community=***)"
 fi
 
+# 0 means "not set": akvorado then rejects any flow with no in-band
+# sampling rate, which is the honest default (we won't invent a ratio).
+default_sampling_rate() {
+    if [ "${DEFAULT_SAMPLING_RATE:-0}" -gt 0 ]; then
+        printf '  core:\n    default-sampling-rate: %s\n' "${DEFAULT_SAMPLING_RATE}"
+        bashio::log.info "Outlet: default sampling rate set to 1:${DEFAULT_SAMPLING_RATE}"
+    fi
+}
+
 envsubst < /etc/templates/console.yaml > /etc/akvorado/console.yaml
 
 # Portable line-for-line substitution (no reliance on a specific sed dialect
 # -- the container's sed is busybox, not GNU or BSD).
 : > /etc/akvorado/akvorado.yaml
 while IFS= read -r line || [ -n "${line}" ]; do
-    if [ "${line}" = "##SNMP_CREDENTIALS##" ]; then
-        snmp_credentials >> /etc/akvorado/akvorado.yaml
-    else
-        printf '%s\n' "${line}" >> /etc/akvorado/akvorado.yaml
-    fi
+    case "${line}" in
+        "##SNMP_CREDENTIALS##") snmp_credentials >> /etc/akvorado/akvorado.yaml ;;
+        "##DEFAULT_SAMPLING_RATE##") default_sampling_rate >> /etc/akvorado/akvorado.yaml ;;
+        *) printf '%s\n' "${line}" >> /etc/akvorado/akvorado.yaml ;;
+    esac
 done < <(envsubst < /etc/templates/akvorado.yaml)
 
 bashio::log.info "Rendered Akvorado configuration (kafka=${KAFKA_HOST}:${KAFKA_PORT}, clickhouse=${CLICKHOUSE_HOST}:${CLICKHOUSE_PORT}, redis=${REDIS_HOST}:${REDIS_PORT})"

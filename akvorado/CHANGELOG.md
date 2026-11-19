@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026.10.1-5
+
+- Add `default_sampling_rate` option, wired into `outlet.core`. Found live
+  with real SNMPv3 credentials working end to end: SNMP resolved cleanly
+  (`akvorado_outlet_metadata_provider_snmp_poller_success_requests_total`
+  nonzero, zero "metadata missing" errors), but every flow was still
+  rejected with `error="sampling rate missing"` since the exporter doesn't
+  report its own rate in-band. `0` (default) keeps akvorado's own
+  behavior (reject); set to the exporter's real ratio to accept flows.
+
 ## 2026.10.1-4
 
 - Add SNMPv3 support: `snmp_v3_user`, `snmp_v3_auth_protocol`,

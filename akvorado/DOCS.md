@@ -45,10 +45,14 @@ this repository first:
 | `snmp_v3_auth_passphrase` | password | empty | Authentication passphrase for the SNMP v3 user. |
 | `snmp_v3_priv_protocol` | list | `AES` | `none`, `DES`, `AES`, `AES192`, `AES256`, `AES192-C`, `AES256-C` (`-C` are Cisco variants). |
 | `snmp_v3_priv_passphrase` | password | empty | Privacy (encryption) passphrase for the SNMP v3 user. |
+| `default_sampling_rate` | int | `0` | Used only when an exporter doesn't report its own sampling rate in-band. `0` leaves akvorado's own default (reject the flow). See below. |
 
 SNMP (v1/v2c or v3) is **required**, not optional enrichment — akvorado
 discards a flow entirely if it can't resolve the exporter's interface name
-and sampling rate via SNMP.
+via SNMP. The sampling rate is a **separate** requirement, resolved
+in-band from the exporter's own NetFlow/IPFIX Option records when it sends
+them — SNMP is not involved in it at all, despite both showing up as
+`akvorado_outlet_core_flows_errors_total` errors.
 
 ## Architecture inside this app
 
@@ -82,6 +86,19 @@ Set `snmp_v3_user` to use SNMPv3 (authentication + optional privacy
 encryption); leave it empty to use the simpler `snmp_community` (v1/v2c)
 string instead. Akvorado itself picks v3 whenever a username is configured,
 regardless of what `snmp_community` is set to.
+
+### Sampling rate
+
+Even with SNMP fully working, akvorado still rejects every flow
+(`error="sampling rate missing"`) if the exporter never reports its own
+sampling rate in-band (some NetFlow v9/IPFIX exporters send this via an
+Option Template/Option Data record; others don't). If you see this error in
+the outlet's metrics after SNMP errors have cleared, set
+`default_sampling_rate` to your exporter's actual configured ratio (e.g.
+`1000` for 1:1000 sampling). Getting this number wrong doesn't break
+anything visibly — it silently multiplies/divides every traffic figure by
+the wrong factor, so confirm the real ratio from the exporter's own flow
+export configuration rather than guessing.
 
 ## Web UI
 

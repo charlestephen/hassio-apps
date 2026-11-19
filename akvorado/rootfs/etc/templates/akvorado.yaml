@@ -51,5 +51,6 @@ outlet:
         credentials:
           ::/0:
 ##SNMP_CREDENTIALS##
+##DEFAULT_SAMPLING_RATE##
 
 console: !include "console.yaml"

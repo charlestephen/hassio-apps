@@ -45,6 +45,13 @@ configuration:
   snmp_v3_priv_passphrase:
     name: SNMP v3 privacy passphrase
     description: Privacy (encryption) passphrase for the SNMP v3 user.
+  default_sampling_rate:
+    name: Default sampling rate (1:N)
+    description: >-
+      Used when an exporter does not report its own sampling rate in-band.
+      0 leaves akvorado's own default: reject any flow with no known rate.
+      Set to your exporter's actual configured sampling ratio, e.g. 1000
+      for 1:1000 — a wrong value here silently skews traffic volume.
 network:
   2055/udp: NetFlow v9/IPFIX flow input (inlet)
   4739/udp: IPFIX flow input (inlet)
