@@ -8,10 +8,12 @@ FROM ${BUILD_FROM}
 # HA entrypoint must start as root to read /data/options.json and chown data.
 # hadolint ignore=DL3002
 USER root
-# jq parses options; openssl generates ENCRYPTION_KEY when left blank.
+# jq parses options; openssl generates ENCRYPTION_KEY when left blank;
+# postgresql18-client (psql) creates the role/database when db_admin_password
+# is set -- matches this repository's own PostgreSQL app version.
 # hadolint ignore=DL3018
 RUN apk upgrade --no-cache \
-    && apk add --no-cache jq openssl
+    && apk add --no-cache jq openssl postgresql18-client
 
 ARG POCKET_ID_VERSION=2.19.3
 ENV POCKET_ID_VERSION=${POCKET_ID_VERSION}

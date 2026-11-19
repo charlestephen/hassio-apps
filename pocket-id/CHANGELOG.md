@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.19.3-1
+
+- PostgreSQL is now the default database, wired the same way as this
+  repository's Authentik app: new `db_host`/`db_port`/`db_name`/`db_user`/
+  `db_password` options build the connection, and setting `db_admin_password`
+  (the PostgreSQL app's superuser password) auto-creates the role and
+  database on start via `psql` (added `postgresql18-client`, matching this
+  repo's own PostgreSQL app version). Fixes database ownership/schema grants
+  the same way Authentik's wrapper does, for PostgreSQL 15+'s stricter
+  `public` schema ownership rules.
+- `db_connection_string` is now documented and positioned as the override it
+  already was: set it directly for SQLite (a file path, e.g.
+  `data/pocket-id.db`) or a hand-built connection string, and it bypasses
+  the PostgreSQL options above entirely — unchanged behavior, just now the
+  non-default path instead of the only path.
+
 ## 2.19.3
 
 - Upgrading from upstream version 2.19.2-4 -> 2.19.3

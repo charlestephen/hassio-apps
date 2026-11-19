@@ -4,7 +4,7 @@ description: >-
   OpenID Connect Certified™ and OAuth 2.0 provider with passkey-only sign-in.
   Thin wrapper on the official Pocket ID image.
 url: https://github.com/charlestephen/hassio-apps/tree/main/pocket-id
-version: "2.19.3"
+version: "2.19.3-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: pocket_id
@@ -44,6 +44,19 @@ options:
   log_level: info
   analytics_disabled: false
   version_check_disabled: false
+  # Default: PostgreSQL, auto-wired to this repository's PostgreSQL app and
+  # auto-created there when Database admin password is set. Set Database
+  # connection string directly to override with SQLite (a file path) or a
+  # custom connection string instead -- it then wins outright and the
+  # db_host/db_port/db_name/db_user/db_password/db_admin_* options below are
+  # ignored entirely.
+  db_host: dd815a57-postgres
+  db_port: 5432
+  db_name: pocketid
+  db_user: pocketid
+  db_password: ""
+  db_admin_user: postgres
+  db_admin_password: ""
   db_connection_string: ""
   # Pocket ID only reads SMTP_* (and other app-config) from the environment when
   # UI_CONFIG_DISABLED is set. Turning this on (or filling any SMTP field) locks
@@ -72,6 +85,13 @@ schema:
   log_level: list(debug|info|warn|error)
   analytics_disabled: bool
   version_check_disabled: bool
+  db_host: str
+  db_port: port
+  db_name: str
+  db_user: str
+  db_password: password?
+  db_admin_user: str?
+  db_admin_password: password?
   db_connection_string: str?
   ui_config_disabled: bool
   smtp_host: str?

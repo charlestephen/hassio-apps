@@ -16,7 +16,10 @@ only.
    look “frozen” when opened by hostname/IP).
 3. Behind Traefik / a reverse proxy, set **Trust proxy** to `true` (or your
    proxy CIDRs), or set **Trusted platform header** (e.g. `CF-Connecting-IP`).
-4. Start the app. Open the Web UI on port `1411` and create the first admin.
+4. Set **Database password** (and, to auto-create it, **Database admin
+   password** — see Database below). PostgreSQL is the default; set
+   **Database connection string** directly instead for SQLite.
+5. Start the app. Open the Web UI on port `1411` and create the first admin.
 
 Leave **Encryption key** blank on first start — a key is generated and stored
 at `/data/.encryption_key`. Back it up; losing it makes encrypted material
@@ -35,10 +38,39 @@ base for token, userinfo, JWKS, introspection, and
 ## Data
 
 Everything under Pocket ID’s `/app/data` is persisted on the Supervisor `/data`
-volume (SQLite DB, uploads, GeoLite DB, encryption key file).
+volume (uploads, GeoLite DB, encryption key file, and the SQLite DB if used).
 
-To use PostgreSQL instead of SQLite, set **Database connection string** to a
-`postgres://…` URL.
+## Database
+
+**PostgreSQL is the default** (same wiring as this repository's Authentik app):
+
+1. Install and start the **PostgreSQL** app from this repository.
+2. In Pocket ID's configuration, set **Database password**: a new password
+   for the `pocketid` role.
+3. Set **Database admin password** to the PostgreSQL app's superuser
+   password. With it, Pocket ID creates the `pocketid` role and database on
+   start. Leave it empty if you create them yourself.
+4. Leave **Database host** / **port** / **name** / **user** / **admin user**
+   at their defaults unless you renamed the PostgreSQL app or the role/database.
+
+If you create the database yourself instead of setting **Database admin
+password**, make the database user its owner — PostgreSQL 15+ does not let
+other roles create tables in `public`:
+
+```sql
+ALTER DATABASE pocketid OWNER TO pocketid;
+\c pocketid
+GRANT ALL ON SCHEMA public TO pocketid;
+```
+
+### SQLite override
+
+Set **Database connection string** directly to a file path (e.g.
+`data/pocket-id.db`, stored under `/data` via the same symlink used for
+uploads) to use SQLite instead — it bypasses all the PostgreSQL options
+above entirely. A full `postgres://…` URL there works the same way, for a
+PostgreSQL connection this app's own auto-wiring doesn't cover (a different
+host, TLS, a pooler, etc.).
 
 ## SMTP
 

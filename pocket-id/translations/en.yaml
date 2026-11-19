@@ -51,10 +51,40 @@ configuration:
   version_check_disabled:
     name: Disable version check
     description: Turn off the check for new releases on GitHub.
-  db_connection_string:
-    name: Database connection string
+  db_host:
+    name: Database host
+    description: PostgreSQL host. Ignored if Database connection string is set.
+  db_port:
+    name: Database port
+    description: PostgreSQL port. Ignored if Database connection string is set.
+  db_name:
+    name: Database name
+    description: Database to connect to / create. Ignored if Database connection string is set.
+  db_user:
+    name: Database user
+    description: Role to connect as / create. Ignored if Database connection string is set.
+  db_password:
+    name: Database password
     description: >-
-      Leave empty for SQLite under /data. Or a postgres:// URL for PostgreSQL.
+      Password for Database user. Required to use PostgreSQL (the default) —
+      set Database connection string instead to use SQLite.
+  db_admin_user:
+    name: Database admin user
+    description: >-
+      Superuser used only to create the role and database on start. Leave
+      empty if you create them yourself.
+  db_admin_password:
+    name: Database admin password
+    description: >-
+      The PostgreSQL app's superuser password. With it set, Pocket ID creates
+      its role and database on start; leave empty if you create them yourself.
+  db_connection_string:
+    name: Database connection string (override)
+    description: >-
+      Leave empty to use PostgreSQL via the options above (the default).
+      Set this to a file path for SQLite (e.g. data/pocket-id.db, stored
+      under /data) or a full postgres:// URL to bypass the options above
+      entirely with your own connection.
   ui_config_disabled:
     name: Disable UI configuration
     description: >-

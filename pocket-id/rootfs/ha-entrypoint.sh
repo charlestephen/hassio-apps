@@ -123,7 +123,76 @@ fi
 export_if_set 'log_level' 'LOG_LEVEL'
 export_true 'analytics_disabled' 'ANALYTICS_DISABLED'
 export_true 'version_check_disabled' 'VERSION_CHECK_DISABLED'
-export_if_set 'db_connection_string' 'DB_CONNECTION_STRING'
+
+# --- Database ------------------------------------------------------------------
+# Default: PostgreSQL, auto-wired to db_host/db_port/db_name/db_user/db_password
+# and auto-created there when db_admin_password is set (same pattern as the
+# Authentik app's own PostgreSQL wiring). Setting db_connection_string directly
+# overrides this entirely -- a SQLite file path or a hand-built connection
+# string both just pass straight through, same as before this change.
+DB_CONN_STRING="$(get 'db_connection_string')"
+if [ -n "${DB_CONN_STRING}" ]; then
+    export DB_CONNECTION_STRING="${DB_CONN_STRING}"
+    log "set DB_CONNECTION_STRING (explicit override)"
+else
+    DB_HOST="$(get 'db_host')"; DB_HOST="${DB_HOST:-dd815a57-postgres}"
+    DB_PORT="$(get 'db_port')"; DB_PORT="${DB_PORT:-5432}"
+    DB_NAME="$(get 'db_name')"; DB_NAME="${DB_NAME:-pocketid}"
+    DB_USER="$(get 'db_user')"; DB_USER="${DB_USER:-pocketid}"
+    DB_PASSWORD="$(get 'db_password')"
+    if [ -z "${DB_PASSWORD}" ]; then
+        log "ERROR: Database password is required to use PostgreSQL. Set it,"
+        log "ERROR: or set Database connection string directly for SQLite instead"
+        log "ERROR: (e.g. data/pocket-id.db) or a custom connection string."
+        exit 1
+    fi
+
+    DB_ADMIN_USER="$(get 'db_admin_user')"; DB_ADMIN_USER="${DB_ADMIN_USER:-postgres}"
+    DB_ADMIN_PASSWORD="$(get 'db_admin_password')"
+    if [ -n "${DB_ADMIN_PASSWORD}" ]; then
+        log "creating/ensuring role and database on ${DB_HOST}:${DB_PORT} ..."
+        i=0
+        until PGPASSWORD="${DB_ADMIN_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_ADMIN_USER}" -d postgres -v ON_ERROR_STOP=1 -tAc 'SELECT 1' >/dev/null 2>&1; do
+            i=$((i + 1))
+            if [ "${i}" -ge 60 ]; then
+                log "ERROR: could not reach PostgreSQL with the admin credentials"
+                exit 1
+            fi
+            sleep 2
+        done
+        # No DO $$ ... $$ blocks: psql's :'var'/:"var" substitution does not
+        # interpolate inside dollar-quoted bodies (confirmed live -- it sent
+        # the literal text ":'dbuser'" to the server and errored). \gexec and
+        # top-level substitution both work fine, so stick to those only.
+        PGPASSWORD="${DB_ADMIN_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_ADMIN_USER}" -d postgres -v ON_ERROR_STOP=1 \
+            -v dbuser="${DB_USER}" -v dbpass="${DB_PASSWORD}" -v dbname="${DB_NAME}" <<'SQL'
+SELECT 'CREATE ROLE ' || quote_ident(:'dbuser') || ' LOGIN PASSWORD ' || quote_literal(:'dbpass')
+WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'dbuser')\gexec
+ALTER ROLE :"dbuser" LOGIN PASSWORD :'dbpass';
+SELECT 'CREATE DATABASE ' || quote_ident(:'dbname') || ' OWNER ' || quote_ident(:'dbuser')
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'dbname')\gexec
+SQL
+        # PostgreSQL 15+ only lets the database owner create tables in "public",
+        # so fix ownership/grants even for an already-existing database.
+        # -c mode does not apply :"var"/:'var' substitution the way script/
+        # stdin mode does (confirmed live -- same syntax error as the DO $$
+        # case above), so this stays in heredoc form too.
+        PGPASSWORD="${DB_ADMIN_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_ADMIN_USER}" -d postgres -v ON_ERROR_STOP=1 \
+            -v dbuser="${DB_USER}" -v dbname="${DB_NAME}" <<'SQL'
+ALTER DATABASE :"dbname" OWNER TO :"dbuser";
+SQL
+        PGPASSWORD="${DB_ADMIN_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_ADMIN_USER}" -d "${DB_NAME}" -v ON_ERROR_STOP=1 \
+            -v dbuser="${DB_USER}" <<'SQL'
+GRANT ALL ON SCHEMA public TO :"dbuser";
+SQL
+        log "database ${DB_NAME} ready"
+    fi
+
+    DB_USER_ENC="$(jq -rn --arg v "${DB_USER}" '$v|@uri')"
+    DB_PASS_ENC="$(jq -rn --arg v "${DB_PASSWORD}" '$v|@uri')"
+    export DB_CONNECTION_STRING="postgres://${DB_USER_ENC}:${DB_PASS_ENC}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+    log "set DB_CONNECTION_STRING -> postgres://${DB_USER_ENC}:***@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+fi
 
 # --- SMTP (app-config; only honored when UI_CONFIG_DISABLED=true) -------------
 # Do not export SMTP_* (including the form default smtp_tls=none) unless SMTP is
