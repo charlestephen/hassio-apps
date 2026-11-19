@@ -50,6 +50,6 @@ outlet:
       - type: snmp
         credentials:
           ::/0:
-            communities: "${SNMP_COMMUNITY}"
+##SNMP_CREDENTIALS##
 
 console: !include "console.yaml"

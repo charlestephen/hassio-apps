@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026.10.1-4
+
+- Add SNMPv3 support: `snmp_v3_user`, `snmp_v3_auth_protocol`,
+  `snmp_v3_auth_passphrase`, `snmp_v3_priv_protocol`,
+  `snmp_v3_priv_passphrase`. Akvorado picks SNMPv3 over v1/v2c whenever a
+  username is set (upstream's own rule); `snmp_community` is still used
+  when `snmp_v3_user` is left empty.
+
 ## 2026.10.1-3
 
 - Add `snmp_community` option (default `public`), wired into

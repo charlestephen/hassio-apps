@@ -39,7 +39,16 @@ this repository first:
 | `clickhouse_password` | password | empty | Must match the ClickHouse app's `default_user_password`. |
 | `redis_host` | string | `dd815a57-valkey` | Hostname of the Valkey app. |
 | `redis_port` | port | `6379` | Valkey port. |
-| `snmp_community` | password | `public` | SNMPv1/v2c read-only community string for resolving exporter interface names. **Required** — akvorado discards a flow entirely if it can't resolve the interface name and sampling rate for it, so this must match what each exporter accepts. |
+| `snmp_community` | password | `public` | SNMPv1/v2c read-only community string. Ignored once `snmp_v3_user` is set. |
+| `snmp_v3_user` | string | empty | Set to use SNMPv3 instead of v1/v2c — takes priority over `snmp_community` whenever non-empty. |
+| `snmp_v3_auth_protocol` | list | `SHA` | `none`, `MD5`, `SHA`, `SHA224`, `SHA256`, `SHA384`, `SHA512`. |
+| `snmp_v3_auth_passphrase` | password | empty | Authentication passphrase for the SNMP v3 user. |
+| `snmp_v3_priv_protocol` | list | `AES` | `none`, `DES`, `AES`, `AES192`, `AES256`, `AES192-C`, `AES256-C` (`-C` are Cisco variants). |
+| `snmp_v3_priv_passphrase` | password | empty | Privacy (encryption) passphrase for the SNMP v3 user. |
+
+SNMP (v1/v2c or v3) is **required**, not optional enrichment — akvorado
+discards a flow entirely if it can't resolve the exporter's interface name
+and sampling rate via SNMP.
 
 ## Architecture inside this app
 
@@ -67,13 +76,12 @@ not published to the host; add it to this app's `ports`/`ports_description`
 if you want to reach it from outside the container. See upstream's
 [configuration reference](https://github.com/akvorado/akvorado/blob/main/console/data/docs/50-configuration.md).
 
-### SNMP is required, not optional
+### SNMP v1/v2c vs v3
 
-Akvorado discards a flow entirely — it is never written to ClickHouse — if
-it cannot resolve the exporter's interface name and sampling rate via SNMP.
-Set `snmp_community` to whatever read-only community string your exporter(s)
-accept (`public` is the default both here and on most factory-configured
-devices, but many networks disable or change it).
+Set `snmp_v3_user` to use SNMPv3 (authentication + optional privacy
+encryption); leave it empty to use the simpler `snmp_community` (v1/v2c)
+string instead. Akvorado itself picks v3 whenever a username is configured,
+regardless of what `snmp_community` is set to.
 
 ## Web UI
 
