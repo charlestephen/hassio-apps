@@ -1,9 +1,11 @@
 ---
-# Binary is COPY'd from the official contrib image (FROM scratch) onto Alpine.
-# Thin wrap: jq + ca-certificates + ha-entrypoint (no s6/bashio).
+# Binary is COPY'd from the official contrib image (FROM scratch) onto
+# Debian (journalctl, needed by the journald receiver, isn't available on
+# Alpine). Thin wrap: jq + ca-certificates + systemd + netcat + ha-entrypoint
+# (no s6/bashio).
 build_from:
-  aarch64: docker.io/library/alpine:3.24
-  amd64: docker.io/library/alpine:3.24
+  aarch64: docker.io/library/debian:trixie-slim
+  amd64: docker.io/library/debian:trixie-slim
 upstream_repo: "open-telemetry/opentelemetry-collector-contrib"
 upstream_docker_image: "otel/opentelemetry-collector-contrib"
 upstream_version_arg: OTELCOL_VERSION
