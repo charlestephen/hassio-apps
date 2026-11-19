@@ -1,7 +1,7 @@
 name: Akvorado
 description: Akvorado collects NetFlow/IPFIX/sFlow, enriches it, stores it in ClickHouse, and visualizes it. Runs orchestrator, inlet, outlet and console together in one app, using the Kafka, ClickHouse and Valkey apps as its dependencies.
 url: https://github.com/charlestephen/hassio-apps/tree/main/akvorado
-version: "2026.10.1"
+version: "2026.10.1-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: akvorado

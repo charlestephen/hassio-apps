@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.4.0-1
+
+- Fix: the Dockerfile tried `microdnf`/`apt-get` to install `jq`, but
+  `apache/kafka` is Alpine-based — neither exists. The image never
+  actually built. Uses `apk` instead.
+
 ## 4.4.0
 
 - Initial release.

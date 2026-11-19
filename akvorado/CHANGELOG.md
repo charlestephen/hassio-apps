@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026.10.1-1
+
+- Fix: `BUILD_FROM` was declared in a stage scope, not before the first
+  `FROM` in the file, so CI's `--build-arg BUILD_FROM=...` resolved to
+  blank instead of the HA base image. The image never actually built.
+
 ## 2026.10.1
 
 - Initial release.

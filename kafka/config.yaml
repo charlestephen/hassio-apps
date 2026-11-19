@@ -1,7 +1,7 @@
 name: Apache Kafka
 description: Apache Kafka is a distributed event streaming platform, used here as a single-node KRaft broker for other apps (e.g. Akvorado) to publish and consume from.
 url: https://github.com/charlestephen/hassio-apps/tree/main/kafka
-version: "4.4.0"
+version: "4.4.0-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: kafka

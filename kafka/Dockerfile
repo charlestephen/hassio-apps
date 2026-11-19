@@ -6,6 +6,7 @@ ARG BUILD_FROM=docker.io/apache/kafka:4.4.0
 # given CLUSTER_ID).
 FROM ${BUILD_FROM}
 
+# hadolint ignore=DL3002
 USER root
 RUN apk add --no-cache jq
 

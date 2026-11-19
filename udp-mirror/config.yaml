@@ -1,7 +1,7 @@
 name: UDP Mirror
 description: udp-mirror listens for UDP packets and sends copies to multiple receivers, so more than one UDP-based analysis tool (e.g. a flow collector) can see the same traffic.
 url: https://github.com/charlestephen/hassio-apps/tree/main/udp-mirror
-version: "0.1.1"
+version: "0.1.1-1"
 stage: stable
 homeassistant: "2026.6.0"
 slug: udp-mirror
