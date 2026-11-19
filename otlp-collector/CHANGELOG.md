@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.165.0-7
+
+- Default export target is now [OpenObserve](../openobserve/): new
+  `openobserve_url`/`openobserve_organization`/`openobserve_username`/
+  `openobserve_password`/`openobserve_stream` options build the
+  `http://<host>/api/<org>` endpoint and the `Authorization: Basic` header
+  automatically (OpenObserve has no option for that header on its own side —
+  confirmed against its own OTLP ingestion docs). `otlp_endpoint`/
+  `otlp_*_endpoint` remain exactly as before and always win over OpenObserve
+  for the signal(s) they cover, so Mimir, VictoriaMetrics, or any other
+  OTLP/Prometheus backend still work unchanged (doc'd under "Other backends"
+  in DOCS.md); credentials are only attached to exporters actually pointed at
+  the configured OpenObserve URL. `prometheus_remote_write_endpoint` is
+  unchanged.
+
 ## 0.165.0-6
 
 - The Home Assistant Prometheus scrape now uses port `80` by default (was `8123`). The new

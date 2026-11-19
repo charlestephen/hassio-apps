@@ -1,0 +1,13 @@
+---
+# Thin wrapper on the official multi-arch image (Docker Hub: webhippie/terrastate;
+# also published on GHCR and Quay). No HA base — add jq onto upstream's own
+# Alpine image and exec its own binary/entrypoint.
+build_from:
+  aarch64: docker.io/webhippie/terrastate:2.11.4
+  amd64: docker.io/webhippie/terrastate:2.11.4
+upstream_repo: "webhippie/terrastate"
+upstream_build_from: true
+upstream_docker_image: "webhippie/terrastate"
+upstream_version_arg: TERRASTATE_VERSION
+args:
+  TERRASTATE_VERSION: "2.11.4"

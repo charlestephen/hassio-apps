@@ -3,7 +3,7 @@ description: >-
   OpenTelemetry Collector Contrib — collect Home Assistant / Docker metrics and
   receive OTLP logs, traces, and metrics; export to an endpoint you choose.
 url: https://github.com/charlestephen/hassio-apps/tree/main/otlp-collector
-version: "0.165.0-6"
+version: "0.165.0-7"
 stage: stable
 homeassistant: "2026.6.0"
 slug: otlp_collector
@@ -32,11 +32,17 @@ backup: cold
 
 options:
   log_level: info
-  # One OTLP/HTTP base URL for traces + metrics + logs (e.g.
-  # http://otel-backend.example.com:4318). Leave empty only for bring-up
-  # (debug exporter) or when using config_yaml / per-signal URLs.
+  # Default export target. Set these three (plus credentials below) to send
+  # traces, metrics and logs to OpenObserve with no other options needed.
+  openobserve_url: "http://dd815a57-openobserve:5080"
+  openobserve_organization: default
+  openobserve_username: ""
+  openobserve_password: ""
+  openobserve_stream: ""
+  # Advanced / other backends (Mimir, VictoriaMetrics, Jaeger, another
+  # collector, ...). Any of these set for a signal overrides OpenObserve for
+  # that signal only. See DOCS.md "Other backends".
   otlp_endpoint: ""
-  # Optional per-signal overrides (win over otlp_endpoint when set).
   otlp_traces_endpoint: ""
   otlp_metrics_endpoint: ""
   otlp_logs_endpoint: ""
@@ -55,6 +61,11 @@ options:
   config_yaml: ""
 schema:
   log_level: list(debug|info|warn|error)
+  openobserve_url: str?
+  openobserve_organization: str?
+  openobserve_username: str?
+  openobserve_password: password?
+  openobserve_stream: str?
   otlp_endpoint: str?
   otlp_traces_endpoint: str?
   otlp_metrics_endpoint: str?

@@ -169,8 +169,9 @@ Or add it manually:
 ### &#10003; [OTLP Collector](otlp-collector/)
 
 - OpenTelemetry Collector Contrib — OTLP logs/traces/metrics hub, Docker stats,
-  optional Prometheus scrape; export to Tempo / Loki / Prometheus. Pair with
-  Alloy for Docker container log tailing.
+  optional Prometheus scrape; exports to OpenObserve by default, or Mimir /
+  VictoriaMetrics / another OTLP backend as an override. Pair with Alloy for
+  Docker container log tailing.
 
 ### &#10003; [PatchMon](patchmon/)
 
@@ -218,6 +219,11 @@ Or add it manually:
 
 - An authoritative + recursive DNS server with a web management UI, DNSSEC, and
   DNS-over-TLS / DNS-over-HTTPS.
+
+### &#10003; [Terrastate](terrastate/)
+
+- Self-hosted Terraform HTTP state backend, with basic auth and optional
+  at-rest encryption. Thin wrapper on the official image.
 
 ### &#10003; [Traefik](traefik/)
 

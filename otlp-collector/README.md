@@ -7,8 +7,10 @@
 
 OpenTelemetry Collector Contrib — receive **logs**, **traces**, and **metrics**
 over OTLP, scrape Docker container stats + Home Assistant Prometheus, and
-export to a user-chosen OTLP endpoint (optional full `config_yaml` override).
-Thin Home Assistant wrapper around
+export to [OpenObserve](../openobserve/) by default (username/password wired
+up automatically) or any other OTLP/Prometheus backend — Mimir,
+VictoriaMetrics, another collector — as an override (optional full
+`config_yaml` override too). Thin Home Assistant wrapper around
 [`otel/opentelemetry-collector-contrib`][image] `0.165.0` (upstream binary
 `otelcol-contrib` preserved).
 

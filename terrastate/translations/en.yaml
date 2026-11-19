@@ -1,0 +1,33 @@
+configuration:
+  access_username:
+    name: Username
+    description: >-
+      Basic auth username for the Terraform state backend. Leave empty with
+      the password to run unauthenticated (not recommended).
+  access_password:
+    name: Password
+    description: Basic auth password, required together with the username above.
+  encryption_secret:
+    name: Encryption secret (optional)
+    description: >-
+      When set, state files are encrypted at rest with this secret. Leave
+      empty to store state unencrypted.
+  storage_path:
+    name: Storage path
+    description: >-
+      Where state files are written, under the HA /data volume so they
+      survive restarts and are included in backups.
+  server_host:
+    name: External server URL (optional)
+    description: >-
+      Public URL clients use to reach this app (e.g. behind a reverse proxy).
+      Informational only; leave empty for the default.
+  metrics_token:
+    name: Metrics token (optional)
+    description: Bearer token required to read the Prometheus /metrics endpoint.
+  log_level:
+    name: Log level
+    description: Process log verbosity (debug, info, warn, error).
+network:
+  8080/tcp: Terraform HTTP state backend (basic auth)
+  8081/tcp: Health check and Prometheus metrics

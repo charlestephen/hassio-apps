@@ -21,8 +21,11 @@ with local disk storage under `/data/openobserve` and telemetry off.
 
    OTLP gRPC is on port `5081`. Authentication is a header,
    `Authorization: Basic <base64 of email:password>`. The
-   [OTLP Collector](../otlp-collector/) app has no option for that header, so use
-   its **Collector YAML** override with an `otlphttp` exporter and `headers`.
+   [OTLP Collector](../otlp-collector/) app in this repository targets this
+   app by default — just set its **OpenObserve username**/**password**
+   options to the root account above (or a service account); it builds this
+   header automatically. Sending from elsewhere still needs the header built
+   by hand.
 
 ## Options
 

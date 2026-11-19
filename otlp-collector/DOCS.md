@@ -6,15 +6,22 @@ image `0.165.0`: the upstream binary is copied onto Alpine, options become a
 collector YAML, then the wrapper **`exec`s**
 `/usr/bin/otelcol-contrib --config …`.
 
+By default, traces, metrics, and logs all export to the
+[OpenObserve](../openobserve/) app in this repository with authentication
+already wired up — install that app, set a username/password here, and
+start. Mimir, VictoriaMetrics, or any other OTLP/Prometheus backend remain
+fully supported as an override; see "Other backends" below.
+
 ## Default pipeline (no custom YAML)
 
-With **OTLP endpoint** set:
+With **OpenObserve URL/username/password** set (the default target — see
+below) or an **OTLP endpoint** set:
 
 | Signal | Sources | Export |
 | --- | --- | --- |
-| Metrics | OTLP receive, Docker stats, Home Assistant `/api/prometheus`, optional extra scrapes | OTLP/HTTP (+ optional Prometheus remote_write) |
-| Traces | OTLP receive (`:4317` / `:4318`) | OTLP/HTTP |
-| Logs | OTLP receive | OTLP/HTTP |
+| Metrics | OTLP receive, Docker stats, Home Assistant `/api/prometheus`, optional extra scrapes | OpenObserve or OTLP/HTTP (+ optional Prometheus remote_write) |
+| Traces | OTLP receive (`:4317` / `:4318`) | OpenObserve or OTLP/HTTP |
+| Logs | OTLP receive | OpenObserve or OTLP/HTTP |
 
 Leave **Full collector YAML** empty to use this generated default. Paste a
 complete YAML into that option to replace it entirely on every start.
@@ -30,17 +37,25 @@ Docker stats come from the [Docker Socket Proxy](../docker-socket-proxy/) app
 filelog collection need extra mounts; use [Grafana Alloy](../alloy/) for
 container log tailing.
 
-## Quick start
+## Quick start (default target: OpenObserve)
 
-1. Install **OTLP Collector**.
-2. For Docker stats, set up the Docker Socket Proxy (next section). Without it
+1. Install and start the [OpenObserve](../openobserve/) app in this
+   repository first; set its **Root email** and **Root password**.
+2. Install **OTLP Collector**. Set **OpenObserve URL** (default
+   `http://dd815a57-openobserve:5080`, i.e. that app's own hostname — change
+   it only if you renamed the app or point at an OpenObserve instance
+   elsewhere), **OpenObserve username**/**password** (the same root email and
+   password from step 1, or a service account you create later), and leave
+   **OpenObserve organization** at `default` unless you made another one.
+3. For Docker stats, set up the Docker Socket Proxy (see below). Without it
    the collector still runs and only skips container metrics.
-3. Set **OTLP endpoint** to your backend base URL, e.g.
-   `http://otel-backend.example.com:4318` or
-   `http://logs.example.com:9428/insert/opentelemetry`.
 4. (Recommended) Create a long-lived HA token and paste it into **Home Assistant
    access token**; keep **Scrape Home Assistant Prometheus** on.
 5. Start. Point instrumented apps at `http://ha-host.example.com:4318`.
+
+Traces, metrics, and logs all land in OpenObserve's `default` organization
+(or **OpenObserve stream name**, if set) with no further configuration. Open
+OpenObserve's own web UI on port `5080` to query them.
 
 ### Example app → collector
 
@@ -49,13 +64,43 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://ha-host.example.com:4318
 OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
 ```
 
+## Other backends (Mimir, VictoriaMetrics, another collector, ...)
+
+OpenObserve above is the default, but any signal can be redirected
+independently:
+
+- **A different OTLP-capable backend entirely** (another collector, Jaeger,
+  Mimir's or VictoriaMetrics' own native OTLP endpoint): set **OTLP endpoint**
+  (all signals) or **OTLP traces/metrics/logs endpoint** (one signal only).
+  Whichever of these is set for a signal always wins over OpenObserve for
+  that signal — you can mix freely, e.g. metrics to Mimir while traces and
+  logs still go to OpenObserve.
+- **Metrics only, via Prometheus remote_write** (the traditional
+  VictoriaMetrics/Mimir path, as an addition to — not a replacement for —
+  whatever is exporting metrics above): set **Prometheus remote_write
+  endpoint** to the backend's `/api/v1/write`-style URL. This does not need
+  OpenObserve credentials and has no effect on traces/logs.
+- **A fully custom pipeline** none of the above options cover (auth
+  extensions, additional processors, a backend with its own exporter type):
+  paste a complete config into **Full collector YAML**; every other option is
+  then ignored.
+
+OpenObserve credentials (the `Authorization: Basic` header) are only ever
+attached to exporters actually pointed at the configured OpenObserve URL —
+setting an OTLP override for a signal sends that signal to its own endpoint
+with no OpenObserve auth header attached.
+
 ## Configuration
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `otlp_endpoint` | *(empty)* | Shared OTLP/HTTP base for traces, metrics, and logs. |
-| `otlp_*_endpoint` | *(empty)* | Optional per-signal overrides. |
-| `prometheus_remote_write_endpoint` | *(empty)* | Extra metrics sink (VictoriaMetrics / Mimir). |
+| `openobserve_url` | `http://dd815a57-openobserve:5080` | Default export target — this repository's OpenObserve app. |
+| `openobserve_organization` | `default` | OpenObserve organization to ingest into. |
+| `openobserve_username` / `openobserve_password` | *(empty)* | OpenObserve login used for the `Authorization: Basic` header. Required together to enable OpenObserve export. |
+| `openobserve_stream` | *(empty)* | Optional custom OpenObserve stream name; empty uses its own `default` stream. |
+| `otlp_endpoint` | *(empty)* | Advanced: shared OTLP/HTTP base for traces, metrics, and logs — overrides OpenObserve for every signal (e.g. Mimir, VictoriaMetrics, another collector). |
+| `otlp_*_endpoint` | *(empty)* | Advanced: per-signal overrides of the above (and of OpenObserve, for just that signal). |
+| `prometheus_remote_write_endpoint` | *(empty)* | Extra metrics sink (VictoriaMetrics / Mimir `remote_write`), in addition to whatever exports metrics above. |
 | `enable_docker_stats` | `true` | Container metrics via Docker socket. |
 | `scrape_homeassistant` | `true` | Scrape `homeassistant:<port>/api/prometheus`. |
 | `ha_port` | `80` | Port Home Assistant serves on for that scrape (`8123` for a default install). |

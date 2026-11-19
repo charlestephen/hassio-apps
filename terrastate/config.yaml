@@ -1,0 +1,47 @@
+# https://developers.home-assistant.io/docs/add-ons/configuration
+name: Terrastate
+description: >-
+  Terrastate — Terraform HTTP state backend with basic auth and optional
+  at-rest encryption. Thin wrapper on the official image.
+url: https://github.com/charlestephen/hassio-apps/tree/main/terrastate
+version: "2.11.4-1"
+stage: stable
+homeassistant: "2026.6.0"
+slug: terrastate
+image: ghcr.io/charlestephen/hassio-addons-terrastate-{arch}
+init: false
+startup: services
+boot: auto
+apparmor: true
+panel_icon: mdi:cloud-lock-outline
+arch:
+  - aarch64
+  - amd64
+map:
+  - type: data
+    read_only: false
+ports:
+  8080/tcp: 8084
+  8081/tcp: 8085
+ports_description:
+  8080/tcp: Terraform HTTP state backend (basic auth)
+  8081/tcp: Health check and Prometheus metrics
+watchdog: http://[HOST]:[PORT:8081]/healthz
+backup: cold
+
+options:
+  access_username: ""
+  access_password: ""
+  encryption_secret: ""
+  storage_path: /data/storage
+  server_host: ""
+  metrics_token: ""
+  log_level: info
+schema:
+  access_username: str?
+  access_password: password?
+  encryption_secret: password?
+  storage_path: str?
+  server_host: str?
+  metrics_token: password?
+  log_level: list(debug|info|warn|error)

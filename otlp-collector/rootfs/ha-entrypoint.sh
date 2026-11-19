@@ -47,6 +47,11 @@ if [ -n "${CUSTOM}" ]; then
 fi
 
 LOG_LEVEL="$(get log_level)"; LOG_LEVEL="${LOG_LEVEL:-info}"
+OO_URL="$(get openobserve_url)"
+OO_ORG="$(get openobserve_organization)"; OO_ORG="${OO_ORG:-default}"
+OO_USER="$(get openobserve_username)"
+OO_PASS="$(get openobserve_password)"
+OO_STREAM="$(get openobserve_stream)"
 OTLP_EP="$(get otlp_endpoint)"
 TRACES_EP="$(get otlp_traces_endpoint)"
 METRICS_EP="$(get otlp_metrics_endpoint)"
@@ -57,10 +62,40 @@ HA_TOKEN="$(get ha_prometheus_token)"
 HA_PORT="$(get ha_port)"; HA_PORT="${HA_PORT:-80}"
 HOSTNAME="$(hostname 2>/dev/null || echo homeassistant)"
 
-# Per-signal endpoints fall back to the shared otlp_endpoint.
+# Per-signal endpoints fall back to the shared otlp_endpoint, which in turn
+# falls back to OpenObserve (default export target) when its own URL and
+# credentials are set. Any explicit otlp_endpoint/otlp_*_endpoint always wins
+# over OpenObserve for the signal(s) it covers -- that's how Mimir,
+# VictoriaMetrics, or any other OTLP-capable backend is used instead; see
+# DOCS.md "Other backends".
+OO_AUTH_HEADER=""
+OO_BASE=""
+if [ -n "${OO_URL}" ] && [ -n "${OO_USER}" ] && [ -n "${OO_PASS}" ]; then
+    OO_BASE="${OO_URL%/}/api/${OO_ORG}"
+    OO_AUTH_HEADER="Basic $(printf '%s:%s' "${OO_USER}" "${OO_PASS}" | base64 -w0)"
+    [ -z "${OTLP_EP}" ] && OTLP_EP="${OO_BASE}"
+    log "OpenObserve default export target: ${OO_BASE} (org ${OO_ORG})"
+elif [ -n "${OO_URL}" ]; then
+    log "WARNING: openobserve_url is set but openobserve_username/openobserve_password are not -- OpenObserve export is disabled until both are set"
+fi
+
 [ -z "${TRACES_EP}" ] && TRACES_EP="${OTLP_EP}"
 [ -z "${METRICS_EP}" ] && METRICS_EP="${OTLP_EP}"
 [ -z "${LOGS_EP}" ] && LOGS_EP="${OTLP_EP}"
+
+# The OpenObserve auth header only applies when a signal actually ended up
+# pointed at OpenObserve's own base URL -- an explicit otlp_*_endpoint for a
+# backend that needs no auth (Mimir, VictoriaMetrics, debug collectors, ...)
+# must not get OpenObserve's credentials attached to it.
+oo_headers_for() {
+    [ -n "${OO_AUTH_HEADER}" ] && [ "$1" = "${OO_BASE}" ] || return 0
+    printf '    headers:\n      Authorization: "%s"\n' "${OO_AUTH_HEADER}"
+    if [ -n "${OO_STREAM}" ]; then
+        printf '      stream-name: "%s"\n' "$(yaml_escape_inline "${OO_STREAM}")"
+    fi
+    return 0
+}
+yaml_escape_inline() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
 
 # --- receivers ----------------------------------------------------------------
 RECEIVERS="  otlp:
@@ -224,6 +259,7 @@ if [ -n "${TRACES_EP}" ]; then
     endpoint: ${TRACES_EP}
     tls:
       insecure: true
+$(oo_headers_for "${TRACES_EP}")
 "
     TRACE_EXP="otlphttp/traces"
     log "traces -> ${TRACES_EP}"
@@ -235,6 +271,7 @@ if [ -n "${METRICS_EP}" ]; then
     endpoint: ${METRICS_EP}
     tls:
       insecure: true
+$(oo_headers_for "${METRICS_EP}")
 "
     METRIC_EXP="otlphttp/metrics"
     log "metrics (OTLP) -> ${METRICS_EP}"
@@ -263,6 +300,7 @@ if [ -n "${LOGS_EP}" ]; then
     endpoint: ${LOGS_EP}
     tls:
       insecure: true
+$(oo_headers_for "${LOGS_EP}")
 "
     LOG_EXP="otlphttp/logs"
     log "logs -> ${LOGS_EP}"
