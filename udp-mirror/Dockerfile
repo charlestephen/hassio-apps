@@ -1,15 +1,27 @@
-ARG BUILD_FROM=ghcr.io/czerwonk/udp-mirror:0.1.1
+# udp-mirror's own image has no shell and no PATH entry for its own binary
+# (it ships at /app/udp_mirror; the image's own ENTRYPOINT names "udp-mirror",
+# which does not exist anywhere in the image and is unresolvable as shipped).
+# Only the compiled binary is taken from upstream; the HA base image supplies
+# the shell and jq needed to read Supervisor's options.
+#
+# Both ARGs used in a FROM must be declared in GLOBAL scope (before the
+# first FROM in the whole file) or buildx silently resolves the CI-supplied
+# --build-arg to blank for the second FROM instead of falling back to its
+# own default.
+ARG UDP_MIRROR_VERSION=0.1.1
+ARG UDP_MIRROR_IMAGE=ghcr.io/czerwonk/udp-mirror:${UDP_MIRROR_VERSION}
+ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 
-# Thin Home Assistant wrapper on udp-mirror's official image. Adds jq to
-# read the app options, builds the CLI flags, then execs upstream's binary.
+FROM ${UDP_MIRROR_IMAGE} AS upstream
+
 FROM ${BUILD_FROM}
 
-USER root
-RUN apk add --no-cache jq || (apt-get update && apt-get install -y --no-install-recommends jq && rm -rf /var/lib/apt/lists/*)
-
-ARG UDP_MIRROR_VERSION=0.1.1
+ARG UDP_MIRROR_VERSION
 ENV UDP_MIRROR_VERSION=${UDP_MIRROR_VERSION}
 
+RUN apk add --no-cache jq
+
+COPY --from=upstream /app/udp_mirror /usr/local/bin/udp-mirror
 COPY --chmod=755 rootfs/ha-entrypoint.sh /ha-entrypoint.sh
 
 EXPOSE 4560/udp
@@ -27,7 +39,7 @@ LABEL \
     io.hass.description="${BUILD_DESCRIPTION}" \
     io.hass.arch="${BUILD_ARCH}" \
     io.hass.type="addon" \
-    io.hass.version=${BUILD_VERSION} \
+    io.hass.version="${BUILD_VERSION}" \
     maintainer="CharleStephen (https://github.com/charlestephen)" \
     org.opencontainers.image.title="${BUILD_NAME}" \
     org.opencontainers.image.description="${BUILD_DESCRIPTION}" \

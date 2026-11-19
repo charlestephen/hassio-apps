@@ -4,12 +4,17 @@
 # app needs to. Only the compiled binary is taken from upstream; everything
 # else (shell, s6-overlay, bashio, jq, envsubst, curl) comes from the HA base
 # image, same as every other app in this repo.
+#
+# Both ARGs used in a FROM must be declared in GLOBAL scope (before the
+# first FROM in the whole file) or buildx silently resolves the CI-supplied
+# --build-arg to blank for the second FROM instead of falling back to its
+# own default.
 ARG AKVORADO_VERSION=2026.10.1
 ARG AKVORADO_IMAGE=ghcr.io/akvorado/akvorado:${AKVORADO_VERSION}
+ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 
 FROM ${AKVORADO_IMAGE} AS upstream
 
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:stable
 FROM ${BUILD_FROM}
 
 ARG AKVORADO_VERSION

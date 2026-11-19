@@ -15,4 +15,4 @@ if [ -z "${RECEIVERS}" ]; then
 fi
 
 echo "[udp-mirror-app] listening on ${LISTEN:-:4560}, mirroring to ${RECEIVERS}"
-exec /udp-mirror -listen-address "${LISTEN:-:4560}" -receivers "${RECEIVERS}"
+exec /usr/local/bin/udp-mirror -listen-address "${LISTEN:-:4560}" -receivers "${RECEIVERS}"

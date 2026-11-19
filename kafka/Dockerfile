@@ -1,12 +1,13 @@
 ARG BUILD_FROM=docker.io/apache/kafka:4.4.0
 
-# Thin Home Assistant wrapper on Apache Kafka's official image. Adds jq to
-# read the app options, then runs upstream's own /etc/kafka/docker/run script
-# (which formats KRaft storage on first boot given CLUSTER_ID).
+# Thin Home Assistant wrapper on Apache Kafka's official image (Alpine-based).
+# Adds jq to read the app options, then runs upstream's own
+# /etc/kafka/docker/run script (which formats KRaft storage on first boot
+# given CLUSTER_ID).
 FROM ${BUILD_FROM}
 
 USER root
-RUN microdnf install -y jq || (apt-get update && apt-get install -y --no-install-recommends jq && rm -rf /var/lib/apt/lists/*)
+RUN apk add --no-cache jq
 
 ARG KAFKA_VERSION=4.4.0
 ENV KAFKA_VERSION=${KAFKA_VERSION}
