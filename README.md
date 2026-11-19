@@ -239,11 +239,6 @@ Or add it manually:
 - Remote-host companion for Traefik Manager, letting it manage a Traefik
   instance running elsewhere on the network.
 
-### &#10003; [UDP Mirror](udp-mirror/)
-
-- Listens for UDP packets and sends copies to multiple receivers. Thin
-  wrapper on the official `czerwonk/udp-mirror` image.
-
 ### &#10003; [Ultimate CA Manager](ultimate-ca-manager/)
 
 - Self-hosted Certificate Authority (ACME, SCEP, EST, OCSP, CRL, TSA, SSH CA).
