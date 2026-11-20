@@ -5,7 +5,7 @@ description: >-
   alternative). Thin wrapper on the official image; runs fully standalone
   (embedded PGLite + in-memory queue) by default.
 url: https://github.com/charlestephen/hassio-apps/tree/main/activepieces
-version: "0.93.0-1"
+version: "0.93.0-2"
 stage: stable
 homeassistant: "2026.6.0"
 slug: activepieces

@@ -22,3 +22,14 @@
   two that need `CAP_SYS_ADMIN`/privileged mode are left to `env_vars`.
 - Ships an AppArmor profile (`apparmor.txt`).
 - `icon.png`/`logo.png` use upstream's own GitHub organization avatar.
+
+## 0.93.0-2
+
+- Fixed a first-boot bug caught by testing on a real Supervisor: the
+  wrapper's `log()` helper wrote to stdout, and `gen_secret()` called it
+  right before printing the secret — so on first generation only,
+  `KEY="$(gen_secret ...)"` captured the log line *and* the secret
+  together, corrupting `AP_ENCRYPTION_KEY`/`AP_JWT_SECRET` and failing
+  Activepieces' own startup validation (`AP_ENCRYPTION_KEY is missing or
+  invalid`). The same bug as Checkmate's — both wrappers used the same
+  `gen_secret()` pattern. Fixed by sending `log()` output to stderr.

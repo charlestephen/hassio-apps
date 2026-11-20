@@ -13,7 +13,7 @@ set -eu
 OPTIONS="/data/options.json"
 VERSION="${ACTIVEPIECES_VERSION:-unknown}"
 
-log() { echo "[activepieces-addon] $*"; }
+log() { echo "[activepieces-addon] $*" >&2; }
 
 get() { jq -r --arg k "$1" '.[$k] // empty' "${OPTIONS}" 2>/dev/null || true; }
 is_true() { [ "$(jq -r --arg k "$1" '.[$k] // false' "${OPTIONS}" 2>/dev/null)" = "true" ]; }
