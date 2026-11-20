@@ -1,0 +1,39 @@
+name: MongoDB
+description: >-
+  MongoDB document database, used here as storage for other apps (e.g.
+  Checkmate).
+url: https://github.com/charlestephen/hassio-apps/tree/main/mongodb
+version: "8.0"
+stage: stable
+homeassistant: "2026.6.0"
+slug: mongodb
+image: ghcr.io/charlestephen/hassio-addons-mongodb-{arch}
+startup: system
+init: false
+boot: auto
+hassio_role: default
+panel_icon: mdi:leaf
+arch:
+  - aarch64
+  - amd64
+map:
+  # Upstream's own image declares VOLUME /data/db -- a bind mount at the
+  # parent /data gets shadowed by Docker/Podman's own anonymous volume at
+  # that nested path (confirmed live: files existed inside the container but
+  # never appeared on the host mount). Mounting the HA data map directly at
+  # /data/db matches the declared path exactly, so the bind mount wins.
+  - type: data
+    path: /data/db
+    read_only: false
+ports:
+  27017/tcp: 27017
+ports_description:
+  27017/tcp: MongoDB
+options:
+  root_username: root
+  root_password: changeme
+  database: ""
+schema:
+  root_username: str
+  root_password: password
+  database: str?

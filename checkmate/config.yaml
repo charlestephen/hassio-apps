@@ -1,0 +1,56 @@
+name: Checkmate
+description: >-
+  Open-source uptime and infrastructure monitoring (HTTP/ping/port/DNS/
+  Docker/gRPC/WebSocket/game-server checks). Thin wrapper on the official
+  image; wired to this repository's MongoDB app by default.
+url: https://github.com/charlestephen/hassio-apps/tree/main/checkmate
+version: "4.1.0-1"
+stage: stable
+homeassistant: "2026.6.0"
+slug: checkmate
+image: ghcr.io/charlestephen/hassio-addons-checkmate-{arch}
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: application
+boot: auto
+apparmor: true
+panel_icon: mdi:check-decagram
+webui: http://[HOST]:[PORT:52345]/
+map:
+  - type: data
+    read_only: false
+ports:
+  52345/tcp: 52345
+ports_description:
+  52345/tcp: Checkmate web UI and API
+backup: cold
+
+options:
+  client_host: ""
+  jwt_secret: ""
+  encryption_key: ""
+  queue_mode: primary
+  mongo_host: dd815a57-mongodb
+  mongo_port: 27017
+  mongo_user: root
+  mongo_password: ""
+  mongo_database: checkmate
+  db_connection_string: ""
+  env_vars: []
+schema:
+  client_host: str?
+  jwt_secret: password?
+  encryption_key: password?
+  queue_mode: list(primary|worker)
+  mongo_host: str?
+  mongo_port: port
+  mongo_user: str?
+  mongo_password: password?
+  mongo_database: str?
+  db_connection_string: str?
+  env_vars:
+    - name: str
+      value: password?
+      secret: bool?

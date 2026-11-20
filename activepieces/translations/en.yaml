@@ -1,0 +1,73 @@
+configuration:
+  frontend_url:
+    name: Frontend URL
+    description: >-
+      Required. Public URL browsers open Activepieces at (e.g.
+      https://pieces.example.com), no trailing slash. Used for webhooks,
+      OAuth redirects, and emailed links. Empty stops the app.
+  encryption_key:
+    name: Encryption key
+    description: >-
+      32-char hex secret that encrypts stored connection credentials. Leave
+      blank to auto-generate a stable key on first start (stored under
+      /data/.encryption_key). Back it up; losing it makes encrypted
+      connections unreadable.
+  jwt_secret:
+    name: JWT secret
+    description: >-
+      32-char hex secret for session/auth tokens. Leave blank to
+      auto-generate a stable key on first start (stored under /data/.jwt_secret).
+  telemetry_enabled:
+    name: Enable telemetry
+    description: Off by default; Activepieces' own default is on.
+  execution_mode:
+    name: Execution mode
+    description: >-
+      UNSANDBOXED (default; plain process fork, supports npm in Code steps)
+      or SANDBOX_CODE_ONLY (a V8 isolate per Code step, no npm). The two
+      stricter modes upstream also offers need CAP_SYS_ADMIN/privileged mode
+      and are not exposed here.
+  db_type:
+    name: Database
+    description: >-
+      pglite (default) — fully standalone, no external database. postgres —
+      use this repository's PostgreSQL app (or another one) via the options
+      below.
+  db_host:
+    name: Database host
+    description: PostgreSQL host. Only used when Database is set to postgres.
+  db_port:
+    name: Database port
+    description: PostgreSQL port. Only used when Database is set to postgres.
+  db_name:
+    name: Database name
+    description: Database to connect to. Only used when Database is set to postgres.
+  db_user:
+    name: Database user
+    description: Role to connect as. Only used when Database is set to postgres.
+  db_password:
+    name: Database password
+    description: Password for Database user. Only used when Database is set to postgres.
+  redis_type:
+    name: Queue
+    description: >-
+      memory (default) — fully standalone, no external Redis. standalone —
+      use this repository's Valkey app (or another Redis-compatible one) via
+      the options below.
+  redis_host:
+    name: Redis host
+    description: Only used when Queue is set to standalone.
+  redis_port:
+    name: Redis port
+    description: Only used when Queue is set to standalone.
+  redis_password:
+    name: Redis password
+    description: Leave empty if the server needs none. Only used when Queue is set to standalone.
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Arbitrary Activepieces variables (AP_FILE_STORAGE_LOCATION, AP_S3_*,
+      AP_SANDBOX_*, …). Mark secrets with secret: true so values stay out of
+      logs.
+network:
+  80/tcp: Activepieces web UI and API.

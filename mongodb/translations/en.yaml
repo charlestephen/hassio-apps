@@ -1,0 +1,16 @@
+configuration:
+  root_username:
+    name: Root username
+    description: Root user created on first start (empty /data/db only).
+  root_password:
+    name: Root password
+    description: >-
+      Password for the root user. Only takes effect the very first time the
+      database initializes — change it from the default before starting.
+  database:
+    name: Initial database
+    description: >-
+      Optional database name to create on first start. Leave empty to skip —
+      most apps create their own database on first connect.
+network:
+  27017/tcp: MongoDB

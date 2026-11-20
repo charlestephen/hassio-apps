@@ -1,0 +1,13 @@
+---
+# Thin wrapper on the official multi-arch image (Docker Hub:
+# activepieces/activepieces; also published as ghcr.io/activepieces/activepieces).
+build_from:
+  aarch64: docker.io/activepieces/activepieces:0.93.0
+  amd64: docker.io/activepieces/activepieces:0.93.0
+upstream_repo: "activepieces/activepieces"
+upstream_build_from: true
+upstream_docker_image: "activepieces/activepieces"
+upstream_tag_pattern: '\d+\.\d+\.\d+'
+upstream_version_arg: ACTIVEPIECES_VERSION
+args:
+  ACTIVEPIECES_VERSION: "0.93.0"

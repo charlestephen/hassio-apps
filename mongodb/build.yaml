@@ -1,0 +1,18 @@
+---
+# Thin wrapper on the official multi-arch image (Docker Hub: library/mongo).
+# jq is already present in the upstream image; no RUN steps needed.
+#
+# Pinned to the floating "8.0" Docker Hub tag (confirmed it exists, matching
+# the more specific "8.0.8" patch tag at the same digest) rather than a
+# patch-level pin -- Docker Hub keeps "8.0" itself current with 8.x patches,
+# so no bot-driven version bump is needed for patch releases. Deliberately
+# no upstream_repo auto-tracking: mongodb/mongo's GitHub tags use an "r"
+# prefix (r8.0.8) that doesn't match Docker Hub's own tag format (8.0.8, no
+# prefix), and also mixes in newer 9.x alpha/dev tags -- confirmed live, not
+# a clean 1:1 mapping the existing updater script handles. Bump the pinned
+# minor version here by hand when moving to MongoDB 9.
+build_from:
+  aarch64: docker.io/library/mongo:8.0
+  amd64: docker.io/library/mongo:8.0
+args:
+  MONGODB_VERSION: "8.0"

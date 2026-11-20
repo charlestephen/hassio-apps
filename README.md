@@ -46,6 +46,12 @@ Or add it manually:
   visualizes it. Runs orchestrator, inlet, outlet and console together in one
   app, using the Kafka, ClickHouse and Valkey apps as dependencies.
 
+### &#10003; [Activepieces](activepieces/)
+
+- No-code business automation / workflow builder. Thin wrapper on the
+  official image; runs fully standalone (embedded database + queue) by
+  default, or against this repository's PostgreSQL/Valkey apps.
+
 ### &#10003; [Apache Kafka](kafka/)
 
 - Distributed event streaming platform. Thin wrapper on the official
@@ -56,6 +62,12 @@ Or add it manually:
 - Identity provider (OpenID Connect, OAuth 2.0, SAML, LDAP). Thin wrapper on
   `ghcr.io/goauthentik/server` running server and worker in one process, using
   the PostgreSQL app for its database.
+
+### &#10003; [Checkmate](checkmate/)
+
+- Open-source uptime and infrastructure monitoring (HTTP/ping/port/DNS/
+  Docker/gRPC/WebSocket/game-server checks). Thin wrapper on the official
+  image, using the MongoDB app for its database.
 
 ### &#10003; [ClickHouse](clickhouse/)
 
@@ -149,6 +161,11 @@ Or add it manually:
 - Self-hosted bookmark manager (SQLite by default), with basic config plus
   arbitrary environment-variable injection from the UI. Ingress + port 9090.
 
+### &#10003; [MongoDB](mongodb/)
+
+- Document database, used here as storage for other apps (e.g. Checkmate).
+  Thin wrapper on the official image.
+
 ### &#10003; [Network Optimizer](network-optimizer/)
 
 - UniFi network optimization, monitoring, security audit, and Wi-Fi health.
@@ -202,6 +219,12 @@ Or add it manually:
 
 - Headless BitTorrent ratio-farming daemon (tracker announces + simulated
   upload). Thin wrapper on `ghcr.io/charlestephen/ratioreign`.
+
+### &#10003; [RSS-Bridge](rss-bridge/)
+
+- Generates Atom/RSS feeds for websites that don't provide their own, via
+  per-site "bridges". Thin wrapper on the official image; all configuration
+  is file-based under the mapped config volume.
 
 ### &#10003; [Semaphore](semaphore/)
 

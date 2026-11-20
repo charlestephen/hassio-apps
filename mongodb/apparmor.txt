@@ -1,0 +1,40 @@
+#include <tunables/global>
+
+profile mongodb flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  capability,
+  file,
+  signal,
+
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+
+  /ha-entrypoint.sh rix,
+  /usr/local/bin/docker-entrypoint.sh rix,
+  /usr/bin/mongod rix,
+  /usr/bin/** rix,
+  /bin/** rix,
+  /sbin/** rix,
+
+  /data/** rwk,
+  /tmp/** mrwk,
+  /run/{,**} rwk,
+  /var/run/{,**} rwk,
+  /dev/tty rw,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
+  /usr/share/zoneinfo/** r,
+  /proc/sys/net/** r,
+  /proc/self/** r,
+}

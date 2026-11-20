@@ -1,0 +1,43 @@
+#include <tunables/global>
+
+profile activepieces flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  capability,
+  file,
+  signal,
+
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+
+  /ha-entrypoint.sh rix,
+  /usr/bin/tini rix,
+  /usr/src/app/docker-entrypoint.sh rix,
+  /usr/bin/** rix,
+  /usr/local/bin/** rix,
+  /bin/** rix,
+  /sbin/** rix,
+
+  /usr/src/app/** rw,
+  /data/** rw,
+  /tmp/** mrwk,
+  /run/{,**} rwk,
+  /var/run/{,**} rwk,
+  /dev/tty rw,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
+  /etc/ssl/certs/** r,
+  /usr/share/zoneinfo/** r,
+  /proc/sys/net/** r,
+  /proc/self/** r,
+}

@@ -1,0 +1,52 @@
+configuration:
+  client_host:
+    name: Client host
+    description: >-
+      Required. Public URL browsers open Checkmate at (e.g.
+      https://checkmate.example.com), no trailing slash.
+  jwt_secret:
+    name: JWT secret
+    description: >-
+      Leave blank to auto-generate a stable secret on first start (stored
+      under /data/.jwt_secret).
+  encryption_key:
+    name: Encryption key
+    description: >-
+      32 bytes as standard base64 (openssl rand -base64 32) — confirmed:
+      Checkmate rejects a hex value here with "must be 32 bytes as padded
+      standard base64". Encrypts stored Docker-monitor TLS keys. Leave
+      blank to auto-generate a stable key on first start (stored under
+      /data/.encryption_key).
+  queue_mode:
+    name: Queue mode
+    description: primary (default, single-instance) or worker.
+  mongo_host:
+    name: MongoDB host
+    description: Only used when Database connection string is empty.
+  mongo_port:
+    name: MongoDB port
+    description: Only used when Database connection string is empty.
+  mongo_user:
+    name: MongoDB user
+    description: Only used when Database connection string is empty.
+  mongo_password:
+    name: MongoDB password
+    description: >-
+      The MongoDB app's root password (or a dedicated user's password).
+      Required unless Database connection string is set directly.
+  mongo_database:
+    name: MongoDB database
+    description: Only used when Database connection string is empty.
+  db_connection_string:
+    name: Database connection string (override)
+    description: >-
+      Set a full mongodb:// URI directly to bypass the MongoDB options
+      above entirely (a different host, a replica set, TLS, etc.).
+  env_vars:
+    name: Extra environment variables
+    description: >-
+      Arbitrary Checkmate variables (TOKEN_TTL, ORIGIN, LOG_LEVEL,
+      QUEUE_PRIMARY_PROCESSES, STATUS_PAGE_THEMES_ENABLED, …). Mark secrets
+      with secret: true so values stay out of logs.
+network:
+  52345/tcp: Checkmate web UI and API.

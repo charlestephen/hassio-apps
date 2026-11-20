@@ -1,0 +1,2 @@
+network:
+  80/tcp: RSS-Bridge web UI and feed endpoints.

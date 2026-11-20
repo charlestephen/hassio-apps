@@ -1,0 +1,46 @@
+#include <tunables/global>
+
+profile rss_bridge flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  capability,
+  file,
+  signal,
+
+  network tcp,
+  network udp,
+  network inet,
+  network inet6,
+  network unix dgram,
+  network unix stream,
+
+  /app/docker-entrypoint.sh rix,
+  /usr/sbin/nginx rix,
+  /usr/sbin/php-fpm8.2 rix,
+  /usr/bin/** rix,
+  /usr/sbin/** rix,
+  /bin/** rix,
+  /sbin/** rix,
+
+  /app/** rw,
+  /config/** rw,
+  /var/log/nginx/** rw,
+  /var/lib/nginx/** rw,
+  /run/{,**} rwk,
+  /var/run/{,**} rwk,
+  /tmp/** mrwk,
+  /dev/tty rw,
+
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /etc/resolv.conf r,
+  /etc/localtime r,
+  /etc/passwd r,
+  /etc/group r,
+  /etc/nginx/** r,
+  /etc/php/** r,
+  /usr/share/zoneinfo/** r,
+  /proc/sys/net/** r,
+  /proc/self/** r,
+}

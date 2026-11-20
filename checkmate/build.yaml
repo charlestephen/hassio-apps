@@ -1,0 +1,14 @@
+---
+# Thin wrapper on the official multi-arch image (GHCR only, no Docker Hub
+# listing, confirmed live: ghcr.io/bluewave-labs/checkmate). GHCR tags exist
+# both with and without the "v" prefix at the same digest; build_from uses
+# the bare form to match this repository's own version-string convention.
+build_from:
+  aarch64: ghcr.io/bluewave-labs/checkmate:4.1.0
+  amd64: ghcr.io/bluewave-labs/checkmate:4.1.0
+upstream_repo: "bluewave-labs/checkmate"
+upstream_build_from: true
+upstream_version_arg: CHECKMATE_VERSION
+upstream_version_arg_prefix: v
+args:
+  CHECKMATE_VERSION: "4.1.0"
