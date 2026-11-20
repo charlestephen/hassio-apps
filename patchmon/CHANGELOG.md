@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.8-2
+
+- No functional change. Version bump only, to force CI to rebuild and push a
+  fresh image and get Supervisor hosts to re-pull it — the previous image
+  wasn't downloading.
+
 ## 2.1.8-1
 
 - Fix `icon.png`/`logo.png`: replaced a flattened render with a solid white

@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "PatchMon"
-version: "2.1.8-1"
+version: "2.1.8-2"
 slug: patchmon
 description: >-
   Linux patch management and monitoring. Uses the PostgreSQL app and includes

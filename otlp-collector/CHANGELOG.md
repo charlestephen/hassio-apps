@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.165.0-11
+
+- No functional change. Version bump only, to force CI to rebuild and push a
+  fresh image and get Supervisor hosts to re-pull it — the previous image
+  wasn't downloading.
+
 ## 0.165.0-10
 
 - Add `compression` option (default `gzip`), applied to every `otlphttp`
