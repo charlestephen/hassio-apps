@@ -1,5 +1,110 @@
 # Changelog
 
+## 2.14.0
+
+- Upgrading from upstream version 2.13.1 -> 2.14.0
+
+> Upstream v2.14.0: https://github.com/homarr-labs/homarr/releases/tag/v2.14.0
+>
+> # Homarr v2.14.0: Header widgets and shareable themes
+>
+> Put widgets and notifications in your header, share complete themes through Workshop, and connect a Homey Pro or Yuvomi instance. Boards finish loading while slow integrations fetch their data.
+>
+> > [!IMPORTANT]
+> > If you self-host Workshop, back up its `pb_data` volume before upgrading Workshop. Wait until clients support themes before converting legacy CSS listings, and take a fresh backup before conversion. Reload any listing edits opened before the upgrade to pick up the new revision. [Workshop upgrade instructions](https://github.com/homarr-labs/homarr/blob/v2.14.0/apps/workshop/README.md#convert-legacy-css-listings)
+> >
+> > If you run Homarr from source, use Node.js 24.22.3 or later. The Docker image already bundles the security update. [#7604](https://github.com/homarr-labs/homarr/pull/7604)
+>
+> ## Highlights
+>
+> ### Widgets and notifications in the header
+>
+> Add personal Widget and Notifications controls to the header. Click a control to open its popover, or open it in board edit mode to configure the widget and popover size. Notifications now include Beszel alerts, dismissible Home Assistant notifications, and Uptime Kuma incidents and monitor status.
+>
+> <img src="https://github.com/user-attachments/assets/f203061a-d9f5-4541-a3c3-11abda6ee586" alt="Notifications from Beszel, Home Assistant, and Uptime Kuma in the header popover" width="600">
+>
+> ### Complete themes in Workshop
+>
+> Browse and publish complete themes through Workshop, or copy and paste a theme as JSON. Choose whether to apply an imported preset or custom CSS, then save to apply your changes. On desktop, the CSS editor sits beside the live board preview.
+>
+> <img src="https://github.com/user-attachments/assets/164e10de-6760-44f0-a052-6aaa227062f4" alt="Theme editor with Workshop and JSON controls and a CSS editor beside the live preview" width="600">
+>
+> ### Guided Custom Widget setup
+>
+> Connect an API and test a request in the guided editor, then use the response to build and preview your widget. Use Advanced mode for manual authoring, define typed widget options, and optionally share the result through Workshop.
+>
+> <img src="https://github.com/user-attachments/assets/54d16f74-79e4-4d59-8527-8130340f62ab" alt="Custom Widget creation with guided API sources, named requests, and the live preview panel" width="600">
+>
+> ### Containers that adapt to media activity
+>
+> A container can watch a Media Server widget and collapse or hide when nobody is watching. When a stream starts, it reappears and can shrink to fit its content. Media Server can also show playback details when only a few streams are active.
+>
+> <img src="https://github.com/user-attachments/assets/14ba0967-c8b4-4856-ab33-1fa018ad379d" alt="An idle media container is hidden and an active container shrinks to fit its stream" width="600">
+>
+> ## New integrations and widgets
+>
+> <img src="https://github.com/homarr-labs/homarr/releases/download/v2.14.0/whats-new.png" alt="Two new integrations in Homarr v2.14.0, Homey and Yuvomi" width="600">
+>
+> | Icon | Name | What it does |
+> | --- | --- | --- |
+> | <img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons@master/svg/homey.svg" alt="" width="24" height="24"> | Homey Pro | Control devices, run flows, and show Homey Insights history and metrics in existing smart home widgets. |
+> | <img src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/yuvomi.svg" alt="" width="24" height="24"> | Yuvomi | Show open tasks, high-priority tasks, and remaining shopping items in the Statistics widget. |
+>
+> <details><summary>Integration screenshots</summary>
+>
+> <img src="https://github.com/user-attachments/assets/97bff887-b993-4c8e-b7c7-1aa9a23f9c51" alt="Homey Pro powers device controls, entity state, flows, and statistics on a board" width="600">
+>
+> <img src="https://github.com/user-attachments/assets/0377104c-d824-48be-9d3c-917386f2b16f" alt="Yuvomi metrics in the Statistics widget and its editor" width="600">
+>
+> </details>
+>
+> ## New
+>
+> - **Header controls:** Open personal widget and notification popovers and receive alerts from Beszel, Home Assistant, and Uptime Kuma. by @ajnart in [#7608](https://github.com/homarr-labs/homarr/pull/7608)
+> - **Workshop themes:** Browse, publish, and import complete themes and edit CSS alongside the live preview. by @ajnart in [#7645](https://github.com/homarr-labs/homarr/pull/7645)
+> - **Custom Widgets:** Set up APIs with a guided editor, use typed options, and share widgets through Workshop. by @ajnart in [#7358](https://github.com/homarr-labs/homarr/pull/7358)
+> - **Smart Containers:** Collapse or hide idle media containers, fit active content, and see more playback details. by @Bergasha in [#7394](https://github.com/homarr-labs/homarr/pull/7394)
+> - **Homey Pro:** Connect Homey Pro to existing smart home widgets. Entity State and Execute Automation now offer searchable pickers for both Homey and Home Assistant. by @spkesDE in [#7646](https://github.com/homarr-labs/homarr/pull/7646)
+> - **Yuvomi:** Track open tasks, high-priority tasks, and items to buy with the Statistics widget. by @ulsklyc in [#7493](https://github.com/homarr-labs/homarr/pull/7493)
+> - **Download categories:** Set or clear categories for qBittorrent and Deluge, or labels for Transmission, from the Download Client widget. by @heathlarsen in [#7370](https://github.com/homarr-labs/homarr/pull/7370)
+>
+> ## Improved
+>
+> - **Widget refresh intervals:** Set how often Health Monitoring and System resources refresh under Advanced options. by @spkesDE in [#7599](https://github.com/homarr-labs/homarr/pull/7599)
+> - **More polling widgets:** Set refresh intervals for System disks, Download Client, Media Server, Media Transcoding, DNS Hole, Firewall, and Docker containers. by @spkesDE in [#7631](https://github.com/homarr-labs/homarr/pull/7631)
+> - **Board loading:** Home and named boards can finish loading while requests for live widget data run separately. by @ajnart in [#7651](https://github.com/homarr-labs/homarr/pull/7651)
+> - **RSS publishers:** Show each article’s feed title in the widget and expanded view, with an option to hide it. by @Pieeeeeeeeeeeee in [#7576](https://github.com/homarr-labs/homarr/pull/7576)
+> - **RSS appearance:** Set poster width and height and hide the blurred article background in the board view. by @Pieeeeeeeeeeeee in [#7622](https://github.com/homarr-labs/homarr/pull/7622)
+>
+> ## Fixed
+>
+> - **App editing:** Edit app settings again from the dashboard and keep drafts when switching between widget and app settings. by @ajnart in [#7643](https://github.com/homarr-labs/homarr/pull/7643)
+> - **Item dialogs:** Repository and app creation dialogs open above the item editor, with usable dropdowns and keyboard focus. by @ajnart in [#7609](https://github.com/homarr-labs/homarr/pull/7609)
+> - **Assistant board edits:** Keep enabled tools across chat continuations and edit individual widget options while preserving layouts and integration bindings. by @ajnart in [#7611](https://github.com/homarr-labs/homarr/pull/7611)
+> - **RSS dates and descriptions:** Use publication dates to order Atom and YouTube entries and show YouTube video descriptions when provided. by @TbhVishal in [#7545](https://github.com/homarr-labs/homarr/pull/7545)
+> - **Board saves and undo:** Keep edits and undo actions on their original board and enforce timeouts on supported integration requests. by @ajnart in [#7302](https://github.com/homarr-labs/homarr/pull/7302)
+>
+> <details><summary>All changes</summary>
+>
+> ### Improved
+>
+> - **Demo board:** Explore widgets on dedicated Home, Media, and Systems tabs with layouts for phones. by @ajnart in [#7577](https://github.com/homarr-labs/homarr/pull/7577)
+> - **System resource charts:** Lightweight sparklines reduce rendering work on boards with many charts. by @spkesDE in [#7623](https://github.com/homarr-labs/homarr/pull/7623)
+> - **Media Releases:** Long release lists render in batches as you scroll. by @spkesDE in [#7624](https://github.com/homarr-labs/homarr/pull/7624)
+>
+> ### Fixed
+>
+> - **Custom Widget diagnostics:** See clearer preview errors and confirm exactly which options or other definition elements will be removed before saving an update. by @ajnart in [#7413](https://github.com/homarr-labs/homarr/pull/7413)
+> - **Homey devices:** Keep device status and controls available when a flow request fails, and show motion for covers that report it without a position. by @ajnart in [#7650](https://github.com/homarr-labs/homarr/pull/7650)
+> - **Plex release links:** Open Plex Web without duplicate path segments and preserve reverse-proxy prefixes. by @ajnart in [#7613](https://github.com/homarr-labs/homarr/pull/7613)
+> - **Release groups:** Remember manually expanded groups after a reload. by @ajnart in [#7570](https://github.com/homarr-labs/homarr/pull/7570)
+> - **Chart alignment:** Align system resource charts when their groups have no scrollbar. by @spkesDE in [#7600](https://github.com/homarr-labs/homarr/pull/7600)
+> - **Spanish Uptime Kuma status:** Label a down monitor “Caído.” by @bfs2021 in [#7625](https://github.com/homarr-labs/homarr/pull/7625)
+> - **Bundled NGINX:** Update NGINX in the Docker image to 1.30.7 for upstream security fixes. by @AnalyticETH in [#7639](https://github.com/homarr-labs/homarr/pull/7639)
+> - **Bundled Redis:** Update the Redis server and CLI in the Docker image to 8.8.4 for upstream security fixes. by @ajnart in [#7606](https://github.com/homarr-labs/homarr/pull/7606)
+> - **Next.js security updates:** Update the application runtime to Next.js 16.4.6. by @ajnart in [#7640](https://github.com/homarr-labs/homarr/pull/7640)
+> …
+
 ## 2.13.1
 
 - Upgrading from upstream version 2.12.0-1 -> 2.13.1

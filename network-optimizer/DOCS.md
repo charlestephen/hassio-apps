@@ -3,7 +3,7 @@
 Self-hosted optimization, monitoring, and security tooling for UniFi networks.
 This app wraps
 [`ghcr.io/ozark-connect/network-optimizer`](https://ghcr.io/ozark-connect/network-optimizer)
-`2.11.5` ([Ozark-Connect/NetworkOptimizer](https://github.com/Ozark-Connect/NetworkOptimizer))
+`2.11.6-oomtest1` ([Ozark-Connect/NetworkOptimizer](https://github.com/Ozark-Connect/NetworkOptimizer))
 and **execs upstream** `/entrypoint.sh` after mapping HA `/data` into the
 paths the image expects and exporting compose-parity environment variables.
 

@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.11.6-oomtest1
+
+- Upgrading from upstream version 2.11.5 -> 2.11.6-oomtest1
+
+> Upstream v2.11.6-oomtest1: https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.6-oomtest1
+>
+> **Test build of the On-Site Agent for EFG and UDM-Beast class gateways. Not a regular release: stay on the stable line unless you were asked to try this.**
+>
+> This build carries two On-Site Agent changes ahead of v2.11.6:
+>
+> - **Fix: Automatic Blocking's public block lists draining on the gateway** - On 64K-page gateways (UDM-Beast, EFG, EF-Core, UXG-Enterprise), an out-of-memory error while applying the public block lists stopped them from refreshing, and the Security Audit then reported **Automatic Blocking: Gateway Blocklist Empty**. The agent now restarts itself when that happens, and the restarted agent re-applies the lists.
+> - **Lower memory churn in Live Traffic sampling** - The conntrack sampler reuses its read buffer and parses without allocating a string per field, which cuts how often the agent's memory is collected.
+>
+> To install it on the gateway, re-run your On-Site Agent install command with `--release v2.11.6-oomtest1` added. Your existing configuration is kept. When v2.11.6 ships, your server offers the upgrade as usual.
+
 ## 2.11.5
 
 - Upgrading from upstream version 2.11.4 -> 2.11.5
