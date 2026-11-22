@@ -3,12 +3,12 @@
 # Upstream tags releases by date (e.g. 2025-08-05), not semver; the same date
 # string is also published as a Docker Hub tag, confirmed live.
 build_from:
-  aarch64: docker.io/rssbridge/rss-bridge:2025-08-05
-  amd64: docker.io/rssbridge/rss-bridge:2025-08-05
+  aarch64: docker.io/rssbridge/rss-bridge:2026-09-30
+  amd64: docker.io/rssbridge/rss-bridge:2026-09-30
 upstream_repo: "RSS-Bridge/rss-bridge"
 upstream_build_from: true
 upstream_docker_image: "rssbridge/rss-bridge"
 upstream_tag_pattern: '\d{4}-\d{2}-\d{2}'
 upstream_version_arg: RSSBRIDGE_VERSION
 args:
-  RSSBRIDGE_VERSION: "2025-08-05"
+  RSSBRIDGE_VERSION: "2026-09-30"

@@ -13,7 +13,7 @@ options, no custom entrypoint — just the image with Home Assistant labels
 and a persistent config volume.
 
 Upstream has no semver releases; it tags both GitHub releases and this
-image by date (e.g. `2025-08-05`), confirmed live against both GitHub's
+image by date (e.g. `2026-09-30`), confirmed live against both GitHub's
 releases API and Docker Hub's own tag listing.
 
 ## Configuration

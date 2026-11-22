@@ -4,7 +4,7 @@ description: >-
   Generates Atom/RSS feeds for websites that don't provide their own. Thin
   wrapper on the official image.
 url: https://github.com/charlestephen/hassio-apps/tree/main/rss-bridge
-version: "2025.08.05-1"
+version: "2026-09-30"
 stage: stable
 homeassistant: "2026.6.0"
 slug: rss_bridge

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-30
+
+- Upgrading from upstream version 2025.08.05-1 -> 2026-09-30
+
 ## 2025.08.05-1
 
 - Initial release.

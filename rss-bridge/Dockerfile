@@ -1,4 +1,4 @@
-ARG BUILD_FROM=docker.io/rssbridge/rss-bridge:2025-08-05
+ARG BUILD_FROM=docker.io/rssbridge/rss-bridge:2026-09-30
 
 # Thin Home Assistant wrapper on the official RSS-Bridge image (Debian,
 # nginx + php-fpm, its own entrypoint already supervises both). No options,
