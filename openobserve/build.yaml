@@ -19,4 +19,4 @@ upstream_tag_pattern: 'v\d+\.\d+\.\d+'
 upstream_version_arg: OPENOBSERVE_VERSION
 upstream_version_arg_prefix: v
 args:
-  OPENOBSERVE_VERSION: "v1.1.2"
+  OPENOBSERVE_VERSION: "v1.2.0"

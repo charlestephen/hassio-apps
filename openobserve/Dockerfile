@@ -1,4 +1,4 @@
-# OpenObserve Enterprise Edition (same v1.1.2 core, same /openobserve binary
+# OpenObserve Enterprise Edition (same 1.2.0 core, same /openobserve binary
 # path, same ZO_* environment variables, same Basic Auth behavior as the
 # Community image this previously wrapped -- confirmed by running both side
 # by side). Still free to run with no license key for Enterprise's own free
@@ -16,13 +16,13 @@
 #
 # ARGs used in FROM must be declared before the first FROM (BuildKit).
 ARG BUILD_FROM=debian:trixie-slim
-ARG OPENOBSERVE_VERSION=v1.1.2
+ARG OPENOBSERVE_VERSION=1.2.0
 
 FROM public.ecr.aws/zinclabs/openobserve-enterprise:${OPENOBSERVE_VERSION} AS upstream
 
 FROM ${BUILD_FROM}
 
-ARG OPENOBSERVE_VERSION=v1.1.2
+ARG OPENOBSERVE_VERSION=1.2.0
 ENV OPENOBSERVE_VERSION=${OPENOBSERVE_VERSION}
 
 # hadolint ignore=DL3008

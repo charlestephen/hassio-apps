@@ -4,7 +4,7 @@ ARG BUILD_FROM=docker.io/fnsys/dockhand:v1.0.57
 # to Dockhand's variables, then run its own entrypoint.
 FROM ${BUILD_FROM}
 
-ARG DOCKHAND_VERSION=1.0.58
+ARG DOCKHAND_VERSION=1.0.59
 ENV DOCKHAND_VERSION=${DOCKHAND_VERSION}
 
 # jq reads the app options.

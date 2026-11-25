@@ -1,4 +1,4 @@
-ARG BUILD_FROM=docker.io/grafana/grafana:13.3.1
+ARG BUILD_FROM=docker.io/grafana/grafana:13.3.2
 
 # Thin Home Assistant wrapper on the official Grafana image. Map options to GF_*
 # variables, keep data on the HA /data volume, then run upstream /run.sh as the
@@ -13,7 +13,7 @@ USER root
 RUN apk upgrade --no-cache \
     && apk add --no-cache jq su-exec
 
-ARG GRAFANA_VERSION=13.3.1
+ARG GRAFANA_VERSION=13.3.2
 ENV GRAFANA_VERSION=${GRAFANA_VERSION}
 
 COPY rootfs/ /

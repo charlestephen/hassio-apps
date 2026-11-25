@@ -1,7 +1,7 @@
 # Grafana
 
 Thin Home Assistant wrapper around the official
-[Grafana](https://grafana.com/oss/grafana/) image (`13.3.1`). Grafana's database,
+[Grafana](https://grafana.com/oss/grafana/) image (`13.3.2`). Grafana's database,
 plugins and settings live in `/data/grafana`, so they are part of the app's
 backups.
 

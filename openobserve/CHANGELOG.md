@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0
+
+- Upgrading from upstream version 1.1.2-2 -> 1.2.0
+
+> Upstream v1.2.0: https://github.com/openobserve/openobserve/releases/tag/v1.2.0
+>
+> 📦 Download Binaries from https://openobserve.ai/downloads
+>
+> undefined
+
 ## 1.1.2-2
 
 - Switched the base image from `openobserve/openobserve` (Community, AGPL)

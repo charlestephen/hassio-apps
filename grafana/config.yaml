@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: "Grafana"
-version: "13.3.1-1"
+version: "13.3.2"
 slug: grafana
 description: >-
   Grafana, the dashboards and observability UI. Data lives on the app's /data
