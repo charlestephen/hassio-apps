@@ -3,7 +3,7 @@
 ## Overview
 
 This app wraps [activepieces/activepieces](https://github.com/activepieces/activepieces)
-`0.93.0`. The core app is MIT-licensed; a separate `packages/ee` tree under a
+`0.94.0`. The core app is MIT-licensed; a separate `packages/ee` tree under a
 non-OSI Enterprise license exists upstream for paid features — this app
 configures none of them, nothing here touches that code path.
 

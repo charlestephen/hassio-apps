@@ -1,4 +1,4 @@
-ARG BUILD_FROM=docker.io/activepieces/activepieces:0.93.0
+ARG BUILD_FROM=docker.io/activepieces/activepieces:0.94.0
 
 # Thin Home Assistant wrapper on the official Activepieces image (Debian,
 # already has a shell + root user). Map HA options to AP_* environment
@@ -6,7 +6,7 @@ ARG BUILD_FROM=docker.io/activepieces/activepieces:0.93.0
 # unchanged.
 FROM ${BUILD_FROM}
 
-ARG ACTIVEPIECES_VERSION=0.93.0
+ARG ACTIVEPIECES_VERSION=0.94.0
 ENV ACTIVEPIECES_VERSION=${ACTIVEPIECES_VERSION}
 
 # jq parses options; openssl (already in the image) generates
