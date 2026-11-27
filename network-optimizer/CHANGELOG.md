@@ -1,5 +1,108 @@
 # Changelog
 
+## 2.11.7
+
+- Upgrading from upstream version 2.11.6-oomtest1 -> 2.11.7
+
+> Upstream v2.11.7: https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.7
+>
+> > **On-Site Agent update (optional; the v2.11.6 Agent, unchanged in v2.11.7):** if you skipped v2.11.6, the Agent on your UniFi Gateway times each connection's round trip for Live Traffic, and on the UDM-Beast, EFG, EF-Core, and UXG-Enterprise it fixes the Agent's out-of-memory errors. Open **Settings - Multi-Site / Agents**, expand your Site, press **Upgrade**, and press **Run It for Me**. If you updated on v2.11.6, you're set.
+>
+> The Dashboard's speed test cards now keep up on their own, and Performance Tweaks supports UniFi OS 6.0.19 EA on the UCG line. See the [v2.11.6 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.6), the [v2.11.5 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.5), the [v2.11.4 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.4), the [v2.11.3 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.3), the [v2.11.2 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.2), the [v2.11.1 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.1), and the [v2.11.0 release notes](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.11.0) for what's new in v2.11.0+.
+>
+> ## Coming Soon
+>
+> - **LAN Health** - a score for every link between your UniFi Devices and every wired port, with when the trouble started and which end it's on, including drops UniFi Network never shows. Try it now in [v2.12.0-preview5](https://github.com/Ozark-Connect/NetworkOptimizer/releases/tag/v2.12.0-preview5).
+>
+> ## Dashboard
+>
+> - **WAN Speed Test and LAN Speed Test cards update as tests finish** - a result shows on its card as soon as it's saved, a Client Speed Test from your phone included, with no reload. The device name and icon fill in a few seconds later, once Network Optimizer has matched the Client.
+>
+> ## Site Health
+>
+> - **Fix: A Gateway update read as ISP loss** - while your Gateway installed a UniFi OS update, Site Health labeled its packet loss "(ISP)". It now reads as the Gateway updating, and stored hours are recomputed after the upgrade.
+>
+> ## Monitoring
+>
+> ### Live Traffic
+>
+> - **Fix: Live Traffic waited forever with Monitoring off** (thanks Samfisher for the report) - the On-Site Agent reads flows only while the Site's Monitoring is on, so without it Live Traffic and a Client's Live Traffic card sat on "Measuring rates" for good. They now say Monitoring is off and link **Monitoring - Setup**, where **Enable Monitoring** turns it on.
+>
+> ### Network Performance
+>
+> - **Fix: Two transit hops with the same name after a rediscovery** - **Upstream Path Discovery** names a transit hop with no reverse DNS by number ("AT&T 1"), and a rediscovery that found a new one could give it the name of an older hop still saved. A new hop whose name is taken now gets a suffix ("AT&T 1-1"), the way hops sharing a number already did, and the next discovery renames an existing duplicate the same way.
+>
+> ### Network Tools
+>
+> - **Fix: No SFP data for a PPPoE WAN** (#1434, thanks @Optic00) - in **Inspect a Gateway Interface**, a PPPoE WAN showed its addresses but nothing under **SFP Module**, because the module sits on the port the PPPoE session runs over. It now reads the module from that port, as UniFi Network reports it, and the card names the port it read ("read from eth6").
+>
+> ## Change Control
+>
+> - **Fix: Your own edits after a Network app upgrade read as the upgrade's** - for an hour after UniFi Network updated, a change Network Optimizer couldn't tie to an admin was filed as "changed during Network app upgrade", and that included the port profile and switch port updates UniFi makes on its own when you add or remove a network. Those now go to whoever added or removed the network, and the upgrade's own window is down to the 10 minutes its migration actually takes.
+> - **Fix: Add Network on UniFi Network 11.1** - a Network added in **Edit** applied as Partial ("Not applied by UniFi: DHCPv6, mDNS"); it now applies clean.
+> - **Fix: A false "still used by" warning when you delete a Network in Edit** - it named UniFi's own Etherlighting colors, which UniFi clears itself, and said Review Plan would refuse the delete when it didn't.
+> - **Fix: The Settings tab no longer jumps around** - on laptop-width windows, the **On this page** links flipped between the two columns several times a second, dragging the cards up and down with them. They now sit still above both columns (#1427, thanks @bondskin for the video).
+>
+> ## Security Audit
+>
+> - **Fix: A named Device needed acknowledging again on every AP, band, and offline** - acknowledging a Finding like **IoT Device Allowed on VLAN** for your TV covered it only on the AP and band it was on at the time. One acknowledgement now covers it wherever it connects, and while it's offline. Devices known only by their type ("Smart TV") still acknowledge one at a time.
+> - **Fix: Security Audit settings saved values the audit could not read** - a VLAN list with a typo, or a grace period of 0, saved without complaint and the audit then ignored it. **Save Audit Settings** now shows the error under the field and saves nothing until every field passes.
+>
+> ## Alerts & Schedule
+>
+> - **Fix: Times in alerts name their time zone** - the On-Site Agent offline alert's "Last seen" and a Change Control approval's "Scheduled for" now read on the site's clock with the zone ("Nov 24, 7:47 AM CST"), as other alerts already did. Discord, Slack, Teams, ntfy, and email show an outage's start that way too, not as a raw UTC timestamp.
+>
+> ## Firmware Rollout
+>
+> - **Fix: Offline alerts mid-upgrade on a build you chose by hand** - a build pasted as a download link or picked in **Deploy Known Firmware** installs over SSH first, and the Device rebooted into its new firmware before the rollout had muted its alerts, so its offline alert fired anyway. Alerts for the Device, and for any Device behind it, now stay quiet the same as for any other upgrade.
+> - **Fix: A pasted build installed over SSH went to the Console as well** - once the Device started flashing the build, the Console was sent the same upgrade too. The Console now gets it only when the Device never starts.
+> - **Fix: An acknowledged Firmware Rollout Started alert stayed open** - acknowledging it while the rollout ran kept it open after the rollout finished. It now closes when the rollout does, acknowledged or not.
+>
+> ## On-Site Agent
+>
+> - **Settings - Multi-Site is now Multi-Site / Agents** (thanks Srinivas for the report) - On-Site Agents are set up there even for a single Site, and with one Site the site switcher in the top bar now stays hidden. Turning off **Enable multi-site / agent management** with an Agent enrolled now warns you first: the Agent keeps running, but you can't upgrade or configure it until the setting is back on.
+>
+> ## Managed SSH Key
+>
+> - **Fix: Remove from gateway took your own key with it** - with a key you already had on the Gateway as the managed key, **Remove from gateway**, or removing the stored key, took it out of authorized_keys too. A key that was there before Network Optimizer installed it now stays.
+>
+> ## Performance Tweaks
+>
+> - **UniFi OS 6.0.19 EA on the UCG line** - supported, verified against the UCG-Fiber 6.0.19 firmware image and live-verified on a UCG-Fiber.
+>
+> ## Fixes
+>
+> - **nginx 1.30.7 on Windows** - the nginx the MSI installs for the LAN speed test moves to 1.30.7, which carries nginx's November 18 security fixes.
+> - **Fix: Remove from UniFi Network logged an error per deleted IP group** (#1424, thanks @bondskin) - on **Automatic Blocking**, an IP group UniFi had already deleted no longer logs an error.
+> - Also fixed: smaller issues in the **Network Tools** traceroute tables on a phone; the Test History charts and Mbps tooltips in **WAN Speed Test** and **Client WAN Test**; the Back button, the floating Save, and the unsaved-changes warning; and Client names in Security Audit, Threat Intelligence, and speed test results.
+>
+> ## Installation
+>
+> **Windows**: Download the MSI installer below
+>
+> **Docker (Upgrade)**:
+> ```bash
+> docker compose pull && docker compose up -d
+> ```
+>
+> **macOS** (native, recommended for accurate speed tests vs Docker Desktop):
+> ```bash
+> git clone https://github.com/Ozark-Connect/NetworkOptimizer.git && cd NetworkOptimizer && ./scripts/install-macos-native.sh
+> # or if you already have it cloned
+> cd NetworkOptimizer && git pull && ./scripts/install-macos-native.sh
+> ```
+>
+> **Proxmox**:
+> ```bash
+> bash -c "$(curl -fsSL https://raw.githubusercontent.com/Ozark-Connect/NetworkOptimizer/main/scripts/proxmox/install.sh)"
+> # or if you just need to update
+> pct exec <CT_ID> -- bash -c 'cd /opt/network-optimizer && docker compose pull && docker compose up -d && docker image prune -f'
+> ```
+>
+> For other platforms (Synology, QNAP, Unraid, native Linux) or new installations, see the [Deployment Guide](https://github.com/Ozark-Connect/NetworkOptimizer/blob/main/docker/DEPLOYMENT.md).
+>
+> Need a hand with an install or upgrade, or something not working right? Ask on the [Network Optimizer Discord](https://discord.gg/pHrmzbBCY3). Confirmed bugs and feature requests go to [GitHub Issues](https://github.com/Ozark-Connect/NetworkOptimizer/issues).
+
 ## 2.11.6-oomtest1
 
 - Upgrading from upstream version 2.11.5 -> 2.11.6-oomtest1

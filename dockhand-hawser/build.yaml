@@ -6,4 +6,4 @@ build_from:
 upstream_repo: "Finsys/hawser"
 upstream_version_arg: HAWSER_VERSION
 args:
-  HAWSER_VERSION: "0.2.53"
+  HAWSER_VERSION: "0.2.54"

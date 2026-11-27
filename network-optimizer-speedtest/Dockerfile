@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/ozark-connect/speedtest:2.11.6-oomtest1
+ARG BUILD_FROM=ghcr.io/ozark-connect/speedtest:2.11.7
 
 # Thin Home Assistant wrapper on the official Network Optimizer Speed Test
 # image (customized OpenSpeedTest). Upstream /docker-entrypoint.sh preserved.
@@ -11,7 +11,7 @@ USER root
 RUN apk upgrade --no-cache \
     && apk add --no-cache jq
 
-ARG NETWORK_OPTIMIZER_SPEEDTEST_VERSION=2.11.6-oomtest1
+ARG NETWORK_OPTIMIZER_SPEEDTEST_VERSION=2.11.7
 ENV NETWORK_OPTIMIZER_SPEEDTEST_VERSION=${NETWORK_OPTIMIZER_SPEEDTEST_VERSION}
 
 COPY rootfs/ /

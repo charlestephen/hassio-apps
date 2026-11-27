@@ -3,7 +3,7 @@
 Customized [OpenSpeedTest](https://openspeedtest.com/) that posts results to
 Network Optimizer’s public API. This app wraps
 [`ghcr.io/ozark-connect/speedtest`](https://ghcr.io/ozark-connect/speedtest)
-`2.11.6-oomtest1` and **execs upstream** `/docker-entrypoint.sh` after exporting the
+`2.11.7` and **execs upstream** `/docker-entrypoint.sh` after exporting the
 same host / proxy environment variables as the main app.
 
 Install **[Network Optimizer](../network-optimizer/)** first (or together).

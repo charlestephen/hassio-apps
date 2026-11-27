@@ -4,7 +4,7 @@
 # base image. Version is pinned here and in build.yaml; track-upstream bumps both.
 FROM ghcr.io/hassio-addons/base:stable
 
-ARG HAWSER_VERSION="0.2.53"
+ARG HAWSER_VERSION="0.2.54"
 ARG BUILD_ARCH
 
 # Runtime tools Hawser needs for Compose stacks + the ingress status page.

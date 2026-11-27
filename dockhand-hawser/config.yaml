@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/add-ons/configuration
 name: Hawser Agent for Dockhand
-version: "0.2.53"
+version: "0.2.54"
 slug: dockhand_hawser
 description: >-
   Bridges Home Assistant's Docker to a Dockhand server (Standard or Edge mode)
