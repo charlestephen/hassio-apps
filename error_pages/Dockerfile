@@ -3,13 +3,13 @@ ARG BUILD_FROM=alpine:3.24
 # onto Alpine with jq so the HA options wrapper can map config → env, then exec
 # upstream `error-pages serve` (no s6/bashio).
 # renovate: datasource=docker depName=ghcr.io/tarampampam/error-pages
-ARG ERROR_PAGES_VERSION=4.2.7
+ARG ERROR_PAGES_VERSION=4.2.8
 
 FROM ghcr.io/tarampampam/error-pages:${ERROR_PAGES_VERSION} AS errorpages
 
 FROM ${BUILD_FROM}
 
-ARG ERROR_PAGES_VERSION=4.2.7
+ARG ERROR_PAGES_VERSION=4.2.8
 ENV ERROR_PAGES_VERSION=${ERROR_PAGES_VERSION}
 
 # hadolint ignore=DL3018

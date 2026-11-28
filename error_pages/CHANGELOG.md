@@ -1,5 +1,62 @@
 # Changelog
 
+## 4.2.8
+
+- Upgrading from upstream version 4.2.7-4 -> 4.2.8
+
+> Upstream v4.2.8: https://github.com/tarampampam/error-pages/releases/tag/v4.2.8
+>
+> <!-- Release notes generated using configuration in .github/release.yml at master -->
+>
+> ## What's Changed
+> ### 🛠 Fixes
+> * fix: Prevent panics for HTTP codes below 100 in https://github.com/tarampampam/error-pages/pull/437
+> ### 📦 Dependency updates
+> * build(deps): Bump golang from 1.27.3 to 1.27.4 in https://github.com/tarampampam/error-pages/pull/438
+> * chore(deps): update golangci/golangci-lint to v2.15.0 in https://github.com/tarampampam/error-pages/pull/431
+> * build(deps): Bump sigstore/cosign-installer from 4.1.2 to 4.1.4 in https://github.com/tarampampam/error-pages/pull/439
+>
+> **Full Changelog**: https://github.com/tarampampam/error-pages/compare/v4.2.7...v4.2.8
+>
+> ## 🐋 Docker images
+>
+> ```cpp
+> // server
+> ghcr.io/tarampampam/error-pages:4.2.8
+> ghcr.io/tarampampam/error-pages:4.2
+> ghcr.io/tarampampam/error-pages:4
+> ghcr.io/tarampampam/error-pages:latest
+> quay.io/tarampampam/error-pages:4.2.8
+> quay.io/tarampampam/error-pages:4.2
+> quay.io/tarampampam/error-pages:4
+> quay.io/tarampampam/error-pages:latest
+> tarampampam/error-pages:4.2.8
+> tarampampam/error-pages:4.2
+> tarampampam/error-pages:4
+> tarampampam/error-pages:latest
+>
+> // builder
+> ghcr.io/tarampampam/error-pages:4.2.8-builder
+> ghcr.io/tarampampam/error-pages:4.2-builder
+> ghcr.io/tarampampam/error-pages:4-builder
+> ghcr.io/tarampampam/error-pages:latest-builder
+> quay.io/tarampampam/error-pages:4.2.8-builder
+> quay.io/tarampampam/error-pages:4.2-builder
+> quay.io/tarampampam/error-pages:4-builder
+> quay.io/tarampampam/error-pages:latest-builder
+> tarampampam/error-pages:4.2.8-builder
+> tarampampam/error-pages:4.2-builder
+> tarampampam/error-pages:4-builder
+> tarampampam/error-pages:latest-builder
+> ```
+>
+> ## 📦 Helm chart
+>
+> ```bash
+> helm install error-pages oci://ghcr.io/tarampampam/error-pages/charts/error-pages \
+>   --version 4.2.8
+> ```
+
 ## 4.2.7-4
 
 - Default host port is now `8181` (was `8080`, shared with Traefik, DNS/IP List Chunker and
